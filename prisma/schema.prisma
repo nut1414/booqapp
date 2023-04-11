@@ -10,3 +10,219 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Role{
+  RoleID Int @id // Auto ? Not So sure na
+  RoleName String
+  User User[] 
+}
+
+model User{
+  UserID Int @id @default(autoincrement()) // Auto ? Not So sure na
+  Username String @unique
+  PhoneNumber String @unique
+  Email String @unique
+  Role Role @relation(fields: [RoleID], references: [RoleID])
+  RoleID Int
+  password String
+  Name String
+  JoinDate DateTime @db.Date
+  // Foreign Keys
+  ShippingAddress ShippingAddress[]
+  ItemInBasket ItemInBasket[]
+  Review Review[]
+  Order Order[]
+  Publisher Publisher[]
+}
+
+model ShippingAddress{
+  ShippingAddressID Int @id @default(autoincrement()) // Auto ? Not So sure na
+  User User @relation(fields: [UserID], references: [UserID])
+  UserID Int
+  Address String
+  ZipCode String
+  PhoneNumber String
+  // Foreign Keys
+  Order Order[]
+}
+
+model ItemInBasket{
+  ItemID Int @id @default(autoincrement()) // Auto ? Not So sure na
+  User User @relation(fields: [UserID], references: [UserID])
+  UserID Int
+  BookID Int
+  Quantity Int
+  TimeStamp DateTime @db.Date
+}
+
+// Book Section
+model BookDetails{
+  BookID Int @id @default(autoincrement()) // Auto ? Not So sure na
+  BookName String
+  Price Int
+  Description String
+  // Getting FormatTypeID From FormatType
+  Format FormatType @relation(fields: [FormatTypeID], references: [FormatTypeID])
+  FormatTypeID Int
+  Weight Float
+  ReleaseDate DateTime @db.Date
+  PublisherID String
+  // BookCover => Image Needed
+  // Foreign Keys
+  BookGenre BookGenre[]
+  BookAuthor BookAuthor[]
+  Review Review[]
+  PromotionBook PromotionBook[]
+}
+
+model FormatType{
+  FormatTypeID Int @id // Auto ? Not So sure na
+  TypeName String
+  BookDetails BookDetails[]
+}
+
+model Genre{
+  BookID Int
+  GenreID Int @unique // Adding Unique to fix the error But not sure if it is correct
+  // Guess that it can't be duplicate any way
+  GenreName String
+  @@id([BookID, GenreID])
+  // Foreign Keys
+  BookGenre BookGenre[]
+}
+
+model BookGenre{
+  BookID Int @id
+  GenreID Int
+  // Foreign Keys
+  BookDetails BookDetails @relation(fields: [BookID], references: [BookID])
+  Genre Genre @relation(fields: [GenreID], references: [GenreID])
+}
+
+model BookAuthor{
+  BookID Int
+  AuthorID Int
+  // Foreign Keys
+  BookDetails BookDetails @relation(fields: [BookID], references: [BookID])
+  Author Author @relation(fields: [AuthorID], references: [AuthorID])
+  @@id([BookID, AuthorID])
+}
+
+model Author{
+  AuthorID Int @id @default(autoincrement()) // Auto ? Not So sure na
+  AuthorName String
+  // Foreign Keys
+  BookAuthor BookAuthor[]
+}
+
+// Review Section
+model Review{
+  BookDetails BookDetails @relation(fields: [BookID], references: [BookID])
+  BookID Int
+  User User @relation(fields: [UserID], references: [UserID])
+  UserID Int
+  Order Order @relation(fields: [OrderID], references: [OrderID])
+  OrderID Int
+  Rate Int
+  Comment String
+  ReviewDate DateTime @db.Date
+  @@id([BookID, UserID, OrderID])
+  // Foreign Keys  
+  
+}
+
+model Order{
+  OrderID Int @id @default(autoincrement()) // Auto ? Not So sure na
+  User User @relation(fields: [UserID], references: [UserID])
+  UserID Int
+  OrderDate DateTime @db.Date
+  ShippingAddress ShippingAddress @relation(fields: [ShippingAddressID], references: [ShippingAddressID])
+  ShippingAddressID Int
+  publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
+  PublisherID Int
+  TrackingNo String
+  // ProofOfTransfer
+  TransactionTime DateTime @db.Date //Date?
+  TransactionApprove Boolean
+  // Foreign Keys
+  Review Review[]
+  OrderBook OrderBook[]
+}
+
+model OrderBook{
+  Order Order @relation(fields: [OrderID], references: [OrderID])
+  OrderID Int @id
+  BookId Int
+  PromotionID Int
+  Quantity Int
+}
+
+model PromotionBook{
+  Promotion Promotion @relation(fields: [PromotionID], references: [PromotionID])
+  PromotionID Int
+  Book BookDetails @relation(fields: [BookID], references: [BookID])
+  BookID Int
+  @@id([PromotionID, BookID])
+}
+
+model Promotion{
+  PromotionID Int @id @default(autoincrement()) // Auto ? Not So sure na
+  DiscountPercent Float
+  PromotionDetail String
+  StartDate DateTime @db.Date
+  EndDate DateTime @db.Date
+  publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
+  PublisherID Int
+  // Foreign Keys
+  PromotionBook PromotionBook[]
+}
+
+model Publisher{
+  Publisher User @relation(fields: [PublisherID], references: [UserID])
+  PublisherID Int @id // Auto ? Not So sure na
+  PublisherName String
+  Description String
+  PhoneNumber String
+  //VerificationDocument ??
+  Verify VerificationStatus @relation(fields: [VerifyStatusID], references: [VerifyStatusID])
+  VerifyStatusID Int
+  // Foreign Keys
+  Promotion Promotion[]
+  Order Order[]
+  PublisherAddress PublisherAddress[]
+  PublisherBank PublisherBank[]
+}
+
+model VerificationStatus{
+  VerifyStatusID Int @id
+  Name String
+  Publisher Publisher[]
+}
+
+model PublisherAddress{
+  Publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
+  PublisherID Int
+  PaddressID Int @id
+  Name String
+  Address String
+  Postcode String
+  PhoneNumber String
+  // Foreign Keys
+}
+
+model PublisherBank{
+  Publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
+  PublisherID Int
+  PBankID Int @id
+  BankName String
+  AccountNumber String
+  // AccountName String ??
+  Bank Bank @relation(fields: [BankID], references: [BankID])
+  BankID Int
+  // Foreign Keys
+}
+
+model Bank{
+  BankID Int @id
+  BankName String
+  PublisherBank PublisherBank[]
+}

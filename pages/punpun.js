@@ -10,6 +10,7 @@ export default function Punpun() {
 
     
   }, [])
+  
 
   return (
     <div onClick={() => {
@@ -17,6 +18,7 @@ export default function Punpun() {
      }} className="">
       Abcdefghijklmnopqrstuvwxyz
     </div>
+
   )
 }
 
