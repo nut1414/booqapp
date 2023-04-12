@@ -18,13 +18,14 @@ model Role{
 
 model User{
   UserID Int @id @default(autoincrement()) // Auto ? Not So sure na
-  Username String @unique
+  UserName String @unique
   PhoneNumber String @unique
   Email String @unique
   Role Role @relation(fields: [RoleID], references: [RoleID])
   RoleID Int
-  password String
-  Name String
+  Password String
+  FirstName String
+  LastName String
   JoinDate DateTime @db.Date
   // Foreign Keys
   ShippingAddress ShippingAddress[]
@@ -75,7 +76,7 @@ model BookDetails{
 }
 
 model FormatType{
-  FormatTypeID Int @id // Auto ? Not So sure na
+  FormatTypeID Int @id @default(autoincrement()) // Auto ? Not So sure na
   TypeName String
   BookDetails BookDetails[]
 }
@@ -178,7 +179,7 @@ model Promotion{
 
 model Publisher{
   Publisher User @relation(fields: [PublisherID], references: [UserID])
-  PublisherID Int @id // Auto ? Not So sure na
+  PublisherID Int @id @default(autoincrement())// Auto ? Not So sure na
   PublisherName String
   Description String
   PhoneNumber String
