@@ -1,6 +1,6 @@
 import { Button } from "@/components/input/Button";
 import { TextBox } from "@/components/input/TextBox";
-
+import { CheckBox } from "@/components/input/CheckBox";
 export default function SignUp() {
   const onClickHandle = () => {
     console.log("test")
@@ -9,6 +9,7 @@ export default function SignUp() {
     <div>
       <Button onClick={onClickHandle} />
       <TextBox />
+      <CheckBox />
     </div>
   )
 }
