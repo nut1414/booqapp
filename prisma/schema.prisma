@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,220 +7,229 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Role{
-  RoleID Int @id // Auto ? Not So sure na
-  RoleName String
-  User User[] 
-}
-
-model User{
-  UserID Int @id @default(autoincrement()) // Auto ? Not So sure na
-  UserName String @unique
-  PhoneNumber String @unique
-  Email String @unique
-  Role Role @relation(fields: [RoleID], references: [RoleID])
-  RoleID Int
-  Password String
-  FirstName String
-  LastName String
-  JoinDate DateTime @db.Date
-  // Foreign Keys
-  ShippingAddress ShippingAddress[]
-  ItemInBasket ItemInBasket[]
-  Review Review[]
-  Order Order[]
-  Publisher Publisher[]
-}
-
-model ShippingAddress{
-  ShippingAddressID Int @id @default(autoincrement()) // Auto ? Not So sure na
-  User User @relation(fields: [UserID], references: [UserID])
-  UserID Int
-  Address String
-  ZipCode String
-  PhoneNumber String
-  // Foreign Keys
-  Order Order[]
-}
-
-model ItemInBasket{
-  ItemID Int @id @default(autoincrement()) // Auto ? Not So sure na
-  User User @relation(fields: [UserID], references: [UserID])
-  UserID Int
-  BookID Int
-  Quantity Int
-  TimeStamp DateTime @db.Date
-}
-
-// Book Section
-model BookDetails{
-  BookID Int @id @default(autoincrement()) // Auto ? Not So sure na
-  BookName String
-  Price Int
-  Description String
-  // Getting FormatTypeID From FormatType
-  Format FormatType @relation(fields: [FormatTypeID], references: [FormatTypeID])
-  FormatTypeID Int
-  Weight Float
-  ReleaseDate DateTime @db.Date
-  PublisherID String
-  // BookCover => Image Needed
-  // Foreign Keys
-  BookGenre BookGenre[]
-  BookAuthor BookAuthor[]
-  Review Review[]
-  PromotionBook PromotionBook[]
-}
-
-model FormatType{
-  FormatTypeID Int @id @default(autoincrement()) // Auto ? Not So sure na
-  TypeName String
-  BookDetails BookDetails[]
-}
-
-model Genre{
-  BookID Int
-  GenreID Int @unique // Adding Unique to fix the error But not sure if it is correct
-  // Guess that it can't be duplicate any way
-  GenreName String
-  @@id([BookID, GenreID])
-  // Foreign Keys
-  BookGenre BookGenre[]
-}
-
-model BookGenre{
-  BookID Int @id
-  GenreID Int
-  // Foreign Keys
-  BookDetails BookDetails @relation(fields: [BookID], references: [BookID])
-  Genre Genre @relation(fields: [GenreID], references: [GenreID])
-}
-
-model BookAuthor{
-  BookID Int
-  AuthorID Int
-  // Foreign Keys
-  BookDetails BookDetails @relation(fields: [BookID], references: [BookID])
-  Author Author @relation(fields: [AuthorID], references: [AuthorID])
-  @@id([BookID, AuthorID])
-}
-
-model Author{
-  AuthorID Int @id @default(autoincrement()) // Auto ? Not So sure na
+model author {
+  AuthorID   Int          @id @default(autoincrement())
   AuthorName String
-  // Foreign Keys
-  BookAuthor BookAuthor[]
+  bookauthor bookauthor[]
 }
 
-// Review Section
-model Review{
-  BookDetails BookDetails @relation(fields: [BookID], references: [BookID])
-  BookID Int
-  User User @relation(fields: [UserID], references: [UserID])
-  UserID Int
-  Order Order @relation(fields: [OrderID], references: [OrderID])
-  OrderID Int
-  Rate Int
-  Comment String
-  ReviewDate DateTime @db.Date
-  @@id([BookID, UserID, OrderID])
-  // Foreign Keys  
-  
+model bank {
+  BankID        Int             @id
+  BankName      String
+  publisherbank publisherbank[]
 }
 
-model Order{
-  OrderID Int @id @default(autoincrement()) // Auto ? Not So sure na
-  User User @relation(fields: [UserID], references: [UserID])
-  UserID Int
-  OrderDate DateTime @db.Date
-  ShippingAddress ShippingAddress @relation(fields: [ShippingAddressID], references: [ShippingAddressID])
-  ShippingAddressID Int
-  publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
-  PublisherID Int
-  TrackingNo String
-  // ProofOfTransfer
-  TransactionTime DateTime @db.Date //Date?
+model bookauthor {
+  BookID      Int
+  AuthorID    Int
+  author      author      @relation(fields: [AuthorID], references: [AuthorID], map: "BookAuthor_AuthorID_fkey")
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookAuthor_BookID_fkey")
+
+  @@id([BookID, AuthorID])
+  @@index([AuthorID], map: "BookAuthor_AuthorID_fkey")
+}
+
+model bookdetails {
+  BookID        Int             @id @default(autoincrement())
+  BookName      String
+  Price         Int
+  Description   String
+  FormatTypeID  Int
+  Weight        Float
+  ReleaseDate   DateTime        @db.Date
+  PublisherID   String
+  bookauthor    bookauthor[]
+  formattype    formattype      @relation(fields: [FormatTypeID], references: [FormatTypeID], map: "BookDetails_FormatTypeID_fkey")
+  bookgenre     bookgenre?
+  promotionbook promotionbook[]
+  review        review[]
+
+  @@index([FormatTypeID], map: "BookDetails_FormatTypeID_fkey")
+}
+
+model bookgenre {
+  BookID      Int         @id
+  GenreID     Int
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookGenre_BookID_fkey")
+  genre       genre       @relation(fields: [GenreID], references: [GenreID], map: "BookGenre_GenreID_fkey")
+
+  @@index([GenreID], map: "BookGenre_GenreID_fkey")
+}
+
+model formattype {
+  FormatTypeID Int           @id @default(autoincrement())
+  TypeName     String
+  bookdetails  bookdetails[]
+}
+
+model genre {
+  BookID    Int
+  GenreID   Int         @unique(map: "Genre_GenreID_key")
+  GenreName String
+  bookgenre bookgenre[]
+
+  @@id([BookID, GenreID])
+}
+
+model iteminbasket {
+  ItemID    Int      @id @default(autoincrement())
+  UserID    Int
+  BookID    Int
+  Quantity  Int
+  TimeStamp DateTime @db.Date
+  user      user     @relation(fields: [UserID], references: [UserID], map: "ItemInBasket_UserID_fkey")
+
+  @@index([UserID], map: "ItemInBasket_UserID_fkey")
+}
+
+model order {
+  OrderID            Int             @id @default(autoincrement())
+  UserID             Int
+  OrderDate          DateTime        @db.Date
+  ShippingAddressID  Int
+  PublisherID        Int
+  TrackingNo         String
+  TransactionTime    DateTime        @db.Date
   TransactionApprove Boolean
-  // Foreign Keys
-  Review Review[]
-  OrderBook OrderBook[]
+  publisher          publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Order_PublisherID_fkey")
+  shippingaddress    shippingaddress @relation(fields: [ShippingAddressID], references: [ShippingAddressID], map: "Order_ShippingAddressID_fkey")
+  user               user            @relation(fields: [UserID], references: [UserID], map: "Order_UserID_fkey")
+  orderbook          orderbook?
+  review             review[]
+
+  @@index([PublisherID], map: "Order_PublisherID_fkey")
+  @@index([ShippingAddressID], map: "Order_ShippingAddressID_fkey")
+  @@index([UserID], map: "Order_UserID_fkey")
 }
 
-model OrderBook{
-  Order Order @relation(fields: [OrderID], references: [OrderID])
-  OrderID Int @id
-  BookId Int
+model orderbook {
+  OrderID     Int   @id
+  BookId      Int
   PromotionID Int
-  Quantity Int
+  Quantity    Int
+  order       order @relation(fields: [OrderID], references: [OrderID], map: "OrderBook_OrderID_fkey")
 }
 
-model PromotionBook{
-  Promotion Promotion @relation(fields: [PromotionID], references: [PromotionID])
-  PromotionID Int
-  Book BookDetails @relation(fields: [BookID], references: [BookID])
-  BookID Int
-  @@id([PromotionID, BookID])
-}
-
-model Promotion{
-  PromotionID Int @id @default(autoincrement()) // Auto ? Not So sure na
+model promotion {
+  PromotionID     Int             @id @default(autoincrement())
   DiscountPercent Float
   PromotionDetail String
-  StartDate DateTime @db.Date
-  EndDate DateTime @db.Date
-  publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
-  PublisherID Int
-  // Foreign Keys
-  PromotionBook PromotionBook[]
+  StartDate       DateTime        @db.Date
+  EndDate         DateTime        @db.Date
+  PublisherID     Int
+  publisher       publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Promotion_PublisherID_fkey")
+  promotionbook   promotionbook[]
+
+  @@index([PublisherID], map: "Promotion_PublisherID_fkey")
 }
 
-model Publisher{
-  Publisher User @relation(fields: [PublisherID], references: [UserID])
-  PublisherID Int @id @default(autoincrement())// Auto ? Not So sure na
-  PublisherName String
-  Description String
+model promotionbook {
+  PromotionID Int
+  BookID      Int
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "PromotionBook_BookID_fkey")
+  promotion   promotion   @relation(fields: [PromotionID], references: [PromotionID], map: "PromotionBook_PromotionID_fkey")
+
+  @@id([PromotionID, BookID])
+  @@index([BookID], map: "PromotionBook_BookID_fkey")
+}
+
+model publisher {
+  PublisherID        Int                @id @default(autoincrement())
+  PublisherName      String
+  Description        String
+  PhoneNumber        String
+  VerifyStatusID     Int
+  order              order[]
+  promotion          promotion[]
+  user               user               @relation(fields: [PublisherID], references: [UserID], map: "Publisher_PublisherID_fkey")
+  verificationstatus verificationstatus @relation(fields: [VerifyStatusID], references: [VerifyStatusID], map: "Publisher_VerifyStatusID_fkey")
+  publisheraddress   publisheraddress[]
+  publisherbank      publisherbank[]
+
+  @@index([VerifyStatusID], map: "Publisher_VerifyStatusID_fkey")
+}
+
+model publisheraddress {
+  PublisherID Int
+  PaddressID  Int       @id
+  Name        String
+  Address     String
+  Postcode    String
   PhoneNumber String
-  //VerificationDocument ??
-  Verify VerificationStatus @relation(fields: [VerifyStatusID], references: [VerifyStatusID])
-  VerifyStatusID Int
-  // Foreign Keys
-  Promotion Promotion[]
-  Order Order[]
-  PublisherAddress PublisherAddress[]
-  PublisherBank PublisherBank[]
+  publisher   publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherAddress_PublisherID_fkey")
+
+  @@index([PublisherID], map: "PublisherAddress_PublisherID_fkey")
 }
 
-model VerificationStatus{
-  VerifyStatusID Int @id
-  Name String
-  Publisher Publisher[]
-}
-
-model PublisherAddress{
-  Publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
-  PublisherID Int
-  PaddressID Int @id
-  Name String
-  Address String
-  Postcode String
-  PhoneNumber String
-  // Foreign Keys
-}
-
-model PublisherBank{
-  Publisher Publisher @relation(fields: [PublisherID], references: [PublisherID])
-  PublisherID Int
-  PBankID Int @id
-  BankName String
+model publisherbank {
+  PublisherID   Int
+  PBankID       Int       @id
+  BankName      String
   AccountNumber String
-  // AccountName String ??
-  Bank Bank @relation(fields: [BankID], references: [BankID])
-  BankID Int
-  // Foreign Keys
+  BankID        Int
+  bank          bank      @relation(fields: [BankID], references: [BankID], map: "PublisherBank_BankID_fkey")
+  publisher     publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherBank_PublisherID_fkey")
+
+  @@index([BankID], map: "PublisherBank_BankID_fkey")
+  @@index([PublisherID], map: "PublisherBank_PublisherID_fkey")
 }
 
-model Bank{
-  BankID Int @id
-  BankName String
-  PublisherBank PublisherBank[]
+model review {
+  BookID      Int
+  UserID      Int
+  OrderID     Int
+  Rate        Int
+  Comment     String
+  ReviewDate  DateTime    @db.Date
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "Review_BookID_fkey")
+  order       order       @relation(fields: [OrderID], references: [OrderID], map: "Review_OrderID_fkey")
+  user        user        @relation(fields: [UserID], references: [UserID], map: "Review_UserID_fkey")
+
+  @@id([BookID, UserID, OrderID])
+  @@index([OrderID], map: "Review_OrderID_fkey")
+  @@index([UserID], map: "Review_UserID_fkey")
+}
+
+model role {
+  RoleID   Int    @id
+  RoleName String
+  user     user[]
+}
+
+model shippingaddress {
+  ShippingAddressID Int     @id @default(autoincrement())
+  UserID            Int
+  Address           String
+  ZipCode           String
+  PhoneNumber       String
+  order             order[]
+  user              user    @relation(fields: [UserID], references: [UserID], map: "ShippingAddress_UserID_fkey")
+
+  @@index([UserID], map: "ShippingAddress_UserID_fkey")
+}
+
+model user {
+  UserID          Int               @id @default(autoincrement())
+  UserName        String            @unique(map: "User_UserName_key")
+  PhoneNumber     String            @unique(map: "User_PhoneNumber_key")
+  Email           String            @unique(map: "User_Email_key")
+  RoleID          Int
+  Password        String
+  FirstName       String
+  LastName        String
+  JoinDate        DateTime          @db.Date
+  iteminbasket    iteminbasket[]
+  order           order[]
+  publisher       publisher?
+  review          review[]
+  shippingaddress shippingaddress[]
+  role            role              @relation(fields: [RoleID], references: [RoleID], map: "User_RoleID_fkey")
+
+  @@index([RoleID], map: "User_RoleID_fkey")
+}
+
+model verificationstatus {
+  VerifyStatusID Int         @id
+  Name           String
+  publisher      publisher[]
 }
