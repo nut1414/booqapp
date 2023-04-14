@@ -6,10 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Template>
-        
-      </Template>
-    </main>
+    <div className='bg-gradient-to-b  from-black to-white min-w-screen min-h-screen'>
+    </div>
   )
 }
