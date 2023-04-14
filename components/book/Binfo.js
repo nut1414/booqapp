@@ -16,7 +16,7 @@ export function Binfo({picture,name,price,author,linkname,linkauthor,onclick}) {
      </div>
      <div className="flex ">
      <p className = "text-white text-2xl  font-light p-5 object-center w-48">{price}</p>
-     <button className = {"rounded-3xl text-4xl "} onClick={onclick}>+</button>
+     <button className = {"rounded-3xl text-4xl hover:text-yellow-600 "} onClick={onclick}>+</button>
      </div>
       </div>
     )
