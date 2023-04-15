@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function Binfo({picture,name,price,author,linkname,linkauthor,onclick}) {
     return (
-    <div className="flex flex-col w-max">
+    <div className="bg-white shadow-2xl rounded-2xl h-82 m-2  flex flex-col w-max">
         <Link href={linkname}>
           <img  className ={"object-cover m-10 "} src= {picture} width="170" height="100" />
       </Link>
