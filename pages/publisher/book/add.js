@@ -1,9 +1,12 @@
+import { ActionTemplate } from "@/components/common/ActionTemplate"
 import { Template } from "@/components/common/Template"
 
 export default function PublisherBookAdd() {
   return (
     <Template>
-      { /* Add your code here */ }
+      <ActionTemplate heading={"Adding Book"}>
+
+      </ActionTemplate>
     </Template>
   )
 }

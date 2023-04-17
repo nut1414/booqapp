@@ -5,12 +5,12 @@ export function Template({ children, className, ...props }) {
   return (
     <div
       className={
-        'min-h-screen flex flex-col justify-between'
+        'min-h-screen flex flex-col justify-between '
         +className}
       {...props}
     >
       <Navbar />
-      <div className="grow">
+      <div className="grow flex flex-col">
         {children}
       </div>
       <Footer />
