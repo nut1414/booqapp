@@ -91,6 +91,7 @@ model order {
   TrackingNo         String
   TransactionTime    DateTime        @db.Date
   TransactionApprove Boolean
+  Proofoftransfer    String
   publisher          publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Order_PublisherID_fkey")
   shippingaddress    shippingaddress @relation(fields: [ShippingAddressID], references: [ShippingAddressID], map: "Order_ShippingAddressID_fkey")
   user               user            @relation(fields: [UserID], references: [UserID], map: "Order_UserID_fkey")
@@ -154,7 +155,7 @@ model publisheraddress {
   PaddressID  Int       @id
   Name        String
   Address     String
-  Postcode    String
+  Zipcode     String
   PhoneNumber String
   publisher   publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherAddress_PublisherID_fkey")
 
@@ -215,8 +216,7 @@ model user {
   Email           String            @unique(map: "User_Email_key")
   RoleID          Int
   Password        String
-  FirstName       String
-  LastName        String
+  Name            String
   JoinDate        DateTime          @db.Date
   iteminbasket    iteminbasket[]
   order           order[]
