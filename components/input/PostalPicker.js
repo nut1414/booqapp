@@ -48,7 +48,7 @@ export function PostalPicker({ }) {
         {provinces.map((province) => (
           <option key={province} value={province} className="">
             {province}
-          </option>
+          </option> 
         ))}
       </SelectBox>
       {selectedProvince && (

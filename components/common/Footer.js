@@ -1,4 +1,4 @@
-import { NavLink } from "./Navbar/NavLink";
+import Link from "next/link"
 
 export function Footer() {
   return (
@@ -6,8 +6,8 @@ export function Footer() {
       <span>© 2023 All Rights Reserved</span>
       <span>Contact: booq@booq.com</span>
       <div className="flex gap-4">
-        <NavLink href={"#"}>Term of use</NavLink>
-        <NavLink href={"#"}>Privacy Notice</NavLink>
+        <Link href={"#"}>Term of use</Link>
+        <Link href={"#"}>Privacy Notice</Link>
       </div>
     </footer>
   )
