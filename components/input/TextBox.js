@@ -1,10 +1,8 @@
-export function TextBox({ onChange, value, name, className ,type }) {
+export function TextBox({ onChange, value, id, name, className ,type, label, readOnly }) {
   return (
-    <form>
-    <p>
-    <label for={name} class = "m-3">{name} : </label><br></br>
-    <input id={name} type = {type} onChange={onChange} className = " p-4 w-4/12 h-7 rounded-full text-gray-900 m-3"></input><br></br>  
-    </p>
-    </form>
+    <div className={className}>
+      <label htmlFor={id ? id : name} className="m-3">{label} : </label><br></br>
+      <input id={id ? id : name} name={name} type={type} onChange={onChange ? onChange : () => { }} value={value} className=" p-4 h-7 rounded-full text-gray-900 m-3 drop-shadow-sm border border-black"  ></input>
+    </div>
   )
 }

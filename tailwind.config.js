@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'spooky-orange': '#FF9F29',
+        'spooky-orange': '#FF7300',
         'spooky-black': '#171719',
         'spooky-blue': '#262A56'
       },
