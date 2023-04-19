@@ -1,12 +1,13 @@
 import Image from "next/image"
 import Link from "next/link"
 
+
 export function ActionTemplate({ children, heading, sideChildren }) {
   return (
     <div className="flex flex-col md:flex-row min-w-full h-full grow">
-      <div className="bg-[#E2DCC8] md:w-1/3  flex flex-col items-center text-left justify-center text-black p-2">
-        <h1 className="text-2xl w-full px-16 font-bold">{ heading }</h1>
-        <div>
+      <div className="bg-[#171719] md:w-1/3  flex flex-col items-center text-left justify-center text-black p-2 ">
+        <h1 className="text-white text-2xl w-full  px-16 font-bold mt-20">{ heading }</h1>
+        <div className="mt-10 mb-32">
           { sideChildren }
         </div>
       </div> 

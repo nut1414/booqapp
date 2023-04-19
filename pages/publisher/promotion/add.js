@@ -2,6 +2,7 @@ import { ActionTemplate } from "@/components/common/ActionTemplate"
 import { Template } from "@/components/common/Template"
 import promotion from "@/public/promo.svg"
 import Image from "next/image"
+import { Button } from "@/components/input/Button"
 
 export default function PublisherPromotionAdd() {
   return (
