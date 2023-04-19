@@ -1,4 +1,4 @@
-import {verify} from 'jsonwebtoken';
+import {sign , verify} from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import Jwttoken from '@/utils/่Jwttoken';
 
@@ -17,15 +17,18 @@ export default async function login(req, res){
     if (!user) {
         return res.status(400).json({ message: 'Wrong Username or Password' })
     }
-    bcrypt.compare(Password, user.Password).then((match) => {
+    bcrypt.compare(Password, user.Password).then(async(match) => {
         if(!match) {
             return res.status(400).json({ message: 'Wrong Username or Password' })
         }
-        else{
-            return res.status(200).json({ message: 'Correct Credential'})
-            token = Jwttoken.createToken(user)
-            if(token)
-                console.log("User token Create => Token: " + token)
+        else{         
+            const Userrole = await prisma.role.findUnique({
+                where: {
+                    RoleID: parseInt(user.RoleID,10)
+                }
+            })   
+            let signtok = sign({ id : user.UserID, name : user.Name, email : user.Email , role : Userrole},  process.env.JWT_SECRET, { expiresIn: "7d" });
+            return res.status(200).json({ token : signtok, message: 'Login Success'})
         }
     })
 }

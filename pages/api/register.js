@@ -1,5 +1,6 @@
-import {verify} from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
+import Jwttoken from '@/utils/่Jwttoken';
 
 const prisma = new PrismaClient()
 const bcrypt = require('bcrypt')
@@ -16,7 +17,7 @@ export default async function register(req, res){
         }
         const hashing = bcrypt.hashSync(req.body.Password, saltround);
         // Hash Password First Before Saving in The Database
-        const User = await prisma.user.create({
+        const user = await prisma.user.create({
                 data: {
                     role: {
                         connect: {
@@ -27,8 +28,7 @@ export default async function register(req, res){
                     PhoneNumber: req.body.PhoneNumber,
                     Email: req.body.Email,
                     Password: hashing,
-                    FirstName: req.body.FirstName,
-                    LastName: req.body.LastName,
+                    Name : req.body.FirstName + " " + req.body.LastName,
                     JoinDate: new Date(),
                 }
         })
@@ -53,12 +53,19 @@ export default async function register(req, res){
                     PhoneNumber: req.body.PhoneNumber,
                 }
             })
+            const userrole = await prisma.role.findUnique({
+                where: {
+                    RoleID: parseInt(req.body.RoleID,10)
+                }
+            })
+            console.log(userrole)
+            let signtok = sign({ id : user.UserID, name : user.Name, email : user.Email , role : userrole},  process.env.JWT_SECRET, { expiresIn: "7d" });
+            return res.status(200).json({token: signtok})
         }
         else
             return res.status(400).json({ message: 'Create failed.'})
         // Return JWT Token
     }
-    return res.status(200).json({ message: 'Create success.'})
     // Address
     await prisma.$disconnect()
 }

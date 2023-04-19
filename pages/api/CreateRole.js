@@ -1,4 +1,3 @@
-import {verify} from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
@@ -12,6 +11,9 @@ export default async function register(req, res){
                     RoleName: req.body.RoleName,
                 }
         })
+        // const Genre = await prisma.Genre.create({
+            
+        // })
     }
     // Address
     await prisma.$disconnect()

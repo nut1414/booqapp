@@ -204,7 +204,7 @@ model shippingaddress {
   ZipCode           String
   PhoneNumber       String
   order             order[]
-  user              user    @relation(fields: [UserID], references: [UserID], map: "ShippingAddress_UserID_fkey")
+  user              user    @relation(fields: [UserID], references: [UserID], map: "ShippingAddress_UserID_fkey", onDelete: Cascade)
 
   @@index([UserID], map: "ShippingAddress_UserID_fkey")
 }
