@@ -15,7 +15,7 @@ export default async function register(req, res){
         || !req.body?.PhoneNumber
         || !req.body?.Email
         || !req.body?.Password
-        // || (req.body?.RoleID !== '1' || req.body?.RoleID !== '2')
+        || !(req.body?.RoleID !== '1' || req.body?.RoleID !== '2')
         || !req.body?.FirstName
         || !req.body?.LastName
         || !req.body?.Address

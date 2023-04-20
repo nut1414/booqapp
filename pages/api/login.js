@@ -22,10 +22,10 @@ export default async function login(req, res){
         res.status(200).json({ token: signtok, message: 'Login Success' })
       }
     } else {
-      res.status(400).json({ message: 'Wrong Username or Password' })
+      res.status(401).json({ message: 'Wrong Username or Password' })
     }
   }else {
-      res.status(400).json({ message: 'Wrong Username or Password' })
+      res.status(401).json({ message: 'Wrong Username or Password' })
   }
   await prisma.$disconnect()
 }

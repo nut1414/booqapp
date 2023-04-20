@@ -71,7 +71,7 @@ export function PostalPicker({ }) {
             ))}
         </SelectBox>
       )}
-      {postcode && <TextBox name="postcode" label="Postcode" value={postcode} readOnly/>}
+      {postcode && <TextBox name="ZipCode" label="Postcode" value={postcode} readOnly/>}
     </>
   )
 }

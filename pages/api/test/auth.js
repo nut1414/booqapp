@@ -5,6 +5,8 @@ const prisma = new PrismaClient()
 
 async function handler(req, res) {
   res.status(200).json({ user: req.user })
+
+  prisma.$disconnect()
 }
 
 export default authRoute(handler,prisma)

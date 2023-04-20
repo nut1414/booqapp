@@ -8,10 +8,10 @@ import { ProfileIcon } from "./ProfileIcon"
 import { Button } from "@/components/input/Button"
 import { useState } from "react"
 
-export function Navbar({ role }) {
-  const isUser = role === "user"
-  const isAdmin = role === "admin"
-  const isPublisher = role == "publisher"
+export function Navbar({ user }) {
+  const isUser = user?.role?.RoleName === "Customer"
+  const isAdmin = user?.role?.RoleName === "Admin"
+  const isPublisher = user?.role?.RoleName == "Publisher"
   const isLogin = isUser || isAdmin || isPublisher
   const [genreOpen, setGenreOpen] = useState(false)
 
