@@ -10,7 +10,7 @@ export default function PublisherBookAdd() {
   return (
     <Template>
       <ActionTemplate heading={"Adding Book"} 
-        sideChildren={
+          sideChildren={
           <div>
             <img className=" w-80" src="/addbook.svg"></img>
             <p className="text-white mt-5 text-xs text-opacity-60 font-semibold inline-flex">jpg, jpeg, png (max file size 5MB)</p>
