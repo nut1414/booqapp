@@ -7,8 +7,13 @@ import { useState, useRef } from "react";
 import { PostalPicker } from "@/components/input/PostalPicker";
 import { RadioBox } from "@/components/input/RadioBox";
 import Link from "next/link";
+import Swal from "sweetalert2";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/router";
 
 export default function SignUp() {
+  const { login } = useAuth()
+  const router = useRouter()
   const [userData, setUserData] = useState({
     UserName: '',
     PhoneNumber: '',
@@ -22,6 +27,7 @@ export default function SignUp() {
   function handleChange(event) {
   }
 
+
   const handleSubmit = e => {
     e.preventDefault()
     const formData = new FormData(formRef.current);
@@ -30,6 +36,28 @@ export default function SignUp() {
       data[key] = value;
     }
     console.log(data);
+    try {
+      fetch('/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(res => res.json())
+      .then(data => {
+        if (data.token) {
+          Swal.fire({ title: 'Success', text: data.message, icon: 'success' })
+          router.push('/login')
+        } else {
+          Swal.fire({title: 'Error', text: data.message, icon: 'error'})
+        }
+      })
+    } catch (err) {
+      console.log(err)
+    }
+    
+    
+    
   }
 
 
@@ -44,18 +72,18 @@ export default function SignUp() {
         <div className="flex gap-4 p-4">
           <Image src={UserProfile} alt="userprofile" />
           <div className="flex flex-col justify-center">
-            <RadioBox id={"customer"} label={"Customer"} name={"roletype"} onChange={onClickHandle} />
-            <RadioBox id={"publisher"} label={"Publisher"} name={"roletype"} onChange={onClickHandle} />
+            <RadioBox defaultChecked={true} id={"customer"} label={"Customer"} name={"RoleID"} value={"1"} onChange={onClickHandle}  />
+            <RadioBox id={"publisher"} label={"Publisher"} name={"RoleID"} value={"2"} onChange={onClickHandle} />
           </div>
         </div>
-        <TextBox label={"Username"} name={"username"} type={"text"} onChange={handleChange} />
-        <TextBox label={"Password"} name={"password"} type={"password"} onChange={handleChange} />
-        <TextBox label={"First Name"} name={"firstname"} type={"text"} onChange={handleChange} />
-        <TextBox label={"Last Name"} name={"lastname"} type={"text"} onChange={handleChange} />
-        <TextBox label={"Phone"} name={"phone"} type={"text"} onChange={handleChange} />
-        <TextBox label={"Email"}name={"email"} type={"text"} onChange={handleChange} />
+        <TextBox label={"Username"} name={"UserName"} type={"text"} onChange={handleChange} />
+        <TextBox label={"Password"} name={"Password"} type={"password"} onChange={handleChange} />
+        <TextBox label={"First Name"} name={"FirstName"} type={"text"} onChange={handleChange} />
+        <TextBox label={"Last Name"} name={"LastName"} type={"text"} onChange={handleChange} />
+        <TextBox label={"Phone"} name={"PhoneNumber"} type={"text"} onChange={handleChange} />
+        <TextBox label={"Email"}name={"Email"} type={"text"} onChange={handleChange} />
         <PostalPicker/>
-        <TextBox label={"Address Detail"} name={"addressdetail"} type={"text"} onChange={handleChange} />
+        <TextBox label={"Address Detail"} name={"Address"} type={"text"} onChange={handleChange} />
         <Button type="submit" text={"Create"} />
       </form>
     </AuthTemplate>

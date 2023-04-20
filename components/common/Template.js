@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth"
 
 export function Template({ children, className, ...props }) {
   const { user, status } = useAuth()
-  const role = status == "authenticated" ? user?.role : ""
+  console.log(user)
 
   return (
     <div
@@ -13,7 +13,7 @@ export function Template({ children, className, ...props }) {
         +className}
       {...props}
     >
-      <Navbar role={role}/>
+      <Navbar user={user}/>
       <div className="grow flex flex-col">
         {children}
       </div>

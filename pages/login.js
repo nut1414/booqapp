@@ -4,9 +4,12 @@ import { Button } from "@/components/input/Button";
 import { TextBox } from "@/components/input/TextBox";
 import { CheckBox } from "@/components/input/CheckBox";
 import { useRef } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Signin() {
   const formRef = useRef(null)
+  const { login } = useAuth()
+
   const handleSubmit = e => {
     e.preventDefault()
     const formData = new FormData(formRef.current);
@@ -15,6 +18,7 @@ export default function Signin() {
       data[key] = value;
     }
     console.log(data);
+    login(data.username, data.password)
   }
 
 

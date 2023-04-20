@@ -210,7 +210,7 @@ model user {
   UserID          Int               @id @default(autoincrement())
   UserName        String            @unique(map: "User_UserName_key")
   PhoneNumber     String            @unique(map: "User_PhoneNumber_key")
-  Email           String            @unique(map: "User_Email_key")
+  Email           String            
   RoleID          Int
   Password        String
   Name            String
