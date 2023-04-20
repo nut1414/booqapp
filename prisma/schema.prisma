@@ -9,7 +9,7 @@ datasource db {
 
 model author {
   AuthorID   Int          @id @default(autoincrement())
-  AuthorName String
+  AuthorName String       @unique(map: "Author_AuthorName_key")
   bookauthor bookauthor[]
 }
 
@@ -40,20 +40,20 @@ model bookdetails {
   PublisherID   String
   bookauthor    bookauthor[]
   formattype    formattype      @relation(fields: [FormatTypeID], references: [FormatTypeID], map: "BookDetails_FormatTypeID_fkey")
-  bookgenre     bookgenre?
+  bookgenre     bookgenre[]
   promotionbook promotionbook[]
   review        review[]
 
   @@index([FormatTypeID], map: "BookDetails_FormatTypeID_fkey")
 }
 
-model bookgenre {
-  BookID      Int         @id
+model bookgenre{
+  BookID      Int         
   GenreID     Int
-  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookGenre_BookID_fkey")
-  genre       genre       @relation(fields: [GenreID], references: [GenreID], map: "BookGenre_GenreID_fkey")
-
-  @@index([GenreID], map: "BookGenre_GenreID_fkey")
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookGenre_BookID_fkey", onUpdate: Cascade, onDelete: Cascade)
+  genre       genre       @relation(fields: [GenreID], references: [GenreID], map: "BookGenre_GenreID_fkey", onUpdate: Cascade, onDelete: Cascade)
+  @@id([BookID, GenreID])
+  //@@index([GenreID], map: "BookGenre_GenreID_fkey")
 }
 
 model formattype {
@@ -63,12 +63,9 @@ model formattype {
 }
 
 model genre {
-  BookID    Int
-  GenreID   Int         @unique(map: "Genre_GenreID_key")
-  GenreName String
+  GenreID   Int         @id @unique(map: "Genre_GenreID_key") @default(autoincrement())
+  GenreName String      @unique(map: "Genre_GenreName_key")
   bookgenre bookgenre[]
-
-  @@id([BookID, GenreID])
 }
 
 model iteminbasket {
