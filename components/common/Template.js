@@ -14,7 +14,7 @@ export function Template({ children, className, ...props }) {
       {...props}
     >
       <Navbar user={user}/>
-      <div className="grow flex flex-col">
+      <div className="grow flex flex-col min-h-[80vh]">
         {children}
       </div>
       <Footer />

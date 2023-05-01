@@ -97,11 +97,11 @@ export function Navbar({ user }) {
           <div className="flex w-128 flex-wrap justify-center gap-4" >
             {isLogin ? <>
               {isUser &&
-                <Link href={"/cart"}>
+                <Link href={"/order/cart"}>
                   <CartIcon />
                 </Link>
               }
-              <Link href={"/profile"}>
+              <Link href={"/user/profile"}>
                 <ProfileIcon/>
               </Link>
             </> : <>
