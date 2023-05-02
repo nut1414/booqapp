@@ -1,4 +1,3 @@
-
 import { verifyUserJWT } from '@/utils/auth'
 
 export default function authRoute(handler, prisma) {
@@ -6,11 +5,11 @@ export default function authRoute(handler, prisma) {
     // Check if the user is logged in
     let token = req.headers['authorization']
     token = token.split(' ')[1]
-    // console.log(token)
+    //console.log(token)
     let decoded = null
     try {
       decoded = verifyUserJWT(token)
-      // console.log(decoded)
+      //console.log(decoded)
       
       if (decoded?.id) {
         req.user = await prisma.user.findUnique({
@@ -27,7 +26,6 @@ export default function authRoute(handler, prisma) {
         }
         req.user.role = role
         return handler(req, res)
-
       }
         
     } catch (err) {
