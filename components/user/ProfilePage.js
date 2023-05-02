@@ -13,7 +13,8 @@ export default function ProfilePage() {
         isChangingPassword ? (
           <div>
           <div>
-              <div className="text-2xl font-bold mb-10">My Profile</div>
+              <div className="text-2xl font-bold mb-10 border-b-2">My Profile</div>
+              <div className="border-b-2 border-black border-opacity-50 mb-10"></div>
           </div>
           <div>
           <div>
@@ -31,7 +32,8 @@ export default function ProfilePage() {
         ) : (
           <div>
             <div>
-                <div className="text-2xl font-bold mb-10">My Profile</div>
+                <div className="text-2xl font-bold mb-4 ">My Profile</div>
+                <div className="border-b-2 border-black border-opacity-50 mb-10"></div>
             </div>
             <div>
               <div className="inline-flex">
