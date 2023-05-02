@@ -1,11 +1,10 @@
 import authRoute from "@/utils/middlewares/authRoute"
 import { PrismaClient } from "@prisma/client";
-import { verifyUserJWT } from "@/utils/auth";
-
 const prisma = new PrismaClient();
 
-export default async function createpromotion(req, res){
+async function createpromotion(req, res){
     if (req.method == "POST"){
+      console.log(req.body.BookID)
       // Combine these into one if statement
       if ( !req.body?.DiscountPercentage
         || !req.body?.StartDate
@@ -18,20 +17,29 @@ export default async function createpromotion(req, res){
       // Can't Check Due to Can't Create Book right now
       if(req.user.role.RoleID != 2){
         await prisma.$disconnect()
-        return res.status(400).json({ message: 'Only Publisher can create book.' })
+        return res.status(400).json({ message: 'Only Publisher can create promotion.' })
       }
       const promotion = await prisma.promotion.create({
         data: {
           publisher: {
             connect: {
-              PublisherID: user.ID
+              PublisherID: req.user.role.RoleID
             }
           },
-          DiscountPercentage: req.body.DiscountPercentage,
-          StartDate: req.body.StartDate,
-          EndDate: req.body.EndDate,
-          PromotionDetails: req.body.PromotionDetails,
-          [BookID]: {
+          DiscountPercent: parseFloat(req.body.DiscountPercentage),
+          StartDate: new Date(req.body.StartDate),
+          EndDate: new Date(req.body.EndDate),
+          PromotionDetail: req.body.PromotionDetails,
+        }
+      });
+      const promotionbook = await prisma.promotionbook.create({
+        data: {
+          promotion: {
+            connect: {
+              PromotionID: promotion.PromotionID
+            }
+          },
+          bookdetails: {
             connect: {
               BookID: parseInt(req.body.BookID,10)
             }
@@ -43,4 +51,4 @@ export default async function createpromotion(req, res){
     }
 }
 
-//export default authRoute(createpromotion,prisma)
+export default authRoute(createpromotion,prisma)

@@ -160,7 +160,7 @@ model publisheraddress {
 
 model publisherbank {
   PublisherID   Int
-  PBankID       Int       @id
+  PBankID       Int       @id @default(autoincrement())
   BankName      String
   AccountNumber String
   BankID        Int

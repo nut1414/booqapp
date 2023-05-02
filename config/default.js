@@ -70,8 +70,28 @@ const defaultFormat = [
   { TypeName: "Ebook" },
 ]
 
+const defaultBank = [
+  { BankID : 0,BankName: "SCB" },
+  { BankID : 1,BankName: "KTB" },
+  { BankID : 2,BankName: "BBL" },
+  { BankID : 3,BankName: "KBank" },
+  { BankID : 4,BankName: "TMB" },
+  { BankID : 5,BankName: "GSB" },
+  { BankID : 6,BankName: "TBank" },
+  { BankID : 7,BankName: "UOB" },
+  { BankID : 8,BankName: "BAY" },
+  { BankID : 9,BankName: "LH" },
+  { BankID : 10,BankName: "KKP" },
+  { BankID : 11,BankName: "TISCO" },
+  { BankID : 12,BankName: "CIMBT" },
+  { BankID : 13,BankName: "ICBC" },
+  { BankID : 14,BankName: "BACC" },
+  { BankID : 15,BankName: "KK" },
+]
+
 export {
   defaultRole,
   defaultGenre,
-  defaultFormat
+  defaultFormat,
+  defaultBank
 }
