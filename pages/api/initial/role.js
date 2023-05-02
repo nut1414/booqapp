@@ -4,6 +4,7 @@ import { defaultRole } from '@/config/default';
 const prisma = new PrismaClient()
 
 export default async function roleInit(req, res){
+  // For initial Role
   if (req.method == "POST") {
     const Role = await prisma.role.createMany({
             data: [

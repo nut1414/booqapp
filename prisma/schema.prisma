@@ -31,19 +31,18 @@ model bookauthor {
 
 model bookdetails {
   BookID        Int             @id @default(autoincrement())
-  BookName      String
+  BookName      String // Can book name duplicate?
   Price         Int
   Description   String
   FormatTypeID  Int
   Weight        Float
   ReleaseDate   DateTime        @db.Date
-  PublisherID   String
+  PublisherID   Int
   bookauthor    bookauthor[]
   formattype    formattype      @relation(fields: [FormatTypeID], references: [FormatTypeID], map: "BookDetails_FormatTypeID_fkey")
   bookgenre     bookgenre[]
   promotionbook promotionbook[]
   review        review[]
-
   @@index([FormatTypeID], map: "BookDetails_FormatTypeID_fkey")
 }
 

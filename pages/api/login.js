@@ -6,6 +6,7 @@ const prisma = new PrismaClient()
 
 export default async function login(req, res){
   const { username, password } = req.body
+  const header = new Headers()
   // console.log(req.body)
   if (username && password) {
     const user = await prisma.user.findUnique({
@@ -19,6 +20,7 @@ export default async function login(req, res){
       }
       else {
         let signtok = await generateUserJWT({ user, prisma })
+        header.set('Authorization', `Bearer ${signtok}`) // Trying to set Authorization header not sure if it's correct?
         res.status(200).json({ token: signtok, message: 'Login Success' })
       }
     } else {

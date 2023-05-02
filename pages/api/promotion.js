@@ -1,9 +1,10 @@
+import authRoute from "@/utils/middlewares/authRoute"
 import { PrismaClient } from "@prisma/client";
 import { verifyUserJWT } from "@/utils/auth";
 
+const prisma = new PrismaClient();
+
 export default async function createpromotion(req, res){
-  const prisma = new PrismaClient();
-    const { user } = await verifyUserJWT(req.headers.authorization); // Not sure
     if (req.method == "POST"){
       // Combine these into one if statement
       if ( !req.body?.DiscountPercentage
@@ -13,17 +14,13 @@ export default async function createpromotion(req, res){
         || !req.body?.BookID) {
         await prisma.$disconnect()
         return res.status(400).json({ message: 'All field must be filled.' })
-      }        
-      // Check if user exist
-      // const checkIfPromotionCreated = await prisma.promotion.findUnique({
-      //   where: {          
-      //   }
-      // })
-      // if (checkIfPromotionCreated) {
-      //   await prisma.$disconnect()
-      //   return res.status(400).json({ message: 'Promotion already exist.' })
-      // }
-      const book = await prisma.promotion.create({
+      }
+      // Can't Check Due to Can't Create Book right now
+      if(req.user.role.RoleID != 2){
+        await prisma.$disconnect()
+        return res.status(400).json({ message: 'Only Publisher can create book.' })
+      }
+      const promotion = await prisma.promotion.create({
         data: {
           publisher: {
             connect: {
@@ -34,12 +31,16 @@ export default async function createpromotion(req, res){
           StartDate: req.body.StartDate,
           EndDate: req.body.EndDate,
           PromotionDetails: req.body.PromotionDetails,
-          BookID: {
+          [BookID]: {
             connect: {
               BookID: parseInt(req.body.BookID,10)
             }
           }
         }
       });
+      res.status(200).json({message: "Promotion created successfully"})
+      prisma.$disconnect()
     }
 }
+
+//export default authRoute(createpromotion,prisma)
