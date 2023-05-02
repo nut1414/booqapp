@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { TextBoxLbInline } from "../input/TextBox"
 import Link from "next/link"
 import { TextBoxInline } from "../input/TextBoxInline"
 import { Button } from "../input/Button"
