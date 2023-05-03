@@ -8,7 +8,7 @@ const saltround = 10
 
 export default async function register(req, res){
     if (req.method == "POST"){
-      // Combine these into one if statement
+      // THIS REQUIRED UserName, PhoneNumber, Email, Password, RoleID, FirstName, LastName, Address, ZipCode, JoinDate(Current Date)
       if (
            !req.body?.UserName
         || !req.body?.PhoneNumber
@@ -21,7 +21,14 @@ export default async function register(req, res){
         || !req.body?.ZipCode) {
         await prisma.$disconnect()
         return res.status(400).json({ message: 'All field must be filled.' })
-      }        
+      }
+      if(req.body?.RoleID == '2'
+        && (!req.body?.Description ||
+            !req.body?.PublisherPhoneNumber ||
+            !req.body?.PublisherName)){
+        await prisma.$disconnect()
+        return res.status(400).json({ message: 'All field must be filled.' })
+      }
       // Check if user exist
       const checkIfUserDuplicate = await prisma.user.findUnique({
         where: {
@@ -57,23 +64,54 @@ export default async function register(req, res){
       })
       console.log(checkIfUserExist)
       // Find user First => If ture => Create Address
-      if(checkIfUserExist){
-          const Address = await prisma.shippingaddress.create({
-              data: {                    
-                  user: {
-                      connect: {
-                          UserID: checkIfUserExist.UserID
-                      }
-                  },
-                  Address: req.body.Address,
-                  ZipCode: req.body.ZipCode,
-                  PhoneNumber: req.body.PhoneNumber,
-              }
-          })
+      if(checkIfUserExist && req.body.RoleID == '1'){
+        const ShppingAddress = await prisma.shippingaddress.create({
+          data: {                    
+            user: {
+                connect: {
+                    UserID: checkIfUserExist.UserID
+                }
+            },
+            Address: req.body.Address,
+            ZipCode: req.body.ZipCode,
+            PhoneNumber: req.body.PhoneNumber,
+          }
+        })
         let signtok = await generateUserJWT({ user: checkIfUserExist, prisma })
-        
+        // Publisher add description + Publisher Name
+        // Publisher Name separate from User Name
         res.status(200).json({token: signtok})
       }
+      else if(checkIfUserExist && req.body.RoleID == '2'){
+        const Publisher = await prisma.publisher.create({
+          data: {
+            // user: {
+            //   connect: {
+            PublisherID: checkIfUserExist.UserID,
+            //   }
+            // },
+            PublisherName: req.body.PublisherName,
+            Description: req.body?.Description,
+            PhoneNumber: req.body.PhoneNumber,
+            VerifyStatusID: undefined,
+          }
+        })
+        const PublisherAddress = await prisma.publisheraddress.create({
+            data: {                    
+                user: {
+                    connect: {
+                      PublisherID: checkIfUserExist.UserID
+                    }
+                },
+                Name: req.body.PublisherName,
+                Address: req.body.Address,
+                ZipCode: req.body.ZipCode,
+                PhoneNumber: req.body.PublisherPhoneNumber,
+            }
+        })
+      let signtok = await generateUserJWT({ user: checkIfUserExist, prisma })
+      res.status(200).json({token: signtok})
+    }
       else
         res.status(400).json({ message: 'Create failed.'})
       // Return JWT Token
