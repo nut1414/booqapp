@@ -82,15 +82,15 @@ model order {
   OrderID            Int             @id @default(autoincrement())
   UserID             Int
   OrderDate          DateTime        @db.Date
-  ShippingAddressID  Int
+  ShippingAddressID  Int?
   PublisherID        Int
   TrackingNo         String
   TransactionTime    DateTime        @db.Date
   TransactionApprove Boolean
   Proofoftransfer    String
   publisher          publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Order_PublisherID_fkey")
-  shippingaddress    shippingaddress @relation(fields: [ShippingAddressID], references: [ShippingAddressID], map: "Order_ShippingAddressID_fkey")
-  user               user            @relation(fields: [UserID], references: [UserID], map: "Order_UserID_fkey")
+  shippingaddress    shippingaddress? @relation(fields: [ShippingAddressID], references: [ShippingAddressID], map: "Order_ShippingAddressID_fkey", onUpdate: Cascade, onDelete: SetNull)
+  user               user            @relation(fields: [UserID], references: [UserID], map: "Order_UserID_fkey", onUpdate: Cascade, onDelete: Cascade)
   orderbook          orderbook?
   review             review[]
 
@@ -138,7 +138,7 @@ model publisher {
   VerifyStatusID     Int
   order              order[]
   promotion          promotion[]
-  user               user               @relation(fields: [PublisherID], references: [UserID], map: "Publisher_PublisherID_fkey")
+  user               user               @relation(fields: [PublisherID], references: [UserID], map: "Publisher_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
   verificationstatus verificationstatus @relation(fields: [VerifyStatusID], references: [VerifyStatusID], map: "Publisher_VerifyStatusID_fkey")
   publisheraddress   publisheraddress[]
   publisherbank      publisherbank[]
@@ -148,12 +148,12 @@ model publisher {
 
 model publisheraddress {
   PublisherID Int
-  PaddressID  Int       @id
+  PaddressID  Int       @id @default(autoincrement())
   Name        String
   Address     String
   Zipcode     String
   PhoneNumber String
-  publisher   publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherAddress_PublisherID_fkey")
+  publisher   publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherAddress_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
 
   @@index([PublisherID], map: "PublisherAddress_PublisherID_fkey")
 }
@@ -163,9 +163,9 @@ model publisherbank {
   PBankID       Int       @id @default(autoincrement())
   BankName      String
   AccountNumber String
-  BankID        Int
-  bank          bank      @relation(fields: [BankID], references: [BankID], map: "PublisherBank_BankID_fkey")
-  publisher     publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherBank_PublisherID_fkey")
+  BankID        Int?
+  bank          bank?      @relation(fields: [BankID], references: [BankID], map: "PublisherBank_BankID_fkey", onUpdate: Cascade, onDelete: SetNull)
+  publisher     publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherBank_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
 
   @@index([BankID], map: "PublisherBank_BankID_fkey")
   @@index([PublisherID], map: "PublisherBank_PublisherID_fkey")

@@ -89,9 +89,16 @@ const defaultBank = [
   { BankID : 15,BankName: "KK" },
 ]
 
+const defaultVerifyStatus = [
+  { VerifyStatusID: 0, Name: "Unverified" },
+  { VerifyStatusID: 1, Name: "Pending" },
+  { VerifyStatusID: 2, Name: "Verified" },
+]
+
 export {
   defaultRole,
   defaultGenre,
   defaultFormat,
-  defaultBank
+  defaultBank,
+  defaultVerifyStatus
 }

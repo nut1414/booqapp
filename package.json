@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",
-    "@prisma/client": "^4.12.0",
+    "@prisma/client": "^4.13.0",
     "autoprefixer": "10.4.14",
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
@@ -21,7 +21,7 @@
     "jsonwebtoken": "^9.0.0",
     "next": "13.3.0",
     "postcss": "8.4.21",
-    "prisma": "^4.14.0-integration-windows-portability.1",
+    "prisma": "^4.13.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sweetalert2": "^11.7.3",

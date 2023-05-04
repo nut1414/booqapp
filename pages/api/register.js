@@ -85,27 +85,31 @@ export default async function register(req, res){
       else if(checkIfUserExist && req.body.RoleID == '2'){
         const Publisher = await prisma.publisher.create({
           data: {
-            // user: {
-            //   connect: {
-            PublisherID: checkIfUserExist.UserID,
-            //   }
-            // },
+            user: {
+              connect: {
+                UserID: checkIfUserExist.UserID,
+              }
+            },
             PublisherName: req.body.PublisherName,
             Description: req.body?.Description,
             PhoneNumber: req.body.PhoneNumber,
-            VerifyStatusID: undefined,
+            verificationstatus: {
+              connect: {
+                VerifyStatusID: 0 // unverified
+              }
+            },
           }
         })
         const PublisherAddress = await prisma.publisheraddress.create({
             data: {                    
-                user: {
+                publisher: {
                     connect: {
                       PublisherID: checkIfUserExist.UserID
                     }
                 },
                 Name: req.body.PublisherName,
                 Address: req.body.Address,
-                ZipCode: req.body.ZipCode,
+                Zipcode: req.body.ZipCode,
                 PhoneNumber: req.body.PublisherPhoneNumber,
             }
         })
