@@ -1,7 +1,7 @@
 import authRoute from "@/utils/middlewares/authRoute"
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
+//Not finished
 async function createpromotion(req, res){
     if (req.method == "POST"){
       console.log(req.body.BookID)

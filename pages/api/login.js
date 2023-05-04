@@ -5,9 +5,9 @@ import { generateUserJWT } from '@/utils/auth';
 const prisma = new PrismaClient()
 
 export default async function login(req, res){
+  // This required username and password
   const { username, password } = req.body
   const header = new Headers()
-  // console.log(req.body)
   if (username && password) {
     const user = await prisma.user.findUnique({
       where: { UserName: username }

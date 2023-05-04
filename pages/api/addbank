@@ -1,7 +1,8 @@
 import authRoute from "@/utils/middlewares/authRoute"
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-
+// Not so sure if it's correct
+// Not finished
 async function addBank(req, res){
     if (req.method == "POST"){
       // Combine these into one if statement

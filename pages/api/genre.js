@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient()
 
 export default async function Genre(req,res){
+    // This required name(GenreName) id(GenreID)(Optional)
     if(req.method == "POST"){
         console.log
         req.body.name = req.body.name.toLowerCase()

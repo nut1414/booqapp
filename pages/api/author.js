@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 export default async function Author(req,res){
     if(req.method == "POST"){
-        console.log
+        // This required name(AuthorName) id(AuthorID)(Optional) 
         req.body.name = req.body.name.toLowerCase()
         const iscreated = await prisma.author.findUnique({
             where: {

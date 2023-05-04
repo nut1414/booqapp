@@ -5,9 +5,8 @@ import { verifyUserJWT } from "@/utils/auth";
 const prisma = new PrismaClient();
 
 async function createbook(req, res){
-    //const { user } = await verifyUserJWT(req.headers.authorization); // Not sure
     if (req.method == "POST"){
-        // Combine these into one if statement
+        // This required BookName AuthorID GenreID FormatID(FormattypeID) Description ReleaseDate Price Weight 
         if ( !req.body?.BookName
           || !req.body?.AuthorID
           || !req.body?.GenreID
@@ -15,7 +14,8 @@ async function createbook(req, res){
           || !req.body?.Description
           || !req.body?.ReleaseDate
           || !req.body?.Price
-          || !req.body?.Weight) {
+          || !req.body?.Weight
+          ) {
           await prisma.$disconnect()
           return res.status(400).json({ message: 'All field must be filled.' })
         }
@@ -32,7 +32,11 @@ async function createbook(req, res){
                         FormatTypeID: parseInt(req.body.FormatID,10)
                     }
                 },
-                PublisherID: parseInt(req.user.role.RoleID),
+                publisher: {
+                    connect: {
+                        PublisherID: req.user.role.RoleID
+                    }
+                },
                 Description: req.body.Description,
                 ReleaseDate: new Date(req.body.ReleaseDate),
                 Price : parseInt(req.body.Price,10),
