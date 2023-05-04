@@ -78,6 +78,7 @@ model iteminbasket {
   TimeStamp DateTime @db.Date
   book      bookdetails @relation(fields: [BookID], references: [BookID], map: "ItemInBasket_BookID_fkey")
   user      user     @relation(fields: [UserID], references: [UserID], map: "ItemInBasket_UserID_fkey")
+  book      bookdetails @relation(fields: [BookID], references: [BookID], map: "ItemInBasket_BookID_fkey")
 
   @@index([UserID], map: "ItemInBasket_UserID_fkey")
 }
