@@ -43,6 +43,8 @@ model bookdetails {
   bookgenre     bookgenre[]
   promotionbook promotionbook[]
   review        review[]
+  iteminbasket  iteminbasket[]
+  orderbook     orderbook[]
   @@index([FormatTypeID], map: "BookDetails_FormatTypeID_fkey")
 }
 
@@ -74,6 +76,7 @@ model iteminbasket {
   Quantity  Int
   TimeStamp DateTime @db.Date
   user      user     @relation(fields: [UserID], references: [UserID], map: "ItemInBasket_UserID_fkey")
+  book      bookdetails @relation(fields: [BookID], references: [BookID], map: "ItemInBasket_BookID_fkey")
 
   @@index([UserID], map: "ItemInBasket_UserID_fkey")
 }
@@ -91,7 +94,7 @@ model order {
   publisher          publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Order_PublisherID_fkey")
   shippingaddress    shippingaddress? @relation(fields: [ShippingAddressID], references: [ShippingAddressID], map: "Order_ShippingAddressID_fkey", onUpdate: Cascade, onDelete: SetNull)
   user               user            @relation(fields: [UserID], references: [UserID], map: "Order_UserID_fkey", onUpdate: Cascade, onDelete: Cascade)
-  orderbook          orderbook?
+  orderbook          orderbook[]
   review             review[]
 
   @@index([PublisherID], map: "Order_PublisherID_fkey")
@@ -104,6 +107,7 @@ model orderbook {
   BookId      Int
   PromotionID Int
   Quantity    Int
+  book        bookdetails @relation(fields: [BookId], references: [BookID], map: "OrderBook_BookID_fkey")
   order       order @relation(fields: [OrderID], references: [OrderID], map: "OrderBook_OrderID_fkey")
 }
 
