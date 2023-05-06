@@ -23,7 +23,7 @@ model bookauthor {
   BookID      Int
   AuthorID    Int
   author      author      @relation(fields: [AuthorID], references: [AuthorID], map: "BookAuthor_AuthorID_fkey")
-  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookAuthor_BookID_fkey")
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookAuthor_BookID_fkey", onDelete: Cascade, onUpdate: Cascade)
 
   @@id([BookID, AuthorID])
   @@index([AuthorID], map: "BookAuthor_AuthorID_fkey")
@@ -78,7 +78,6 @@ model iteminbasket {
   TimeStamp DateTime @db.Date
   book      bookdetails @relation(fields: [BookID], references: [BookID], map: "ItemInBasket_BookID_fkey")
   user      user     @relation(fields: [UserID], references: [UserID], map: "ItemInBasket_UserID_fkey")
-  book      bookdetails @relation(fields: [BookID], references: [BookID], map: "ItemInBasket_BookID_fkey")
 
   @@index([UserID], map: "ItemInBasket_UserID_fkey")
 }

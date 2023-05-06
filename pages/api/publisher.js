@@ -66,6 +66,10 @@ async function publisher(req, res){
       })
     await prisma.$disconnect()
   }
+  else if(req.method == "GET"){
+  }
+  else if(req.method == "DELETE"){
+  }
 } 
 
 export default authRoute(publisher,prisma);
