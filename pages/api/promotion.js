@@ -4,7 +4,6 @@ const prisma = new PrismaClient();
 //Not finished
 async function createpromotion(req, res){
     if (req.method == "POST"){
-      console.log(req.body.BookID)
       // Combine these into one if statement
       if ( !req.body?.DiscountPercentage
         || !req.body?.StartDate
@@ -23,7 +22,7 @@ async function createpromotion(req, res){
         data: {
           publisher: {
             connect: {
-              PublisherID: req.user.role.RoleID
+              PublisherID: req.user.UserID
             }
           },
           DiscountPercent: parseFloat(req.body.DiscountPercentage),
@@ -31,24 +30,24 @@ async function createpromotion(req, res){
           EndDate: new Date(req.body.EndDate),
           PromotionDetail: req.body.PromotionDetails,
         }
-      });
-      const promotionbook = await prisma.promotionbook.create({
-        data: {
-          promotion: {
-            connect: {
-              PromotionID: promotion.PromotionID
-            }
-          },
-          bookdetails: {
-            connect: {
-              BookID: parseInt(req.body.BookID,10)
-            }
-          }
-        }
+      });      
+      const promotiondata = req.body.BookID.map((x) => ({
+        PromotionID: promotion.PromotionID,
+        BookID: x
+      }))
+      console.log(promotiondata)
+      const promotionbook = await prisma.promotionbook.createMany({
+        data: promotiondata
       });
       res.status(200).json({message: "Promotion created successfully"})
-      prisma.$disconnect()
     }
+    else if(req.method == "GET"){
+
+    }
+    else if(req.method == "DELETE"){
+
+    }    
+    prisma.$disconnect()
 }
 
 export default authRoute(createpromotion,prisma)

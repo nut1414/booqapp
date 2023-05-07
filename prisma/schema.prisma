@@ -23,7 +23,7 @@ model bookauthor {
   BookID      Int
   AuthorID    Int
   author      author      @relation(fields: [AuthorID], references: [AuthorID], map: "BookAuthor_AuthorID_fkey")
-  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookAuthor_BookID_fkey")
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "BookAuthor_BookID_fkey", onDelete: Cascade, onUpdate: Cascade)
 
   @@id([BookID, AuthorID])
   @@index([AuthorID], map: "BookAuthor_AuthorID_fkey")
