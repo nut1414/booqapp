@@ -87,10 +87,11 @@ model order {
   OrderDate          DateTime        @db.Date
   ShippingAddressID  Int?
   PublisherID        Int
-  TrackingNo         String
-  TransactionTime    DateTime        @db.Date
+  TrackingNo         String?
+  TransactionTime    DateTime?        @db.Date
+  Proofoftransfer    String?
   TransactionApprove Boolean
-  Proofoftransfer    String
+  Received           Boolean        // ADD IN REPORT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   publisher          publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Order_PublisherID_fkey")
   shippingaddress    shippingaddress? @relation(fields: [ShippingAddressID], references: [ShippingAddressID], map: "Order_ShippingAddressID_fkey", onUpdate: Cascade, onDelete: SetNull)
   user               user            @relation(fields: [UserID], references: [UserID], map: "Order_UserID_fkey", onUpdate: Cascade, onDelete: Cascade)
@@ -103,12 +104,14 @@ model order {
 }
 
 model orderbook {
-  OrderID     Int   @id
-  BookId      Int
-  PromotionID Int
+  OrderID     Int
+  BookID      Int 
+  PromotionID Int?
   Quantity    Int
-  book        bookdetails @relation(fields: [BookId], references: [BookID], map: "OrderBook_BookID_fkey")
-  order       order @relation(fields: [OrderID], references: [OrderID], map: "OrderBook_OrderID_fkey")
+  book        bookdetails @relation(fields: [BookID], references: [BookID], map: "OrderBook_BookID_fkey")
+  order       order @relation(fields: [OrderID], references: [OrderID], map: "OrderBook_OrderID_fkey",  onUpdate: Cascade, onDelete: Cascade)
+  promotion   promotion? @relation(fields: [PromotionID], references: [PromotionID], map: "OrderBook_PromotionID_fkey", onUpdate: Cascade, onDelete: SetNull)
+  @@id([OrderID, BookID])
 }
 
 model promotion {
@@ -120,6 +123,7 @@ model promotion {
   PublisherID     Int
   publisher       publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Promotion_PublisherID_fkey")
   promotionbook   promotionbook[]
+  orderbook       orderbook[]
 
   @@index([PublisherID], map: "Promotion_PublisherID_fkey")
 }

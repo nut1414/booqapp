@@ -1,0 +1,62 @@
+import { PrismaClient } from "@prisma/client";
+import authRoute from "@/utils/middlewares/authRoute";
+import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
+import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
+import { includePromotion, includePublisher } from "@/utils/bookquery";
+
+const prisma = new PrismaClient();
+
+async function orderpublisher(req, res) {
+  if (req.user.role.RoleID != 1) {
+    prisma.$disconnect();
+    res.status(401).json({ message: "Unauthorized" }); // if not user
+  }
+
+
+  try {
+    if (req.method == "GET") {
+      const orders = await prisma.order.findMany({
+        where: {
+          PublisherID: req.user.UserID,
+        },
+        include: {
+          publisher: true,
+          shippingaddress: true,
+          orderbook: {
+            include: {
+              promotion: true,
+              book: true
+            }
+          }
+        }
+      })
+
+      const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
+        console.log(order)
+        order.orderbook = order.orderbook.map((bookinfo) => {
+          return {
+            ...bookinfo,
+            book: {
+              ...bookinfo.book,
+              promotionbook: bookinfo.promotion ? {BookID: bookinfo.BookID,PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion} : {}
+            },
+            promotion: undefined
+          }
+        }) 
+        return order
+      }), 'orderbook')
+
+
+      res.status(200).json({ message: "Success", orders: calculatedResult });
+    }
+
+    
+  } catch (e) {
+    res.status(500).json({ message: "Internal Server Error", error: e.message })
+    prisma.$disconnect();
+  }
+  await prisma.$disconnect();
+  
+}
+
+export default authRoute(orderpublisher, prisma);

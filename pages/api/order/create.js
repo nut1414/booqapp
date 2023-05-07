@@ -18,7 +18,7 @@ async function summarizeOrder(req, res) {
        * expect input { [ItemID] }
        *
        */
-      const { selectedItems } = req.body;
+      const { selectedItems, shippingAddressID } = req.body;
       const currentDate = new Date();
       console.log("currentDate", currentDate);
 
@@ -59,6 +59,72 @@ async function summarizeOrder(req, res) {
         return acc + curr.totalShipping;
       }, 0);
 
+      if (calculatedResult.length == 0) {
+        res.status(400).json({ message: "No valid item" });
+        prisma.$disconnect();
+      }
+
+      calculatedResult.forEach(async (order) => {
+        const booksOrder = order.items.map((item) => {
+          // console.log(item.book.promotionbook)
+          return {
+            BookID: item.BookID,
+            Quantity: item.Quantity,
+            PromotionID: item.book.promotionbook?.reduce(
+              (acc, curr) => {
+                if (
+                  curr.promotion.DiscountPercent > acc.promotion.DiscountPercent
+                ) {
+                  console.log("curr", curr);
+                  return curr;
+                }
+              },
+              { promotion: { DiscountPercent: 0, PromotionID: undefined } }
+            )?.promotion?.PromotionID,
+          };
+        });
+
+        console.log("booksOrder", booksOrder);
+
+        const orderEntity = await prisma.order.create({
+          data: {
+            OrderDate: currentDate,
+            user: {
+              connect: {
+                UserID: req.user.UserID,
+              },
+            },
+            shippingaddress: {
+              connect: {
+                ShippingAddressID: shippingAddressID,
+              },
+            },
+            publisher: {
+              connect: {
+                PublisherID: order.publisher.PublisherID,
+              },
+            },
+            TransactionApprove: false,
+            Received: false,
+            orderbook: {
+              create: booksOrder,
+            },
+          },
+        });
+
+        const OrderItemIds = order.items.map((item) => item.ItemID);
+
+        if (orderEntity) {
+          await prisma.iteminbasket.deleteMany({
+            where: {
+              ItemID: {
+                in: OrderItemIds,
+              },
+            },
+          });
+        }
+      });
+
       res.status(200).json({
         message: "Order summarized",
         order: calculatedResult,
@@ -69,10 +135,11 @@ async function summarizeOrder(req, res) {
       res.status(400).json({ message: "Method not allowed" });
     }
   } catch (e) {
-    es.status(500).json({ message: "Internal Server Error", error: e.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: e.message });
     prisma.$disconnect();
   }
-
   await prisma.$disconnect();
 }
 
