@@ -42,7 +42,7 @@ async function createpromotion(req, res){
       res.status(200).json({message: "Promotion created successfully"})
     }
     else if(req.method == "GET"){
-
+      
     }
     else if(req.method == "DELETE"){
 

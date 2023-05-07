@@ -3,22 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function publisher(req, res){
-    if (req.method == "POST"){
-      // Combine these into one if statement
-      if (
-           !req.body?.PublisherName
-        || !req.body?.Description
-        || !req.body?.PhoneNumber
-        || !req.body?.Address
-        || !req.body?.Zipcode
-        || !req.body?.PBankID
-        || !req.body?.BankName
-        || !req.body?.AccountNumber
-        || !req.body?.BankID
-           ) {
-        await prisma.$disconnect()
-        return res.status(400).json({ message: 'All field must be filled.' })
-      }
+    if (req.method == "PUT"){
       // Check if the user is really a publisher
       if(req.user.role.RoleID != 2){
         await prisma.$disconnect()
@@ -67,8 +52,18 @@ async function publisher(req, res){
     await prisma.$disconnect()
   }
   else if(req.method == "GET"){
-  }
-  else if(req.method == "DELETE"){
+    if(req.user.role.RoleID != 2){
+      await prisma.$disconnect()
+      return res.status(400).json({ message: 'Only Publisher can create promotion.' })
+    }
+    let getpublisher = [];
+    //req.query.PublisherName = req.query.PublisherName.toLowerCase();
+    getpublisher = await prisma.publisher.findMany({
+      where: {
+        PublisherID: req.query.PublisherID,
+      },
+    });
+    res.status(200).json({ publisher: getpublisher });
   }
 } 
 

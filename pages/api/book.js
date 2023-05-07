@@ -1,6 +1,7 @@
 import authRoute from "@/utils/middlewares/authRoute";
 import { PrismaClient } from "@prisma/client";
 import { verifyUserJWT } from "@/utils/auth";
+import Author from "./author";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +10,7 @@ async function createbook(req, res) {
     // This required BookName AuthorID GenreID FormatID(FormattypeID) Description ReleaseDate Price Weight
     if (
       !req.body?.BookName ||
-      !req.body?.AuthorID ||
+      !req.body?.AuthorName ||
       !req.body?.GenreID ||
       !req.body?.FormatID ||
       !req.body?.Description ||
@@ -20,15 +21,34 @@ async function createbook(req, res) {
       await prisma.$disconnect();
       return res.status(400).json({ message: "All field must be filled." });
     }
-    console.log(req.user.role.RoleID);
     if (req.user.role.RoleID != 2) {
       await prisma.$disconnect();
       return res
         .status(400)
         .json({ message: "Only Publisher can create book." });
     }
-    console.log("This is the user");
-    console.log(req.user);
+    let author = [];
+    for(let i = 0; i < req.body.AuthorName.length; i++){
+      console.log(req.body.AuthorName[i]);        
+      const authorcheck = await prisma.author.findFirst({
+        where: {
+          AuthorName: req.body.AuthorName[i],
+        }
+      });
+      console.log(authorcheck);
+      author[i] = authorcheck;
+      if(!authorcheck){
+        console.log(req.body.AuthorName[i] +"Is beging created")
+        const createauthor = await prisma.author.create({
+          data: {
+            AuthorName: req.body.AuthorName[i],
+            //AuthorID: req.body?.id ? parseInt(req.body?.id, 10) : undefined,
+          },
+        });
+        author[i] = createauthor;
+      }
+      console.log(typeof author[i].AuthorID)
+    }
     const book = await prisma.bookdetails.create({
       data: {
         BookName: req.body.BookName,
@@ -62,32 +82,73 @@ async function createbook(req, res) {
         },
       },
     });
-    const bookauthor = await prisma.bookauthor.create({
-      data: {
-        bookdetails: {
-          connect: {
-            BookID: book.BookID,
+    const authordata = author.map((x) => ({
+      BookID: book.BookID,
+      AuthorID: x.AuthorID
+    }))
+    console.log(authordata);
+    const bookauthor = await prisma.bookauthor.createMany({
+      data: authordata
+    });
+    prisma.$disconnect();
+    res.status(200).json({ message: "Book created successfully", book: book });
+  }else if(req.method == "GET"){
+    console.log(req.query);
+    let getbook = [];
+    getbook = await prisma.bookdetails.findMany({
+      include: {
+        bookgenre: {
+          include: {
+            genre: {
+              select: {
+                GenreName: true,
+              },
+            }
           },
         },
-        author: {
-          connect: {
-            AuthorID: parseInt(req.body.AuthorID, 10),
-          },
+        bookauthor: {
+            author: {
+              select: {
+                AuthorName: true,
+              },
+            },
+        },
+      },
+      where: {
+        BookName: {
+          contains: req.query?.BookName ? req.query?.BookName:undefined,
+        },
+        bookgenre: {
+          include: {
+            genre: {
+              GenreName: {
+                contains: req.query?.GenreName ? req.query?.GenreName:undefined,
+              },
+            },
+          }
+        },
+        bookauthor: {      
+          author: {
+            connect: {    
+              AuthorName: {
+                contains: req.query?.AuthorName ? req.query?.AuthorName:undefined,
+              }
+            }
+          }
         },
       },
     });
     prisma.$disconnect();
-    res.status(200).json({ message: "Book created successfully", book: book });
+    res.status(200).json({ book: getbook });
   }else if (req.method == "DELETE") {
     // Query not body
     console.log(req.query);
-    req.query.name = req.query.BookName.toLowerCase();
+    //req.query.name = req.query.BookName.toLowerCase();
     if (req.query?.BookID || req.query?.BookName) {
       const deletebooks = await prisma.bookdetails
         .delete({
           where: {
             BookID: req.query?.BookID ? parseInt(req.query?.BookID, 10) : undefined,
-            BookName: req.query?.BookName ? req.query?.BookName : undefined,
           },
         })
         .then(() => {

@@ -26,24 +26,14 @@ export default async function Genre(req, res) {
     }
   } else if (req.method == "GET") {
     let getgenre = [];
-    if (req.query.name) {
-      req.query.name = req.query.name.toLowerCase();
-      getgenre = await prisma.genre.findMany({
-        where: {
-          GenreName: req.query.name,
-        },
-      });
-    } else {
-      getgenre = await prisma.genre.findMany({
-        where: {
-          NOT: [
-            {
-              GenreName: "Uncategorized",
-            },
-          ],
-        },
-      });
-    }
+    req.query.name = req.query.name.toLowerCase();
+    getgenre = await prisma.genre.findMany({
+      where: {
+        GenreName: {
+          contains: req.query?.name ? req.query?.name : undefined,
+        }
+      },
+    });
     res.status(200).json({ genre: getgenre });
   } else if (req.method == "DELETE") {
     // Query not body
