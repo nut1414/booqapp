@@ -4,10 +4,10 @@ export default function authRoute(handler, prisma) {
   return async (req, res) => {
     // Check if the user is logged in
     let token = req.headers['authorization']
-    token = token.split(' ')[1]
     //console.log(token)
     let decoded = null
     try {
+      token = token?.split(' ')[1]
       decoded = verifyUserJWT(token)
       //console.log(decoded)
       
