@@ -1,7 +1,7 @@
 import { Button } from "../input/Button"
 import { BookOrder } from "./BookOrder"
 
-export function Order({status}) {
+export function Order({status, Class}) {
    // "unpaid" "shipping" "shipped" "recieved" "rated" 
    const statusOrder = status
     const payingText = {
@@ -13,7 +13,7 @@ export function Order({status}) {
     }
   
     return (
-      <>
+      <div className={Class}>
       <div className="mb-5">
          <div className="inline-flex">Order ID : xxxxxxx</div>
          <div className=" float-right text-[#FF7300] text-sm font-bold ">
@@ -41,13 +41,13 @@ export function Order({status}) {
         :(status == "shipping") ? <Button type={"secondary"} text={"Cancle Order"}></Button>
         :(status == "shipped") ? <Button text={"Order Received"}></Button>
         :(status == "recieved") ? <Button text={"Rated"}></Button>
-        :(status == "rated") ? <Button text={"Rated"}></Button>
+        :(status == "rated") ? <Button type={"secondary"} text={"Rated"}></Button>
         :null
         }
       </div>
       </div>
       <div className="border-b-2 border-black border-opacity-50 mb-10 clear-both"></div>
-      </>
+      </div>
     )
     
   }
