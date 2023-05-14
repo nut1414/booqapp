@@ -1,7 +1,6 @@
 import authRoute from "@/utils/middlewares/authRoute";
 import { PrismaClient } from "@prisma/client";
 import { verifyUserJWT } from "@/utils/auth";
-import Author from "./author";
 
 const prisma = new PrismaClient();
 
@@ -93,6 +92,7 @@ async function createbook(req, res) {
     prisma.$disconnect();
     res.status(200).json({ message: "Book created successfully", book: book });
   }else if(req.method == "GET"){
+    // Get Logic not Finished Yet
     console.log(req.query);
     let getbook = [];
     getbook = await prisma.bookdetails.findMany({
@@ -141,10 +141,14 @@ async function createbook(req, res) {
     prisma.$disconnect();
     res.status(200).json({ book: getbook });
   }else if (req.method == "DELETE") {
-    // Query not body
+    // Deleting Book Logic not Finished Yet
     console.log(req.query);
-    //req.query.name = req.query.BookName.toLowerCase();
-    if (req.query?.BookID || req.query?.BookName) {
+    if (req.query?.BookID) {      
+      const bookauthor = await prisma.bookauthor.findFirst({
+        where: {
+          BookID: req.query?.BookID ? parseInt(req.query?.BookID, 10) : undefined,
+        },
+      });
       const deletebooks = await prisma.bookdetails
         .delete({
           where: {
@@ -158,9 +162,12 @@ async function createbook(req, res) {
           console.log(err);
           res.status(404).json({ message: "Book Doesn't Exist" });
         });
+      
     } else {
       res.status(400).json({ message: "No Input" });
     }
+    console.log(bookauthor);
+    
   }
   prisma.$disconnect();
 }
