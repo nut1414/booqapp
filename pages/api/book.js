@@ -143,26 +143,54 @@ async function createbook(req, res) {
   }else if (req.method == "DELETE") {
     // Deleting Book Logic not Finished Yet
     console.log(req.query);
-    if (req.query?.BookID) {      
-      const bookauthor = await prisma.bookauthor.findFirst({
-        where: {
-          BookID: req.query?.BookID ? parseInt(req.query?.BookID, 10) : undefined,
-        },
-      });
-      const deletebooks = await prisma.bookdetails
-        .delete({
+
+    //req.query.name = req.query.BookName.toLowerCase();
+    if (req.query?.BookID || req.query?.BookName) {
+      const [findauthorbybook,  deletebook] = await prisma.$transaction([
+        prisma.bookauthor.findMany({
           where: {
             BookID: req.query?.BookID ? parseInt(req.query?.BookID, 10) : undefined,
           },
+        }),
+        prisma.bookdetails.delete({
+          where: {
+            BookID: req.query?.BookID ? parseInt(req.query?.BookID, 10) : undefined,
+          },
+        }),
+      ])
+      console.log(findauthorbybook);
+      const allAuthor = findauthorbybook.map(async (bookauthor) => {
+        const otherbookauthor = await prisma.bookauthor.count({
+          where: {
+            AuthorID: bookauthor.AuthorID,
+            BookID: { // Getting Other BookID that have same AuthorID
+              not: bookauthor.BookID
+            }
+          }
         })
-        .then(() => {
-          res.status(200).json({ message: "Book Deleted" });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(404).json({ message: "Book Doesn't Exist" });
-        });
-      
+
+        if (otherbookauthor == 0) {
+          const author = await prisma.author.delete({
+            where: {
+              AuthorID: bookauthor.AuthorID
+            }
+          })
+          if (author)
+            bookauthor.deleted = true
+        } else {
+          // other book author exists
+          // don't delete
+          bookauthor.deleted = false // marked as false
+        }
+        return bookauthor
+      })
+        
+      if (deletebook) {
+        res.status(200).json({ message: "Book Deleted", book: deletebook, authors: allAuthor });
+      }else {
+        res.status(404).json({ message: "Book Not Found" });
+      }
+        
     } else {
       res.status(400).json({ message: "No Input" });
     }
