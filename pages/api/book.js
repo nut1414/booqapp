@@ -1,7 +1,7 @@
 import authRoute from "@/utils/middlewares/authRoute";
 import { PrismaClient } from "@prisma/client";
 import { verifyUserJWT } from "@/utils/auth";
-import Author from "./author";
+import { includeBookAuthor, whereBookSearchQuery, includeBookPublisher, includeBookGenre, includeBookPromotion } from "@/utils/bookquery";
 
 const prisma = new PrismaClient();
 
@@ -28,8 +28,8 @@ async function createbook(req, res) {
         .json({ message: "Only Publisher can create book." });
     }
     let author = [];
-    for(let i = 0; i < req.body.AuthorName.length; i++){
-      console.log(req.body.AuthorName[i]);        
+    for (let i = 0; i < req.body.AuthorName.length; i++) {
+      console.log(req.body.AuthorName[i]);
       const authorcheck = await prisma.author.findFirst({
         where: {
           AuthorName: req.body.AuthorName[i],
@@ -37,8 +37,8 @@ async function createbook(req, res) {
       });
       console.log(authorcheck);
       author[i] = authorcheck;
-      if(!authorcheck){
-        console.log(req.body.AuthorName[i] +"Is beging created")
+      if (!authorcheck) {
+        console.log(req.body.AuthorName[i] + "Is beging created")
         const createauthor = await prisma.author.create({
           data: {
             AuthorName: req.body.AuthorName[i],
@@ -92,55 +92,7 @@ async function createbook(req, res) {
     });
     prisma.$disconnect();
     res.status(200).json({ message: "Book created successfully", book: book });
-  }else if(req.method == "GET"){
-    console.log(req.query);
-    let getbook = [];
-    getbook = await prisma.bookdetails.findMany({
-      include: {
-        bookgenre: {
-          include: {
-            genre: {
-              select: {
-                GenreName: true,
-              },
-            }
-          },
-        },
-        bookauthor: {
-            author: {
-              select: {
-                AuthorName: true,
-              },
-            },
-        },
-      },
-      where: {
-        BookName: {
-          contains: req.query?.BookName ? req.query?.BookName:undefined,
-        },
-        bookgenre: {
-          include: {
-            genre: {
-              GenreName: {
-                contains: req.query?.GenreName ? req.query?.GenreName:undefined,
-              },
-            },
-          }
-        },
-        bookauthor: {      
-          author: {
-            connect: {    
-              AuthorName: {
-                contains: req.query?.AuthorName ? req.query?.AuthorName:undefined,
-              }
-            }
-          }
-        },
-      },
-    });
-    prisma.$disconnect();
-    res.status(200).json({ book: getbook });
-  }else if (req.method == "DELETE") {
+  } else if (req.method == "DELETE") {
     // Query not body
     console.log(req.query);
 

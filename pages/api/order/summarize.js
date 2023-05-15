@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import authRoute from "@/utils/middlewares/authRoute";
 import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
 import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
-import { includePromotion, includePublisher } from "@/utils/bookquery";
+import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
 
 const prisma = new PrismaClient();
 
@@ -40,8 +40,8 @@ async function summarizeOrder(req, res) {
         include: {
           book: {
             include: {
-              ...includePublisher(),
-              ...includePromotion(currentDate),
+              ...includeBookPublisher(),
+              ...includeBookPromotion(currentDate),
             },
           },
         },

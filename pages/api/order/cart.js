@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import authRoute from "@/utils/middlewares/authRoute";
-import { includePromotion, includePublisher } from "@/utils/bookquery";
+import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
 import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
 import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
 
@@ -17,18 +17,18 @@ async function cart(req, res) {
     if (req.method == "POST") {
       // adding to user cart
       /**
-       * expect input { bookID, quantity }
+       * expect input { BookID, quantity }
        */
 
-      const { bookID, quantity } = req.body;
+      const { BookID, quantity } = req.body;
 
-      if (!bookID) {
+      if (!BookID) {
         res.status(400).json({ message: "All field must be filled" });
         prisma.$disconnect();
       }
 
       const book = await prisma.bookdetails.findUnique({
-        where: { BookID: parseInt(bookID) },
+        where: { BookID: parseInt(BookID) },
       });
 
       if (!book) {
@@ -37,7 +37,7 @@ async function cart(req, res) {
       }
 
       const itembasket = await prisma.iteminbasket.findFirst({
-        where: { BookID: parseInt(bookID), UserID: req.user.UserID },
+        where: { BookID: parseInt(BookID), UserID: req.user.UserID },
       });
 
       console.log(itembasket);
@@ -57,7 +57,7 @@ async function cart(req, res) {
       } else {
         const item = await prisma.iteminbasket.create({
           data: {
-            BookID: parseInt(bookID),
+            BookID: parseInt(BookID),
             Quantity: quantity ? parseInt(quantity) : 1,
             UserID: req.user.UserID,
           },
@@ -73,7 +73,7 @@ async function cart(req, res) {
         where: { UserID: req.user.UserID },
         include: {
           book: {
-            include: { ...includePublisher(), ...includePromotion(new Date()) },
+            include: { ...includeBookPublisher(), ...includeBookPromotion(new Date()) },
           },
         },
       });
@@ -122,15 +122,15 @@ async function cart(req, res) {
        *
        */
 
-      const { itemID } = req.query;
+      const { ItemID } = req.query;
 
-      if (!itemID) {
+      if (!ItemID) {
         res.status(400).json({ message: "All field must be filled" });
         prisma.$disconnect();
       }
 
       const item = await prisma.book.findUnique({
-        where: { ItemID: parseInt(itemID), UserID: req.user.UserID },
+        where: { ItemID: parseInt(ItemID), UserID: req.user.UserID },
       });
 
       if (!item) {
@@ -139,7 +139,7 @@ async function cart(req, res) {
       }
 
       const itemDeleted = await prisma.iteminbasket.delete({
-        where: { ItemID: parseInt(itemID), UserID: req.user.UserID },
+        where: { ItemID: parseInt(ItemID), UserID: req.user.UserID },
       });
 
       prisma.$disconnect();
