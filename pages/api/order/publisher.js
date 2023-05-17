@@ -6,6 +6,7 @@ import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
 
 const prisma = new PrismaClient();
 
+//getting all orders that the current publisher has
 async function orderpublisher(req, res) {
   if (req.user.role.RoleID != 1) {
     prisma.$disconnect();

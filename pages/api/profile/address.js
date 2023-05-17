@@ -6,12 +6,12 @@ const prisma = new PrismaClient();
 async function address(req, res) {
   try {
     if (req.method == "GET") {
-      const address = await prisma.address.findMany({
+      const address = await prisma.shippingaddress.findMany({
         where: {
           UserID: req.user.UserID,
         },
       });
-      res.status (200).json({ message: "Address fetched successfully", address: address ? address : [] });
+      res.status(200).json({ message: "Address fetched successfully", address: address ? address : [] });
     } else if (req.method == "POST") { // create address
       let {
         Address,
@@ -22,7 +22,7 @@ async function address(req, res) {
         await prisma.$disconnect();
         return res.status(400).json({ message: "All field must be filled." });
       }
-      const address = await prisma.address.create({
+      const address = await prisma.shippingaddress.create({
         data: {
           Address,
           ZipCode,
@@ -46,10 +46,9 @@ async function address(req, res) {
         await prisma.$disconnect();
         return res.status(400).json({ message: "All field must be filled." });
       }
-      const address = await prisma.address.update({
+      const address = await prisma.shippingaddress.update({
         where: {
           ShippingAddressID: ShippingAddressID,
-          UserID: req.user.UserID
         },
         data: {
           Address,
@@ -64,15 +63,26 @@ async function address(req, res) {
     } else if (req.method == "DELETE") { // delete address
       let {
         ShippingAddressID
-      } = req.body
-      if (!ShippingAddressID) {
+      } = req.query
+      if (!parseInt(ShippingAddressID)) {
         await prisma.$disconnect();
         return res.status(400).json({ message: "All field must be filled." });
       }
-      const address = await prisma.address.delete({
+      const alladdress = await prisma.shippingaddress.findMany({
         where: {
-          ShippingAddressID: ShippingAddressID,
-          UserID: req.user.UserID
+          UserID: req.user.UserID,
+        },
+      });
+      if (alladdress.length <= 1) {
+        await prisma.$disconnect();
+        return res.status(400).json({ message: "You must have at least one address." });
+      }
+      const address = await prisma.shippingaddress.delete({
+        where: {
+          ShippingAddressID: parseInt(ShippingAddressID),
+          user: {
+            UserID: req.user.UserID
+          }
         },
       });
       if (address)
@@ -82,9 +92,10 @@ async function address(req, res) {
     } else {
       res.status(400).json({ message: "Method not allowed." });
     }
-    
+
   } catch (e) {
-    res.status(500).json({ message: "Internal Server Error", error: e });
+    console.log(e)
+    res.status(500).json({ message: "Internal Server Error", error: e.message });
   }
   await prisma.$disconnect();
 }
