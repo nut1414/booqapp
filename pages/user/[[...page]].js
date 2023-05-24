@@ -16,19 +16,8 @@ export default function UserPage() {
   const router = useRouter()
   const { page } = router.query
   const [currentPage, setCurrentPage] = useState('profile')
-  // const { user, status } = useAuth()
+  const { user, status, logout } = useAuth()
 
-  let user = { // temp user for no backend
-    "id": 9,
-    "name": "test test",
-    "email": "test",
-    "role": {
-      "RoleID": 1,
-      "RoleName": "Customer" // or "Publisher" or "Admin"
-    },
-    "iat": 1682935092,
-    "exp": 1683539892
-  }
 
 
   const pageList = {
@@ -53,21 +42,25 @@ export default function UserPage() {
     if (!Array.isArray(page) || !Object.keys(pageList)?.includes(page[0])) {
       console.log('wrong page')
       router.push('/user/profile')
+    } else if (status == 'unauthenticated') {
+      router.push('/login')
     } else {
       console.log("current page:", page[0])
       setCurrentPage(page[0])
     }
     
-  }, [router.isReady, page])
+  }, [router.isReady, page, status])
 
   useEffect(() => {
-    if (pagePermission[currentPage].includes(user?.role?.RoleName)) {
-      console.log('access granted')
-    } else {
-      console.log('access denied')
-      router.push('/user/profile')
+    if (status == 'authenticated') {
+      if (pagePermission[currentPage].includes(user?.role?.RoleName)) {
+        console.log('access granted')
+      } else {
+        console.log('access denied')
+        router.push('/user/profile')
+      }
     }
-  }, [pagePermission, currentPage])
+  }, [pagePermission, currentPage, status])
 
 
   return (
@@ -95,7 +88,7 @@ export default function UserPage() {
               }
               )
             }
-            <div onClick={() => { }}>
+            <div onClick={logout}>
               <Link href="#" className=" px-2 text-red-600" >
                 Log out
               </Link>

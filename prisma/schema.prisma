@@ -147,6 +147,7 @@ model publisher {
   Description        String
   PhoneNumber        String
   VerifyStatusID     Int
+  VerificationDocument Bytes?
   order              order[]
   promotion          promotion[]
   bookdetails        bookdetails[]

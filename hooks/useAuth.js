@@ -8,7 +8,7 @@ const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null) // { id, email, name, role }
-  const [status, setStatus] = useState('unauthenticated') // 'unauthenticated',  'authenticated'
+  const [status, setStatus] = useState('loading') // 'unauthenticated', 'loading',  'authenticated'
   const router = useRouter()
 
   useEffect(() => {
