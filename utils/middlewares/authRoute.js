@@ -9,7 +9,7 @@ export default function authRoute(handler, prisma) {
     try {
       token = token?.split(' ')[1]
       decoded = verifyUserJWT(token)
-      //console.log(decoded)
+      // console.log(decoded)
       
       if (decoded?.id) {
         req.user = await prisma.user.findUnique({

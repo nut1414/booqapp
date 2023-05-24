@@ -75,6 +75,7 @@ export default async function register(req, res){
             },
             Address: req.body.Address,
             ZipCode: req.body.ZipCode,
+            Name: req.body.ShippingAddressName,
             PhoneNumber: req.body.PhoneNumber,
           }
         })
@@ -108,9 +109,9 @@ export default async function register(req, res){
                       PublisherID: checkIfUserExist.UserID
                     }
                 },
-                Name: req.body.PublisherName,
+                Name: req.body.PublisherAddressName,
                 Address: req.body.Address,
-                Zipcode: req.body.ZipCode,
+                ZipCode: req.body.ZipCode,
                 PhoneNumber: req.body.PublisherPhoneNumber,
             }
         })

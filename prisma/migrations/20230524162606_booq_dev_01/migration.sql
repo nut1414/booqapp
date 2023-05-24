@@ -85,8 +85,13 @@ CREATE TABLE `order` (
     `PublisherID` INTEGER NOT NULL,
     `TrackingNo` VARCHAR(191) NULL,
     `TransactionTime` DATE NULL,
+    `TotalPrice` DOUBLE NOT NULL,
+    `TotalShipping` DOUBLE NOT NULL,
     `Proofoftransfer` VARCHAR(191) NULL,
     `TransactionApprove` BOOLEAN NOT NULL,
+    `Address` VARCHAR(191) NOT NULL,
+    `ZipCode` VARCHAR(191) NOT NULL,
+    `PhoneNumber` VARCHAR(191) NOT NULL,
     `Received` BOOLEAN NOT NULL,
 
     INDEX `Order_PublisherID_fkey`(`PublisherID`),
@@ -97,12 +102,13 @@ CREATE TABLE `order` (
 
 -- CreateTable
 CREATE TABLE `orderbook` (
+    `OrderBookID` INTEGER NOT NULL AUTO_INCREMENT,
     `OrderID` INTEGER NOT NULL,
-    `BookID` INTEGER NOT NULL,
+    `BookID` INTEGER NULL,
     `PromotionID` INTEGER NULL,
     `Quantity` INTEGER NOT NULL,
 
-    PRIMARY KEY (`OrderID`, `BookID`)
+    PRIMARY KEY (`OrderBookID`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -110,6 +116,7 @@ CREATE TABLE `promotion` (
     `PromotionID` INTEGER NOT NULL AUTO_INCREMENT,
     `DiscountPercent` DOUBLE NOT NULL,
     `PromotionDetail` VARCHAR(191) NOT NULL,
+    `Verified` BOOLEAN NOT NULL DEFAULT false,
     `StartDate` DATE NOT NULL,
     `EndDate` DATE NOT NULL,
     `PublisherID` INTEGER NOT NULL,
@@ -159,6 +166,7 @@ CREATE TABLE `publisherbank` (
     `PBankID` INTEGER NOT NULL AUTO_INCREMENT,
     `BankName` VARCHAR(191) NOT NULL,
     `AccountNumber` VARCHAR(191) NOT NULL,
+    `Main` BOOLEAN NOT NULL,
     `BankID` INTEGER NULL,
 
     INDEX `PublisherBank_BankID_fkey`(`BankID`),
@@ -244,7 +252,7 @@ ALTER TABLE `bookgenre` ADD CONSTRAINT `BookGenre_BookID_fkey` FOREIGN KEY (`Boo
 ALTER TABLE `bookgenre` ADD CONSTRAINT `BookGenre_GenreID_fkey` FOREIGN KEY (`GenreID`) REFERENCES `genre`(`GenreID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `iteminbasket` ADD CONSTRAINT `ItemInBasket_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `iteminbasket` ADD CONSTRAINT `ItemInBasket_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `iteminbasket` ADD CONSTRAINT `ItemInBasket_UserID_fkey` FOREIGN KEY (`UserID`) REFERENCES `user`(`UserID`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -259,7 +267,7 @@ ALTER TABLE `order` ADD CONSTRAINT `Order_ShippingAddressID_fkey` FOREIGN KEY (`
 ALTER TABLE `order` ADD CONSTRAINT `Order_UserID_fkey` FOREIGN KEY (`UserID`) REFERENCES `user`(`UserID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `orderbook` ADD CONSTRAINT `OrderBook_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `orderbook` ADD CONSTRAINT `OrderBook_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orderbook` ADD CONSTRAINT `OrderBook_OrderID_fkey` FOREIGN KEY (`OrderID`) REFERENCES `order`(`OrderID`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -271,7 +279,7 @@ ALTER TABLE `orderbook` ADD CONSTRAINT `OrderBook_PromotionID_fkey` FOREIGN KEY 
 ALTER TABLE `promotion` ADD CONSTRAINT `Promotion_PublisherID_fkey` FOREIGN KEY (`PublisherID`) REFERENCES `publisher`(`PublisherID`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `promotionbook` ADD CONSTRAINT `PromotionBook_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `promotionbook` ADD CONSTRAINT `PromotionBook_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `promotionbook` ADD CONSTRAINT `PromotionBook_PromotionID_fkey` FOREIGN KEY (`PromotionID`) REFERENCES `promotion`(`PromotionID`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -292,7 +300,7 @@ ALTER TABLE `publisherbank` ADD CONSTRAINT `PublisherBank_BankID_fkey` FOREIGN K
 ALTER TABLE `publisherbank` ADD CONSTRAINT `PublisherBank_PublisherID_fkey` FOREIGN KEY (`PublisherID`) REFERENCES `publisher`(`PublisherID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `review` ADD CONSTRAINT `Review_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `review` ADD CONSTRAINT `Review_BookID_fkey` FOREIGN KEY (`BookID`) REFERENCES `bookdetails`(`BookID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `review` ADD CONSTRAINT `Review_OrderID_fkey` FOREIGN KEY (`OrderID`) REFERENCES `order`(`OrderID`) ON DELETE RESTRICT ON UPDATE CASCADE;
