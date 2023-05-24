@@ -1,9 +1,9 @@
-import { verify } from "jsonwebtoken";
+import authRoute from "@/utils/middlewares/authRoute"
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function Genre(req, res) {
+async function Genre(req, res) {
   // This required name(GenreName) id(GenreID)(Optional)
   if (req.method == "POST") {
     console.log;
@@ -61,3 +61,5 @@ export default async function Genre(req, res) {
   await prisma.$disconnect();
   return res;
 }
+
+export default authRoute(Genre,prisma);

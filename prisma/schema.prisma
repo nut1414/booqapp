@@ -91,6 +91,9 @@ model order {
   TransactionTime    DateTime?        @db.Date
   Proofoftransfer    String?
   TransactionApprove Boolean
+  Address            String
+  Zipcode            String
+  PhoneNumber        String
   Received           Boolean        // ADD IN REPORT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   publisher          publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Order_PublisherID_fkey")
   shippingaddress    shippingaddress? @relation(fields: [ShippingAddressID], references: [ShippingAddressID], map: "Order_ShippingAddressID_fkey", onUpdate: Cascade, onDelete: SetNull)
@@ -172,6 +175,7 @@ model publisherbank {
   PBankID       Int       @id @default(autoincrement())
   BankName      String
   AccountNumber String
+  Main          Boolean
   BankID        Int?
   bank          bank?      @relation(fields: [BankID], references: [BankID], map: "PublisherBank_BankID_fkey", onUpdate: Cascade, onDelete: SetNull)
   publisher     publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherBank_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
