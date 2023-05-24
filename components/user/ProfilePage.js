@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { TextBoxInline } from "../input/TextBoxInline";
 import { Button } from "../input/Button";
@@ -6,10 +6,80 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/router";
 import fetch from "@/utils/fetch";
 
-
 export default function ProfilePage() {
   const router = useRouter();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [userData, setUserData] = useState({
+    UserName: "",
+    Email: "",
+    Name: "",
+    PhoneNumber: "",
+    Password: "",
+  });
+
+  const onInputChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
+
+  const fetchUserData = async () => {
+    let data = {
+      UserName: "",
+      Email: "",
+      Name: "",
+      PhoneNumber: "",
+      Password: "",
+    };
+    const res = await fetch("/api/profile/info");
+    try {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      const resdata = await res.json();
+      data = resdata.user;
+    } catch (e) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong while fetching user data",
+      });
+    }
+    setUserData(data);
+  };
+
+  const handleChangeUserInfo = async (e) => {
+    e.preventDefault();
+    console.log("change user info");
+    let name = e.target[0].value;
+    let email = e.target[1].value;
+    let phone = e.target[2].value;
+    try {
+      if (name.length > 3 && email.length > 5 && phone.length > 4) {
+        const res = await fetch("/api/profile/info", {
+          method: "POST",
+          body: JSON.stringify(userData),
+        });
+        if (!res.ok) {
+          const a = await res.json();
+
+          throw new Error(a?.message ? a.message : res.statusText);
+        }
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "User info changed",
+        }).then(() => {
+          router.push("/user/");
+        });
+        console.log(name, email, phone);
+      }
+    } catch (e) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! " + e?.message,
+      }).then(() => {});
+    }
+  };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -23,13 +93,13 @@ export default function ProfilePage() {
           icon: "error",
           title: "Oops...",
           text: "New password and confirm new password does not match",
-        })
+        });
       } else if (newPassword.length < 8) {
         Swal.fire({
           icon: "error",
           title: "Oops...",
           text: "New password must be at least 8 characters",
-        })
+        });
       } else {
         const res = await fetch("/api/profile/changepass", {
           method: "POST",
@@ -38,29 +108,31 @@ export default function ProfilePage() {
             newpass: newPassword,
           }),
         });
-        console.log (res)
+        console.log(res);
         if (!res.ok) {
           throw new Error(res.statusText);
         }
 
         Swal.fire({
           icon: "success",
-          title: "Success",       
+          title: "Success",
           text: "Password changed",
         }).then(() => {
           router.push("/logout");
         });
       }
-
-    } catch (e){
+    } catch (e) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong! " + e?.message,
-      }).then(() => {
-      })
+      }).then(() => {});
     }
-  }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   return (
     <>
@@ -73,7 +145,11 @@ export default function ProfilePage() {
           </div>
           <div>
             <div>
-              <form method="POST" className="ml-7" onSubmit={handleChangePassword}>
+              <form
+                method="POST"
+                className="ml-7"
+                onSubmit={handleChangePassword}
+              >
                 <TextBoxInline
                   classNamebox={"ml-28"}
                   classNamelb={"mr-2"}
@@ -94,8 +170,18 @@ export default function ProfilePage() {
                   type={"password"}
                 ></TextBoxInline>
                 <div className="float-right mt-10">
-                  <Button type="secondary" text={"Cancel"} onClick={() => setIsChangingPassword(false)} />
-                  <Button type="primary" text={"Save"} onSubmit={(e) => { e.preventDefault() }}/>
+                  <Button
+                    type="secondary"
+                    text={"Cancel"}
+                    onClick={() => setIsChangingPassword(false)}
+                  />
+                  <Button
+                    type="primary"
+                    text={"Save"}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                    }}
+                  />
                 </div>
               </form>
             </div>
@@ -110,7 +196,7 @@ export default function ProfilePage() {
           <div>
             <div className="inline-flex">
               <div className="text-xl font-bold mb-10 ml-10">Username</div>
-              <div className="text-xl  ml-9">TestUsername</div>
+              <div className="text-xl  ml-9">{userData.UserName}</div>
             </div>
             <div className="mb-5">
               <div className="text-xl font-bold ml-10 inline-flex">
@@ -125,36 +211,52 @@ export default function ProfilePage() {
               </Link>
             </div>
             <div>
-              <form className="ml-7">
+              <form
+                method="POST"
+                className="ml-7"
+                onSubmit={handleChangeUserInfo}
+              >
                 <TextBoxInline
                   classNamebox={"ml-36"}
                   classNamelb={"mr-1"}
                   label={"Name"}
                   name={"Name"}
                   type={"text"}
+                  value={userData.Name}
+                  onChange={onInputChange}
                 ></TextBoxInline>
                 <TextBoxInline
                   classNamebox={"ml-36"}
                   label={"Phone"}
-                  name={"Phone"}
-                  type={"text"}
+                  name={"PhoneNumber"}
+                  type={"tel"}
+                  value={userData.PhoneNumber}
+                  onChange={onInputChange}
                 ></TextBoxInline>
                 <TextBoxInline
                   classNamebox={"ml-36"}
                   label={"E-mail"}
-                  name={"E-mail"}
+                  name={"Email"}
                   type={"text"}
+                  value={userData.Email}
+                  onChange={onInputChange}
                 ></TextBoxInline>
                 <TextBoxInline
                   classNamebox={"ml-8"}
                   label={"Confirm password"}
-                  name={"Confirm password"}
+                  name={"Password"}
                   type={"password"}
+                  value={userData.Password}
+                  onChange={onInputChange}
                 ></TextBoxInline>
+                <div className="float-right mt-10">
+                  <Button
+                    type="submit"
+                    text={"Save"}
+                    onSubmit={(e) => e.preventDefault()}
+                  />
+                </div>
               </form>
-            </div>
-            <div className="float-right mt-10">
-              <Button type="submit" text={"Save"} />
             </div>
           </div>
         </div>
