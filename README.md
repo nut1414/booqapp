@@ -1,3 +1,33 @@
+# booq online book store
+create database: booq in your dbms
+
+```
+create database booq
+```
+
+after that you should yarn to install packages
+
+```
+yarn
+
+```
+
+then migrate prisma
+
+```
+yarn prisma migrate dev
+```
+
+then start server
+
+```
+yarn dev
+```
+
+# notice -> run api in /initialize to initialize initial values required for the operation
+
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

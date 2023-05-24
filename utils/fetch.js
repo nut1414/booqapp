@@ -1,6 +1,6 @@
 //fetch 
 
-export default async function fetch(resource, option) {
+async function fetch(resource, option) {
   const headers = {
     "Content-Type": "application/json",
   }
@@ -20,6 +20,8 @@ export default async function fetch(resource, option) {
     headers,
   }
 
-  return await fetch(resource, options)
+  return window.fetch(resource, options)
 
 }
+
+export default fetch
