@@ -1,14 +1,17 @@
-import authRoute from "@/utils/middlewares/authRoute";
-import { PrismaClient } from "@prisma/client";
-
+import authRoute from "@/utils/middlewares/authRoute"
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-async function address(req, res) {
+async function publisher(req, res){
   try {
+    if(req.user.role.RoleID != 2){
+      await prisma.$disconnect();
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     if (req.method == "GET") {
-      const address = await prisma.shippingaddress.findMany({
+      const address = await prisma.publisheraddress.findMany({
         where: {
-          UserID: req.user.UserID,
+          PublisherID: req.user.UserID,
         },
       });
       res.status(200).json({ message: "Address fetched successfully", address: address ? address : [] });
@@ -23,13 +26,17 @@ async function address(req, res) {
         await prisma.$disconnect();
         return res.status(400).json({ message: "All field must be filled." });
       }
-      const address = await prisma.shippingaddress.create({
+      const address = await prisma.publisheraddress.create({
         data: {
           Address,
           ZipCode,
           PhoneNumber,
           Name,
-          UserID: req.user.UserID
+          publisher: {
+            connect: {
+              PublisherID: req.user.UserID
+            }
+          }
         },
       });
       await prisma.$disconnect();
@@ -39,18 +46,18 @@ async function address(req, res) {
         res.status(400).json({ message: "Failed to create address." });
     } else if (req.method == "PUT") { // update address
       let {
-        ShippingAddressID,
+        PaddressID,
         Address,
         ZipCode,
         PhoneNumber,
       } = req.body
-      if (!ShippingAddressID || !Address || !ZipCode || !PhoneNumber) {
+      if (!PaddressID || !Address || !ZipCode || !PhoneNumber) {
         await prisma.$disconnect();
         return res.status(400).json({ message: "All field must be filled." });
       }
-      const address = await prisma.shippingaddress.update({
+      const address = await prisma.publisheraddress.update({
         where: {
-          ShippingAddressID: ShippingAddressID,
+          PaddressID: parseInt(PaddressID),
         },
         data: {
           Address,
@@ -64,26 +71,26 @@ async function address(req, res) {
         res.status(400).json({ message: "Failed to update address." });
     } else if (req.method == "DELETE") { // delete address
       let {
-        ShippingAddressID
+        PaddressID
       } = req.query
-      if (!parseInt(ShippingAddressID)) {
+      if (!parseInt(PaddressID)) {
         await prisma.$disconnect();
         return res.status(400).json({ message: "All field must be filled." });
       }
-      const alladdress = await prisma.shippingaddress.findMany({
+      const alladdress = await prisma.publisheraddress.findMany({
         where: {
-          UserID: req.user.UserID,
+          PublisherID: req.user.UserID,
         },
       });
       if (alladdress.length <= 1) {
         await prisma.$disconnect();
         return res.status(400).json({ message: "You must have at least one address." });
       }
-      const address = await prisma.shippingaddress.delete({
+      const address = await prisma.publisheraddress.delete({
         where: {
-          ShippingAddressID: parseInt(ShippingAddressID),
-          user: {
-            UserID: req.user.UserID
+          PaddressID: parseInt(PaddressID),
+          publisher: {
+            PublisherID: req.user.UserID
           }
         },
       });
@@ -100,5 +107,6 @@ async function address(req, res) {
     res.status(500).json({ message: "Internal Server Error", error: e.message });
   }
   await prisma.$disconnect();
-}
-export default authRoute(address,prisma)
+} 
+
+export default authRoute(publisher,prisma);

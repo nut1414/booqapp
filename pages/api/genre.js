@@ -5,9 +5,11 @@ const prisma = new PrismaClient();
 
 async function Genre(req, res) {
   // This required name(GenreName) id(GenreID)(Optional)
+  // if(req.user.role.RoleID != 0){
+  //   await prisma.$disconnect();
+  //   return res.status(400).json({ message: "Only Admin can create genre."});
+  // }
   if (req.method == "POST") {
-    console.log;
-    req.body.name = req.body.name.toLowerCase();
     const iscreated = await prisma.genre.findUnique({
       where: {
         GenreName: req.body.name,
@@ -26,19 +28,28 @@ async function Genre(req, res) {
     }
   } else if (req.method == "GET") {
     let getgenre = [];
-    req.query.name = req.query.name.toLowerCase();
     getgenre = await prisma.genre.findMany({
       where: {
-        GenreName: {
-          contains: req.query?.name ? req.query?.name : undefined,
+      },
+      orderBy: {
+        bookgenre: {
+          _count: "desc",
         }
       },
+      include: {
+        bookgenre: {
+          select: {
+            bookdetails: {
+            }
+          }
+        }
+      },
+      skip: req.query?.skip ? parseInt(req.query?.skip, 10) : undefined,
     });
     res.status(200).json({ genre: getgenre });
   } else if (req.method == "DELETE") {
     // Query not body
     console.log(req.query);
-    req.query.name = req.query.name.toLowerCase();
     if (req.query?.id || req.query?.name) {
       const deletegenre = await prisma.genre
         .delete({

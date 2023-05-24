@@ -166,7 +166,7 @@ model publisheraddress {
   PaddressID  Int       @id @default(autoincrement())
   Name        String
   Address     String
-  Zipcode     String
+  ZipCode     String
   PhoneNumber String
   publisher   publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherAddress_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
 
@@ -212,6 +212,7 @@ model role {
 model shippingaddress {
   ShippingAddressID Int     @id @default(autoincrement())
   UserID            Int
+  Name              String
   Address           String
   ZipCode           String
   PhoneNumber       String
