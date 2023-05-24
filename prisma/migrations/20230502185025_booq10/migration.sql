@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `publisherbank` MODIFY `PBankID` INTEGER NOT NULL AUTO_INCREMENT;
