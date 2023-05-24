@@ -21,8 +21,15 @@ export default function SignUp() {
     phone: '',
     Email: '',
   })
+  const [isPublisher, setIsPublisher] = useState(false)
   const formRef = useRef(null)
-  const onClickHandle = () => {
+  const onClickHandle = (e) => {
+    const formData = new FormData(formRef.current);
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+    if (data.RoleID == '2') setIsPublisher(true); else setIsPublisher(false)
   } 
   function handleChange(event) {
   }
@@ -36,6 +43,7 @@ export default function SignUp() {
       data[key] = value;
     }
     console.log(data);
+
     try {
       fetch('/api/register', {
       method: 'POST',
@@ -81,7 +89,13 @@ export default function SignUp() {
         <TextBox label={"First Name"} name={"FirstName"} type={"text"} onChange={handleChange} />
         <TextBox label={"Last Name"} name={"LastName"} type={"text"} onChange={handleChange} />
         <TextBox label={"Phone"} name={"PhoneNumber"} type={"text"} onChange={handleChange} />
-        <TextBox label={"Email"}name={"Email"} type={"text"} onChange={handleChange} />
+        <TextBox label={"Email"} name={"Email"} type={"text"} onChange={handleChange} />
+        {isPublisher == true ? <>
+          <TextBox label={"Description"} name={"Description"} type={"text"} onChange={handleChange} />
+          <TextBox label={"Publisher Name"} name={"PublisherName"} type={"text"} onChange={handleChange} />
+          <TextBox label={"Publisher Phone Number "} name={"PublisherPhoneNumber"} type={"text"} onChange={handleChange} />
+        </> : <></>}
+            
         <PostalPicker/>
         <TextBox label={"Address Detail"} name={"Address"} type={"text"} onChange={handleChange} />
         <Button type="submit" text={"Create"} />

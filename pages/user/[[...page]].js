@@ -23,17 +23,19 @@ export default function UserPage() {
   const pageList = {
     'profile': 'My Profile',
     'address': 'My Address',
+    'publisheraddress': 'Publisher Addresss',
     'order': 'My Purchase',
     'bank': 'My Bank Account',
-    'verify': 'Verify Shop',
+    'verify': 'Verify Shop', 
   }
 
   const pagePermission = {
     'profile': ['Customer', 'Publisher', 'Admin'],
-    'address': ['Customer', 'Publisher', 'Admin'],
-    'order': ['Customer', 'Publisher', 'Admin'],
-    'bank': ['Customer', 'Publisher', 'Admin'],
-    'verify': ['Customer', 'Publisher', 'Admin'],
+    'address': ['Customer'],
+    'publisheraddress': ['Publisher'],
+    'order': ['Customer'],
+    'bank': ['Publisher'],
+    'verify': ['Publisher'],
   }
 
 

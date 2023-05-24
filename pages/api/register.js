@@ -19,13 +19,14 @@ export default async function register(req, res){
         || !req.body?.LastName
         || !req.body?.Address
         || !req.body?.ZipCode) {
+        console.log(req.body)
         await prisma.$disconnect()
         return res.status(400).json({ message: 'All field must be filled.' })
       }
       if(req.body?.RoleID == '2'
         && (!req.body?.Description ||
             !req.body?.PublisherPhoneNumber ||
-            !req.body?.PublisherName)){
+          !req.body?.PublisherName)) {
         await prisma.$disconnect()
         return res.status(400).json({ message: 'All field must be filled.' })
       }
