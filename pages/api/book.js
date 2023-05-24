@@ -38,7 +38,7 @@ async function createbook(req, res) {
       console.log(authorcheck);
       author[i] = authorcheck;
       if (!authorcheck) {
-        console.log(req.body.AuthorName[i] + "Is beging created")
+        console.log(req.body.AuthorName[i] + "Is being created")
         const createauthor = await prisma.author.create({
           data: {
             AuthorName: req.body.AuthorName[i],

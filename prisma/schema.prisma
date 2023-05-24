@@ -75,7 +75,7 @@ model iteminbasket {
   UserID    Int
   BookID    Int
   Quantity  Int
-  book      bookdetails @relation(fields: [BookID], references: [BookID], map: "ItemInBasket_BookID_fkey")
+  book      bookdetails @relation(fields: [BookID], references: [BookID], map: "ItemInBasket_BookID_fkey" , onUpdate: Cascade, onDelete: Cascade)
   user      user     @relation(fields: [UserID], references: [UserID], map: "ItemInBasket_UserID_fkey")
 
   @@index([UserID], map: "ItemInBasket_UserID_fkey")
@@ -89,10 +89,12 @@ model order {
   PublisherID        Int
   TrackingNo         String?
   TransactionTime    DateTime?        @db.Date
+  TotalPrice         Float
+  TotalShipping      Float
   Proofoftransfer    String?
   TransactionApprove Boolean
-  Address            String
-  Zipcode            String
+  Address            String         // Duplicate Address for backup (history)
+  ZipCode            String          
   PhoneNumber        String
   Received           Boolean        // ADD IN REPORT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   publisher          publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "Order_PublisherID_fkey")
@@ -107,20 +109,21 @@ model order {
 }
 
 model orderbook {
+  OrderBookID Int      @id @default(autoincrement())
   OrderID     Int
-  BookID      Int 
+  BookID      Int?     // book is optional because we want to indicate to user that there was once a book in this order once the book was deleted
   PromotionID Int?
   Quantity    Int
-  book        bookdetails @relation(fields: [BookID], references: [BookID], map: "OrderBook_BookID_fkey")
+  book        bookdetails? @relation(fields: [BookID], references: [BookID], map: "OrderBook_BookID_fkey" , onUpdate: Cascade, onDelete: SetNull)
   order       order @relation(fields: [OrderID], references: [OrderID], map: "OrderBook_OrderID_fkey",  onUpdate: Cascade, onDelete: Cascade)
   promotion   promotion? @relation(fields: [PromotionID], references: [PromotionID], map: "OrderBook_PromotionID_fkey", onUpdate: Cascade, onDelete: SetNull)
-  @@id([OrderID, BookID])
 }
 
 model promotion {
   PromotionID     Int             @id @default(autoincrement())
   DiscountPercent Float
   PromotionDetail String
+  Verified        Boolean         @default(false)
   StartDate       DateTime        @db.Date
   EndDate         DateTime        @db.Date
   PublisherID     Int
@@ -134,9 +137,8 @@ model promotion {
 model promotionbook {
   PromotionID Int
   BookID      Int
-  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "PromotionBook_BookID_fkey")
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "PromotionBook_BookID_fkey", onUpdate: Cascade, onDelete: Cascade)
   promotion   promotion   @relation(fields: [PromotionID], references: [PromotionID], map: "PromotionBook_PromotionID_fkey")
-
   @@id([PromotionID, BookID])
   @@index([BookID], map: "PromotionBook_BookID_fkey")
 }
@@ -192,7 +194,7 @@ model review {
   Rate        Int
   Comment     String
   ReviewDate  DateTime    @db.Date
-  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "Review_BookID_fkey")
+  bookdetails bookdetails @relation(fields: [BookID], references: [BookID], map: "Review_BookID_fkey", onUpdate: Cascade, onDelete: Cascade)
   order       order       @relation(fields: [OrderID], references: [OrderID], map: "Review_OrderID_fkey")
   user        user        @relation(fields: [UserID], references: [UserID], map: "Review_UserID_fkey")
 

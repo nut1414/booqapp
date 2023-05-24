@@ -5,10 +5,6 @@ const prisma = new PrismaClient();
 async function publisher(req, res){
     if (req.method == "PUT"){
       // Check if the user is really a publisher
-      if(req.user.role.RoleID != 2){
-        await prisma.$disconnect()
-        return res.status(400).json({ message: 'Only Publisher can create promotion.' })
-      }
       const publisher = await prisma.publisher.create({
         data: {
           user: {

@@ -25,11 +25,24 @@ async function summarizeOrder(req, res) {
       if (
         !selectedItems ||
         !Array.isArray(selectedItems) ||
+        shippingAddressID == undefined ||
         selectedItems?.length == 0
       ) {
-        res.status(400).json({ message: "All field must be filled" });
-        prisma.$disconnect();
+        prisma.$disconnect();        
+        return res.status(400).json({ message: "All field must be filled" });
       }
+
+      const checkshippingad = await prisma.shippingaddress.findUnique({
+        where: {
+          ShippingAddressID: shippingAddressID,
+        },
+      });
+
+      if (!checkshippingad) {
+        prisma.$disconnect();
+        return res.status(400).json({ message: "Shipping address not found" });
+      }
+
       const result = await prisma.iteminbasket.findMany({
         where: {
           ItemID: {
@@ -99,11 +112,16 @@ async function summarizeOrder(req, res) {
                 ShippingAddressID: shippingAddressID,
               },
             },
+            Address : checkshippingad.Address,
+            ZipCode : checkshippingad.ZipCode,
+            PhoneNumber : checkshippingad.PhoneNumber,
             publisher: {
               connect: {
                 PublisherID: order.publisher.PublisherID,
               },
             },
+            TotalPrice: order.totalPrice,
+            TotalShipping: order.totalShipping,
             TransactionApprove: false,
             Received: false,
             orderbook: {
