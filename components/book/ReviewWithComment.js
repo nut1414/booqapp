@@ -55,7 +55,7 @@ export function ReviewWithComment({title,star}) {
         :null
         }
         </div>
-        <input type="text" name="comment" placeholder="Comment Here" className="mt-3 pl-3 rounded-lg w-200 h-20 border border-black"></input>
+        <input type="text" name="comment" placeholder="Comment Here" className="mt-3 pl-3 rounded-lg w-[56rem] h-20 border border-black"></input>
         </div>
         </div>
     )
