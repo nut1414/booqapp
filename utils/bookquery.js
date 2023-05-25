@@ -50,8 +50,9 @@ const whereBookSearchQuery = ({
       GenreName,
       GenreID,
       PublisherID,
-      PublisherName
-}) => (
+      PublisherName,
+      Available
+}, UserID) => (
   {
       BookName: BookName ? {
           contains: BookName
@@ -80,15 +81,14 @@ const whereBookSearchQuery = ({
         }
       } : undefined,
       publisher: (PublisherID || PublisherName) ? {
-        some: {
-          publisher: {
+        is: {
             OR: [
               { PublisherName: PublisherName ? { contains: PublisherName } : undefined },
               { PublisherID: PublisherID ? { equals: parseInt(PublisherID, 10) } : undefined }
             ]
-          }
         }
-      } : undefined,
+    } : undefined,
+    Available: Available == "true" ? undefined : true, // insecure but works
     }
 )
 

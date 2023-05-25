@@ -79,7 +79,8 @@ async function createbook(req, res) {
             ))),
           ]
         },
-        BookCover: coverBuffer,
+        Available: req.body?.Available ? parseInt(req.body?.Available, 10) == 1 : undefined,
+        BookCover: coverBuffer, 
         Description: req.body.Description,
         ReleaseDate: new Date(req.body.ReleaseDate),
         Price: parseInt(req.body.Price, 10),

@@ -37,6 +37,7 @@ model bookdetails {
   Description   String
   FormatTypeID  Int
   Weight        Float
+  Available     Boolean        @default(true)
   ReleaseDate   DateTime        @db.Date
   publisher     publisher       @relation(fields: [PublisherID], references: [PublisherID], map: "BookDetails_PublisherID_fkey")
   PublisherID   Int
