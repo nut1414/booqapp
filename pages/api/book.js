@@ -28,6 +28,10 @@ async function createbook(req, res) {
         .json({ message: "Only Publisher can create book." });
     }
     let author = [];
+    let coverBuffer = null;
+    if (req.body?.BookCover)
+      coverBuffer = Buffer.from(req.body.BookCover, "utf-8");
+    console.log("cover", coverBuffer);
     for (let i = 0; i < req.body.AuthorName.length; i++) {
       console.log(req.body.AuthorName[i]);
       const authorcheck = await prisma.author.findFirst({
@@ -75,11 +79,24 @@ async function createbook(req, res) {
             ))),
           ]
         },
+        BookCover: coverBuffer,
         Description: req.body.Description,
         ReleaseDate: new Date(req.body.ReleaseDate),
         Price: parseInt(req.body.Price, 10),
         Weight: parseFloat(req.body.Weight),
       },
+      select: {
+        BookID: true,
+        Description: true,
+        BookName: true,
+        formattype: true,
+        bookgenre: true,
+        Description: true,
+        ReleaseDate: true,
+        Price: true,
+        Weight: true,
+        BookCover: false
+      }
     });
 
     const authordata = author.map((x) => ({
