@@ -62,26 +62,26 @@ async function createbook(req, res) {
             PublisherID: req.user.UserID,
           },
         },
+        bookgenre: {
+          create: [
+            ...(req.body.GenreID?.map((x) => (
+              {
+                genre: {
+                  connect: {
+                    GenreID: parseInt(x, 10),
+                  }
+                }
+              }
+            ))),
+          ]
+        },
         Description: req.body.Description,
         ReleaseDate: new Date(req.body.ReleaseDate),
         Price: parseInt(req.body.Price, 10),
         Weight: parseFloat(req.body.Weight),
       },
     });
-    const bookgenre = await prisma.bookgenre.create({
-      data: {
-        bookdetails: {
-          connect: {
-            BookID: book.BookID,
-          },
-        },
-        genre: {
-          connect: {
-            GenreID: parseInt(req.body.GenreID, 10),
-          },
-        },
-      },
-    });
+
     const authordata = author.map((x) => ({
       BookID: book.BookID,
       AuthorID: x.AuthorID
