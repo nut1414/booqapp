@@ -237,6 +237,10 @@ export default function PublisherBookAdd() {
               label={"Weight"}
               type={"number"}
             ></TextBox>
+            <SelectBox name="Available" label="Available">
+              <option value={1}>Yes</option>
+              <option value={0}>No</option>
+            </SelectBox>
             <div className="ml-96 mt-10 mb-5">
               <Button
                 className={"w-28"}

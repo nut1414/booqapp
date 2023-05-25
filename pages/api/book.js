@@ -28,6 +28,10 @@ async function createbook(req, res) {
         .json({ message: "Only Publisher can create book." });
     }
     let author = [];
+    let coverBuffer = null;
+    if (req.body?.BookCover)
+      coverBuffer = Buffer.from(req.body.BookCover, "utf-8");
+    console.log("cover", coverBuffer);
     for (let i = 0; i < req.body.AuthorName.length; i++) {
       console.log(req.body.AuthorName[i]);
       const authorcheck = await prisma.author.findFirst({
@@ -62,26 +66,40 @@ async function createbook(req, res) {
             PublisherID: req.user.UserID,
           },
         },
+        bookgenre: {
+          create: [
+            ...(req.body.GenreID?.map((x) => (
+              {
+                genre: {
+                  connect: {
+                    GenreID: parseInt(x, 10),
+                  }
+                }
+              }
+            ))),
+          ]
+        },
+        Available: req.body?.Available ? parseInt(req.body?.Available, 10) == 1 : undefined,
+        BookCover: coverBuffer, 
         Description: req.body.Description,
         ReleaseDate: new Date(req.body.ReleaseDate),
         Price: parseInt(req.body.Price, 10),
         Weight: parseFloat(req.body.Weight),
       },
+      select: {
+        BookID: true,
+        Description: true,
+        BookName: true,
+        formattype: true,
+        bookgenre: true,
+        Description: true,
+        ReleaseDate: true,
+        Price: true,
+        Weight: true,
+        BookCover: false
+      }
     });
-    const bookgenre = await prisma.bookgenre.create({
-      data: {
-        bookdetails: {
-          connect: {
-            BookID: book.BookID,
-          },
-        },
-        genre: {
-          connect: {
-            GenreID: parseInt(req.body.GenreID, 10),
-          },
-        },
-      },
-    });
+
     const authordata = author.map((x) => ({
       BookID: book.BookID,
       AuthorID: x.AuthorID

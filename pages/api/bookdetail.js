@@ -8,9 +8,10 @@ async function bookdetail(req, res) {
   try {
     if (req.method == "GET") {
       console.log(req.query);
-      let { BookID } = req.query;
+      let { BookID, PublisherID } = req.query;
+      if (!PublisherID) PublisherID = 0;
 
-      const bookdetail = await prisma.bookdetails.findUnique({
+      const bookdetail = await prisma.bookdetails.findFirst({
         where: {
           BookID: parseInt(BookID, 10),
         },
@@ -21,9 +22,13 @@ async function bookdetail(req, res) {
           ...includeBookPromotion(new Date()),
         },
       })
-      if (bookdetail)
-        res.status(200).json({ bookdetail: bookdetail });
-      else
+      if (bookdetail) {
+        
+        if (bookdetail?.BookCover) {
+          bookdetail.BookCover = bookdetail.BookCover.toString('utf-8');
+        }
+        res.status(200).json({ bookdetail: (bookdetail?.publisher.PublisherID == PublisherID || bookdetail?.Available) ? bookdetail : null });
+      }else
         res.status(404).json({ message: "Not Found" });
     } else {
       res.status(400).json({ message: "No Input" });

@@ -38,7 +38,8 @@ async function orderuser(req, res) {
             ...bookinfo,
             book: {
               ...bookinfo.book,
-              promotionbook: bookinfo.promotion ? {BookID: bookinfo.BookID,PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion} : {}
+              promotionbook: bookinfo.promotion ? {BookID: bookinfo.BookID,PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion} : {},
+              BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
             },
             promotion: undefined
           }
