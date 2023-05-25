@@ -14,8 +14,8 @@ export default function review() {
       <div>
        <div className=" text-2xl font-bold mt-10 ml-32">Review</div>
        <div className="ml-44 mt-5 inline-flex mb-5">
-            <p>{"Order Id:  "+orderID}</p>
-            <p className="ml-5">{publishing}</p>
+            <p className=" font-light">{"Order Id:  "+orderID}</p>
+            <p className="font-light ml-5">{publishing}</p>
         </div>
        <div>
        <Reviewbook imgbook={imgbook} title={title} star={star}></Reviewbook>
