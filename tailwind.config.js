@@ -20,6 +20,17 @@ module.exports = {
     },
     fontFamily: {
       noto: ["Noto Sans Thai", "sans-serif"]
+    },
+    width: {
+      // Add your custom width values here
+      '128': '32rem', // Example: width-128 will be 32rem
+        '144': '36rem', // Example: width-144 will be 36rem
+        '160': '40rem', // Example: width-160 will be 40rem
+        '192': '48rem', // Example: width-192 will be 48rem
+        '200': '56rem', // Example: width-200 will be 56rem
+        '256': '64rem', // Example: width-256 will be 64rem
+        '320': '80rem', // Example: width-320 will be 80rem
+      // Add more custom width values as needed
     }
   },
   plugins: [require("daisyui")],
