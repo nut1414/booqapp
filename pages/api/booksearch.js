@@ -26,7 +26,7 @@ async function bookdetail(req, res) {
         },
         where: {
           ...whereBookSearchQuery(req.query),
-          promotionbook: promotioned == 'true' ?{
+          promotionbook: promotioned == 'true' ? {
             some: {
               promotion: {
                 StartDate: {

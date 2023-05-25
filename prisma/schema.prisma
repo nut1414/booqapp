@@ -150,6 +150,7 @@ model publisher {
   PhoneNumber        String
   VerifyStatusID     Int
   VerificationDocument Bytes?
+  Mainbank           Int?
   order              order[]
   promotion          promotion[]
   bookdetails        bookdetails[]
@@ -169,7 +170,6 @@ model publisheraddress {
   ZipCode     String
   PhoneNumber String
   publisher   publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherAddress_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
-
   @@index([PublisherID], map: "PublisherAddress_PublisherID_fkey")
 }
 
@@ -178,7 +178,6 @@ model publisherbank {
   PBankID       Int       @id @default(autoincrement())
   BankName      String
   AccountNumber String
-  Main          Boolean
   BankID        Int?
   bank          bank?      @relation(fields: [BankID], references: [BankID], map: "PublisherBank_BankID_fkey", onUpdate: Cascade, onDelete: SetNull)
   publisher     publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherBank_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
