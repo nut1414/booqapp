@@ -3,7 +3,7 @@ export function Payment({orderID,price,publishername,paymentstatus,paymentconfir
     
     return (
       <div>
-        <div className="grid grid-cols-7  ml-32 mt-3 ">
+        <div className="grid grid-cols-7  ml-44 mt-3 ">
         <p className=" font-bold text-lg">{orderID}</p>
         <p className=" font-bold text-lg ">{price}</p>
         <p className=" font-bold text-lg ">{publishername}</p>
@@ -12,7 +12,7 @@ export function Payment({orderID,price,publishername,paymentstatus,paymentconfir
         <p className=" font-bold text-lg ">{receivestatus}</p>
         <Link className="text-[#FF7300] hover:text-amber-400 transition-all text-sm mr-52  underline w-max ml-10" href={"#"}>View</Link>
         </div>
-        <div> <div className="border-b border-black border-opacity-30 mt-2 ml-32 mr-32"></div></div>
+        <div> <div className="border-b border-black border-opacity-30 mt-2 ml-44 mr-28"></div></div>
      </div>
     )
   }
