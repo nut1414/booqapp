@@ -31,7 +31,8 @@ model bookauthor {
 
 model bookdetails {
   BookID        Int             @id @default(autoincrement())
-  BookName      String // Can book name duplicate?
+  BookName      String // Can book name duplicate
+  BookCover   Bytes?
   Price         Int
   Description   String
   FormatTypeID  Int
@@ -182,7 +183,6 @@ model publisherbank {
   BankID        Int?
   bank          bank?      @relation(fields: [BankID], references: [BankID], map: "PublisherBank_BankID_fkey", onUpdate: Cascade, onDelete: SetNull)
   publisher     publisher @relation(fields: [PublisherID], references: [PublisherID], map: "PublisherBank_PublisherID_fkey", onUpdate: Cascade, onDelete: Cascade)
-
   @@index([BankID], map: "PublisherBank_BankID_fkey")
   @@index([PublisherID], map: "PublisherBank_PublisherID_fkey")
 }
