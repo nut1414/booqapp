@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Swal from 'sweetalert2'
 import { decode } from 'jsonwebtoken'
+import fetch from '@/utils/fetch'
 
 
 const AuthContext = createContext()
@@ -17,15 +18,19 @@ export function AuthProvider({ children }) {
       try {
         // console.log(token)
         const decoded = decode(token)
-        if (decoded.exp * 1000 < Date.now()) {
-          localStorage.removeItem('token')
-        } else {
-          // console.log(decoded)
-          setUser(decoded)
-          setStatus('authenticated')
-          console.log('authenticated')
-        }
+        const checkToken = fetch('/api/auth').then((res) => {
+          if (decoded.exp * 1000 < Date.now() || !res.ok) {
+            setStatus("unauthenticated");
+            localStorage.removeItem("token");
+          } else {
+            // console.log(decoded)
+            setUser(decoded);
+            setStatus("authenticated");
+            console.log("authenticated");
+          }
+        })
       } catch (err) {
+        setStatus("unauthenticated");
         localStorage.removeItem('token')
       }
       
