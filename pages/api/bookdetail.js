@@ -21,9 +21,13 @@ async function bookdetail(req, res) {
           ...includeBookPromotion(new Date()),
         },
       })
-      if (bookdetail)
+      if (bookdetail) {
+        
+        if (bookdetail?.BookCover) {
+          bookdetail.BookCover = bookdetail.BookCover.toString('utf-8');
+        }
         res.status(200).json({ bookdetail: bookdetail });
-      else
+      }else
         res.status(404).json({ message: "Not Found" });
     } else {
       res.status(400).json({ message: "No Input" });

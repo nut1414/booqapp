@@ -1,5 +1,10 @@
 const includeBookPublisher = () => ({
-  publisher: true
+  publisher: {
+    select: {
+      PublisherID: true,
+      PublisherName: true,
+    },
+  }
 })
 
 const includeBookPromotion = (time) => ({

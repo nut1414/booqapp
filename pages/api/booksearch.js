@@ -39,15 +39,22 @@ async function bookdetail(req, res) {
             },
           } : undefined,
         },
-        take: parseInt(booklimit),
+        take: parseInt(booklimit) ? parseInt(booklimit) : undefined,
         orderBy: (releaseDate == 'asc' || releaseDate == 'desc' || bestsalered == 'true') ? {
           ReleaseDate: releaseDate ? releaseDate : undefined,
           orderbook : (bestsalered == 'true') ? {
             _count: "desc"
           } : undefined,
         } : undefined,
-        skip: parseInt(req.query.skip),
+        skip: parseInt(req.query.skip) ? parseInt(req.query.skip) : undefined,
       });
+
+      if (getbook.length > 0) {
+        getbook = getbook.map((book) => ({
+          ...book,
+          BookCover: book?.BookCover?.toString('utf-8'),
+        }))
+      }
       console.log(getbook)
 
       prisma.$disconnect();

@@ -43,7 +43,7 @@ async function summarizeOrder(req, res) {
         return res.status(400).json({ message: "Shipping address not found" });
       }
 
-      const result = await prisma.iteminbasket.findMany({
+      let result = await prisma.iteminbasket.findMany({
         where: {
           ItemID: {
             in: selectedItems,
@@ -59,6 +59,16 @@ async function summarizeOrder(req, res) {
           },
         },
       });
+
+      result = result.map((item) => {
+        return {
+          ...item,
+          book: {
+            ...item.book,
+            BookCover: item.book.BookCover.toString('utf-8')
+          }
+        }
+      })
 
       const groupedResult = itemCartGroupByPublisher(result);
 

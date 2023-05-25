@@ -69,15 +69,26 @@ async function cart(req, res) {
       }
     } else if (req.method == "GET") {
       // getting what is in user cart
-      const cart = await prisma.iteminbasket.findMany({
+      let cart = await prisma.iteminbasket.findMany({
         where: { UserID: req.user.UserID },
         include: {
           book: {
-            include: { ...includeBookPublisher(), ...includeBookPromotion(new Date()) },
+            include: {
+              ...includeBookPublisher(),
+              ...includeBookPromotion(new Date()),
+            },
           },
         },
       });
-
+      cart = cart.map((item) => {
+        return {
+          ...item,
+          book: {
+            ...item.book,
+            BookCover: item.book?.BookCover?.toString("utf-8"),
+          },
+        };
+      });
       prisma.$disconnect();
       res
         .status(200)
@@ -153,7 +164,8 @@ async function cart(req, res) {
       prisma.$disconnect();
     }
   } catch (e) {
-    es.status(500).json({ message: "Internal Server Error", error: e.message });
+    console.log(e)
+    res.status(500).json({ message: "Internal Server Error", error: e.message });
     prisma.$disconnect();
   }
   await prisma.$disconnect();

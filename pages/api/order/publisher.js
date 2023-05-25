@@ -16,7 +16,7 @@ async function orderpublisher(req, res) {
 
   try {
     if (req.method == "GET") {
-      const orders = await prisma.order.findMany({
+      let orders = await prisma.order.findMany({
         where: {
           PublisherID: req.user.UserID,
         },
@@ -32,6 +32,21 @@ async function orderpublisher(req, res) {
         }
       })
 
+      orders = orders.map((order) => {
+        order.orderbook = order.orderbook.map((bookinfo) => {
+          return {
+            ...bookinfo,
+            book: {
+              ...bookinfo.book,
+              BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
+            },
+          }
+        }
+        )
+      })
+      
+
+
       const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
         console.log(order)
         order.orderbook = order.orderbook.map((bookinfo) => {
@@ -39,7 +54,8 @@ async function orderpublisher(req, res) {
             ...bookinfo,
             book: {
               ...bookinfo.book,
-              promotionbook: bookinfo.promotion ? {BookID: bookinfo.BookID,PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion} : {}
+              promotionbook: bookinfo.promotion ? {BookID: bookinfo.BookID,PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion} : {},
+              BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
             },
             promotion: undefined
           }
