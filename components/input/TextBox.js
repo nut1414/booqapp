@@ -1,5 +1,5 @@
 export function TextBox({ onChange, value, id, name, className ,type, label, readOnly, desorNot }) {
-  const labelclass = desorNot === "Description" ? "h-20" : type == 'datetime-local' ? "h-12" : "h-7"
+  const labelclass = desorNot === "Description" ? "h-20" : type == 'date' ? "h-12" : "h-7"
 
   return (
     <div> 
