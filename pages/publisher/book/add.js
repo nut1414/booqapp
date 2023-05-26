@@ -20,7 +20,7 @@ const resizeFile = (file) =>
       300,
       400,
       "JPEG",
-      85,
+      70,
       0,
       (uri) => {
         resolve(uri);
@@ -72,8 +72,8 @@ export default function PublisherBookAdd() {
     e.preventDefault()
     const formData = new FormData(e.target)
     const data = {
-      BookGenre: selectedGenre,
-      BookAuthor: selectedAuthor,
+      GenreID: selectedGenre,
+      AuthorName: selectedAuthor,
       BookCover: img
     }
 
@@ -89,14 +89,14 @@ export default function PublisherBookAdd() {
         text: "Title cannot be empty!",
       });
       return;
-    } else if (data.BookAuthor.length <= 0) {
+    } else if (data.AuthorName.length <= 0) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Author cannot be empty!",
       });
       return;
-    } else if (data.BookGenre.length <= 0) {
+    } else if (data.GenreID.length <= 0) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -127,6 +127,26 @@ export default function PublisherBookAdd() {
       });
 
     }
+
+    const res = await fetch('/api/book', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+    if (res.ok) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Book has been added!",
+      });
+      router.push('/publisher/book')
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+    }
+
   }
 
 
@@ -134,11 +154,6 @@ export default function PublisherBookAdd() {
 
     // console.log(data)
 
-    // const res = await fetch('/api/publisher/book/add', {
-    //   method: 'POST',
-    //   body: data
-    // })
-  // }
 
   useEffect(() => {
     getGenre()
@@ -205,7 +220,7 @@ export default function PublisherBookAdd() {
               selectedTags={selectedGenre}
               setSelectedTags={setSelectedGenre}
             />
-            <SelectBox name="Format" label="Format">
+            <SelectBox name="FormatID" label="Format">
               {format?.map((item) => (
                 <option key={item.FormatTypeID} value={item.FormatTypeID}>
                   {item.TypeName}
@@ -221,7 +236,7 @@ export default function PublisherBookAdd() {
             {/* <TextBox className={""} id={"e"} name={"Description"} label={"Description"}  type={"text"} desorNot={"Description"}></TextBox> */}
             <TextBox
               id={"f"}
-              name={"Release Date"}
+              name={"ReleaseDate"}
               label={"Release Date"}
               type={"date"}
             ></TextBox>
