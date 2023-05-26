@@ -40,6 +40,7 @@ async function Genre(req, res) {
         bookgenre: {
           select: {
             bookdetails: {
+              
             }
           }
         }
