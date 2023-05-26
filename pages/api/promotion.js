@@ -97,29 +97,7 @@ async function createpromotion(req, res) {
         PromotionID: { in : promotionid }
       }
     });
-    // console.log(agg[0]._sum.Quantity);
-    // const result = getpromotion.map((x) => ({ 
-    //   agg.reduce((a, b) => {
-    //     if(b.BookID == x.promotionbook.BookID){
-    //       return a.concat(b._sum.Quantity);
-    //     }
-    //   }, [])
-    // , ...x });
-    // console.log(result);
-    // Version 2
-    // const mappedQuantityArray = agg.map(aggre => {
-    // const { Quantity } = aggre._sum;
-    // const { BookID } = aggre;
-    // const promotions = getpromotion.filter(promo => {
-    //   return promo.promotionbook.some(book => book.BookID === BookID);
-    // });
-    //   return {
-    //     Quantity,
-    //     BookID,
-    //     promotions
-    //   };
-    // });
-
+    
     for (const item of agg) {
       const { BookID, _sum: { Quantity } } = item;
       

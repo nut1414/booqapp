@@ -164,6 +164,80 @@ async function createbook(req, res) {
     } else {
       res.status(400).json({ message: "No Input" });
     }
+  } else if (req.method == "PUT") {
+    let author = [];
+    for (let i = 0; i < req.body.AuthorName.length; i++) {
+    console.log(req.body.AuthorName[i]);
+    const authorcheck = await prisma.author.findFirst({
+      where: {
+        AuthorName: req.body.AuthorName[i],
+      }
+    });
+    console.log(authorcheck);
+    author[i] = authorcheck;
+    if (!authorcheck) {
+      console.log(req.body.AuthorName[i] + "Is being created")
+      const createauthor = await prisma.author.create({
+        data: {
+          AuthorName: req.body.AuthorName[i],
+          //AuthorID: req.body?.id ? parseInt(req.body?.id, 10) : undefined,
+        },
+      });
+      author[i] = createauthor;
+    }
+    console.log(typeof author[i].AuthorID)
+  }
+    const deleteoldgenre = await prisma.bookgenre.deleteMany({
+      where: {
+        BookID: req.body?.BookID ? parseInt(req.body?.BookID, 10) : undefined,
+      },
+    });
+    const deleteoldauthor = await prisma.bookauthor.deleteMany({
+      where: {
+        BookID: req.body?.BookID ? parseInt(req.body?.BookID, 10) : undefined,
+      },
+    });
+    const updatebook = await prisma.bookdetails.update({
+      where: {
+        BookID: req.body?.BookID ? parseInt(req.body?.BookID, 10) : undefined,
+      },
+      data: {
+        BookName: req.body?.BookName,
+        formattype: {
+          connect: {
+            FormatTypeID: parseInt(req.body?.FormatID, 10),
+          },
+        },
+        bookgenre: {
+          create: [
+            ...(req.body.GenreID?.map((x) => (
+              {
+                genre: {
+                  connect: {
+                    GenreID: parseInt(x, 10),
+                  }
+                }
+              }
+            ))),
+          ]
+        },
+        Description: req.body?.Description,
+        ReleaseDate: new Date(req.body?.ReleaseDate),
+        Price: parseInt(req.body?.Price, 10),
+        Weight: parseFloat(req.body?.Weight),
+        Available: req.body?.Available ? parseInt(req.body?.Available, 10) == 1 : undefined,
+      },
+    });
+    const authordata = author.map((x) => ({
+      BookID: updatebook.BookID,
+      AuthorID: x.AuthorID
+    }))
+    console.log(authordata);
+    const bookauthor = await prisma.bookauthor.createMany({
+      data: authordata
+    });
+    prisma.$disconnect();
+    res.status(200).json({ message: "Book Updated", book: updatebook });
   }
   prisma.$disconnect();
 }
