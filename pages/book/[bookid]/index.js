@@ -45,7 +45,7 @@ export default function BookInfo() {
           <div className="grow md:w-[30vw] p-2">
             <img
               className={"object-cover md:p-10 float-left "}
-              src={book?.BookCover ?? "/picture/noim.jpg"}
+              src={book?.BookCover?.length > 10 ? book?.BookCover :  "/picture/noim.jpg"}
             />
           </div>
           <div className="flex box-border md:w-[60vw]">
@@ -63,7 +63,7 @@ export default function BookInfo() {
                       <BookTagLink
                         key={author?.author?.AuthorID}
                         type="author"
-                        tagID={author?.author?.AuthorID}
+                        tagID={author?.author?.AuthorName}
                         tagLabel={author?.author?.AuthorName}
                       />
                     ))}
@@ -73,7 +73,7 @@ export default function BookInfo() {
                     {
                       <BookTagLink
                         type="publisher"
-                        tagID={book?.publisher?.PublisherID}
+                        tagID={book?.publisher?.PublisherName}
                         tagLabel={book?.publisher?.PublisherName}
                       />
                     }
@@ -84,7 +84,7 @@ export default function BookInfo() {
                       <BookTagLink
                         key={genre?.genre?.GenreID}
                         type="genre"
-                        tagID={genre?.genre?.GenreID}
+                        tagID={genre?.genre?.GenreName}
                         tagLabel={genre?.genre?.GenreName}
                       />
                     ))}
