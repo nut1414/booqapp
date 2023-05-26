@@ -1,5 +1,5 @@
 import { Template } from "@/components/common/Template";
-
+import { Button } from "@/components/input/Button";
 import { Genre1 } from "@/components/manage/Genre1";
 import { Genre2 } from "@/components/manage/Genre2";
 
@@ -60,6 +60,7 @@ export default function managegenre() {
       </div>
       </div>
       </div>
+      <div><Button text={"+Add"} className={"float-right mr-[17rem] mt-8"} onClick={""}></Button></div>
     </Template>
   )
 }
