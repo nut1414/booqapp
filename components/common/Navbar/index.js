@@ -6,7 +6,8 @@ import { SearchBox } from "@/components/input/SearchBox"
 import { CartIcon } from "@/components/common/Navbar/CartIcon"
 import { ProfileIcon } from "./ProfileIcon"
 import { Button } from "@/components/input/Button"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { defaultGenre } from "@/config/default"
 
 export function Navbar({ user }) {
   const isUser = user?.role?.RoleName === "Customer"
@@ -14,6 +15,28 @@ export function Navbar({ user }) {
   const isPublisher = user?.role?.RoleName == "Publisher"
   const isLogin = isUser || isAdmin || isPublisher
   const [genreOpen, setGenreOpen] = useState(false)
+  const [genre, setGenre] = useState([])
+
+  const fetchGenre = async () => {
+    try {
+      const res = await fetch(`/api/fetch/genre`)
+      const data = await res.json()
+      if (res.ok) {
+        console.log(data.genre)
+        setGenre(data.genre)
+      } else {
+        throw new Error(data.message)
+      }
+      
+    } catch (e) {
+      console.log(e)
+      setGenre(defaultGenre)
+    }
+  }
+
+  useEffect(() => {
+    fetchGenre()
+  }, [])
 
   return (
     <nav className="sticky text-white w-full h-fit flex bg-spooky-black justify-around flex-wrap">
@@ -26,7 +49,7 @@ export function Navbar({ user }) {
           {isPublisher && <>
             <NavLink href={"/"}>Order</NavLink>
             <NavLink href={"/"}>Manage Book</NavLink>
-            <NavLink href={"/"}>Sale</NavLink>
+            <NavLink href={"/"}>Promotion</NavLink>
           </>}
           {isAdmin && <>
             <NavLink href={"/"}>Manage Publisher</NavLink>
@@ -34,56 +57,21 @@ export function Navbar({ user }) {
           </>}
         </div>}
         <div className="flex items-center  h-full flex-wrap justify-center align-middle grow">
-          <NavLink href={"/"} type="secondary">Special Offer</NavLink>
-          <NavLink href={"/"}>Best Sellers</NavLink>
+          <NavLink href={"/book/specialoffer"} type="secondary">Special Offer</NavLink>
+          <NavLink href={"/book/bestseller"}>Best Sellers</NavLink>
           <div onClick={() => setGenreOpen(a=>!a)} className={`h-full group relative hover:text-black hover:bg-white ${genreOpen ? "text-black bg-white" : ""}`}>
             <Link href={"#"} className={`flex justify-center items-center h-full px-2 align-middle transition-all  ${genreOpen ? " text-black hover:text-black bg-white" : "text-white bg-spooky-black group-hover:text-black group-hover:bg-white"}`}>
               <div className="align-middle">
                 Genre
               </div>
-              {genreOpen && <div className=" text-black absolute p-5 w-fit bg-white rounded-b-xl bottom-[-300px] h-[300px] drop-shadow-sm ">
-                <div className="flex gap-4 relative ">
-                  <div>
-                    <h1 className="text-xl font-bold">
-                      Fiction
-                    </h1>
-                    <ul className="grid grid-cols-2 w-64 lg:w-96 p-2">
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-
+              {genreOpen && <div className=" text-black absolute p-5 w-[900px] bg-white rounded-b-xl bottom-[-350px] h-[350px] drop-shadow-sm ">
+                <div className="flex gap-4 relative w-fit ">
+                    <ul className="flex flex-col flex-wrap h-[300px] w-fit gap-y-1.5 lg:w-128 p-0">
+                      {genre.map((item, index) => (<Link href={`/book/search/genre/${item.GenreName}`} className="w-32 text-wrap" key={index}>{ item.GenreName }</Link>))}
+                      
                       
                     </ul>
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold">
-                      Non-Fiction
-                    </h1>
-                    <ul className="grid grid-cols-2 w-64 lg:w-96 p-2">
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                      <Link href="/login" className="hover:text-spooky-orange">Genre 1</Link>
-                    </ul>
-                  </div>
+                  
                 
               </div>
               
