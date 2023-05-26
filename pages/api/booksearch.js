@@ -2,7 +2,7 @@ import { Order } from "@/components/order/Order";
 import { includeBookAuthor, includeBookGenre, includeBookPromotion, includeBookPublisher, whereBookSearchQuery } from "@/utils/bookquery";
 import { PrismaClient } from "@prisma/client";
 import promotion from "./promotion";
-
+import calculateBookDetailPricePromo from "@/utils/order/calculateBookDetailPricePromo";
 
 const prisma = new PrismaClient();
 
@@ -50,12 +50,17 @@ async function bookdetail(req, res) {
       });
 
       if (getbook.length > 0) {
-        getbook = getbook.map((book) => ({
-          ...book,
-          BookCover: book?.BookCover?.toString('utf-8'),
-        }))
+        getbook = getbook.map((book) => {
+          book = {
+            ...book,
+            BookCover: book?.BookCover?.toString('utf-8'),
+          };
+          book = calculateBookDetailPricePromo(book);
+          return book
+        })
+        
       }
-      console.log(getbook)
+      // console.log(getbook)
 
       prisma.$disconnect();
       res.status(200).json({ book: getbook });

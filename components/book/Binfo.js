@@ -2,22 +2,67 @@
 
 import Link from "next/link";
 
-export function Binfo({picture,name,price,author,linkname,linkauthor,onclick}) {
-    return (
+export function Binfo({
+  picture,
+  name,
+  price,
+  author,
+  linkname,
+  linkauthor,
+  onClick,
+  promotion,
+  finalprice,
+}) {
+
+  picture = picture.length < 10 ? "/picture/noim.jpg" : picture;
+
+  return (
     <div className="flex flex-col w-max">
-        <Link href={linkname}>
-          <img  className ={"object-cover m-10 "} src= {picture} width="170" height="100" />
+      <Link href={linkname}>
+        <img
+          className={"object-cover m-10 "}
+          src={picture}
+          width="170"
+          height="100"
+        />
       </Link>
       <div className="mb-2">
-          <Link href={linkname} className = " text-black  hover:text-spooky-orange transition-all text-2xl w-max p-5 ">{name}</Link><br></br>
+        <Link
+          href={linkname}
+          className=" text-black  hover:text-spooky-orange transition-all text-2xl w-max p-5 "
+        >
+          {name}
+        </Link>
+        <br></br>
       </div>
       <div>
-          <Link href={linkauthor} className = "text-black  hover:text-spooky-orange transition-all text-base w-max font-light  p-5">{author}</Link>
+        <Link
+          href={linkauthor}
+          className="text-black  hover:text-spooky-orange transition-all text-base w-max font-light  p-5"
+        >
+          {author}
+        </Link>
       </div>
       <div className="flex">
-        <p className = "text-2xl  font-light p-5 object-center w-48">{price}</p>
-        <button className = {"rounded-3xl text-4xl hover:text-yellow-600  "} onClick={onclick}>+</button>
+        {promotion ? (
+          <div className="w-48 flex">
+            <p className="text-2xl  py-5 pl-5 object-center  ">
+              {finalprice}
+            </p>
+            <p className="text-2xl py-5 pl-2 object-center  line-through text-red-500">
+              {price}
+            </p>
+          </div>
+        ) : (
+          <p className="text-2xl  p-5 object-center w-48">{price}</p>
+        )}
+        <button
+          className={"rounded-3xl text-4xl hover:text-yellow-600  "}
+          onClick={onClick}
+        >
+          +
+        </button>
       </div>
     </div>
-    )
-  }
+  );
+}

@@ -6,13 +6,13 @@ export default function managepromotion() {
   return (
     <Template>
       <div>
-      <div className=" text-2xl font-bold mt-10 ml-32 inline-flex">All Book</div>
+      <div className=" text-2xl font-bold mt-10 ml-32 inline-flex">All Promotion</div>
       <div className="float-right">
-      <p className="mt-6 font-bold">Available Status</p>
+      <p className="mt-6 font-bold">Active Status</p>
         <select className="p-2  rounded-full bg-white text-gray-900  mr-5  drop-shadow-sm  border border-black " name="verification" id="verification">
               <option value="all">All</option>
-              <option value="available">Available</option>
-              <option value="notavailabe">Not Available</option>
+              <option value="active">Active</option>
+              <option value="notactive">Not active</option>
        </select> 
        
        <input type="text" className="inline-flex mr-28 pl-3 h-10 rounded-full text-gray-900 m-3 drop-shadow-sm border border-black w-72" placeholder="Search for Promotion name"></input>
