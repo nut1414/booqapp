@@ -38,17 +38,11 @@ export default function SearchEntity() {
 
   return (
     <Template>
-      <div className="ml-24  text-2xl font-bold mt-14">
-        Special Offers
-      </div>
+      <div className="ml-24  text-2xl font-bold mt-14">Special Offers</div>
       <div className="grid grid-cols-1 sm:grid sm:grid-cols-2 md:grid md:grid-cols-3 lg:grid lg:grid-cols-4 xl:grid xl:grid-cols-5 m-28 mt-8 gap-10 ">
         {books.map((book) => (
           <Binfo
             key={"book" + book.BookID}
-            linkname={"/book/" + book.BookID}
-            linkauthor={
-              "/book/search/author/" + book.bookauthor[0].author.AuthorName
-            }
             picture={
               book?.BookCover?.length < 10
                 ? "/picture/noim.jpg"
@@ -59,6 +53,7 @@ export default function SearchEntity() {
             price={book.Price}
             promotion={book?.CurrentPromotion}
             finalprice={book?.FinalPrice}
+            bookid={book.BookID}
           />
         ))}
       </div>

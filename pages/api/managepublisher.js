@@ -60,7 +60,6 @@ async function getpublisherbook(req, res) {
       }
     }
     res.status(200).json(getbook);
-  } else if (req.method == "DELETE") {
   }
   prisma.$disconnect();
 }

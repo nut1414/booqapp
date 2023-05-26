@@ -53,7 +53,9 @@ async function createpromotion(req, res) {
   } else if (req.method == "GET") {
     let getpromotion = [];
     getpromotion = await prisma.promotion.findMany({
-      where: {},
+      where: {
+        PromotionID: req.query?.PromotionID ? parseInt(req.query.PromotionID) : undefined,
+      },
       orderBy: {
         PromotionID: "asc",
       },

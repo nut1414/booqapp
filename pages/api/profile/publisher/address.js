@@ -2,7 +2,7 @@ import authRoute from "@/utils/middlewares/authRoute"
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-async function publisher(req, res){
+async function address(req, res){
   try {
     if(req.user.role.RoleID != 2){
       await prisma.$disconnect();
@@ -106,4 +106,4 @@ async function publisher(req, res){
   await prisma.$disconnect();
 } 
 
-export default authRoute(publisher,prisma);
+export default authRoute(address,prisma);

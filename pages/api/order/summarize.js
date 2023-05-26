@@ -58,7 +58,7 @@ async function summarizeOrder(req, res) {
       })
 
       const groupedResult = itemCartGroupByPublisher(result);
-
+      console.log("groupedResult", groupedResult)
       const calculatedResult = calculateOrderTotalDiscountShip(groupedResult);
 
       const allOrderPrice = calculatedResult.reduce((acc, curr) => {

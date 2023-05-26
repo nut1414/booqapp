@@ -81,6 +81,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('token')
     setUser(null)
     setStatus('unauthenticated')
+    
     router.push('/')
   }
 

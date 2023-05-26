@@ -93,7 +93,8 @@ model order {
   TransactionTime    DateTime?        @db.Date
   TotalPrice         Float
   TotalShipping      Float
-  Proofoftransfer    Bytes?
+  Proofoftransfer    String?
+  VerificationDate   DateTime?        @db.Date
   TransactionApprove Boolean
   Address            String         // Duplicate Address for backup (history)
   ZipCode            String          

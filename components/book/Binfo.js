@@ -1,5 +1,5 @@
 //import './book.css';
-
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 export function Binfo({
@@ -7,14 +7,18 @@ export function Binfo({
   name,
   price,
   author,
-  linkname,
-  linkauthor,
   onClick,
   promotion,
   finalprice,
+  bookid
 }) {
+  const router = useRouter();
 
-  picture = picture.length < 10 ? "/picture/noim.jpg" : picture;
+  onClick = onClick ? onClick : () => router.push("/order/cart/add?BookID=" + bookid )
+
+  picture = picture?.length < 3 ? "/picture/noim.jpg" : picture;
+  let linkname = "/book/" + bookid;
+  let linkauthor = "/book/search/author/" + author;
 
   return (
     <div className="flex flex-col w-max">
