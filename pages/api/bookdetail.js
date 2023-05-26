@@ -1,4 +1,5 @@
 import { includeBookAuthor, includeBookGenre, includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
+import calculateBookDetailPricePromo from "@/utils/order/calculateBookDetailPricePromo";
 import { PrismaClient } from "@prisma/client";
 
 
@@ -11,7 +12,7 @@ async function bookdetail(req, res) {
       let { BookID, PublisherID } = req.query;
       if (!PublisherID) PublisherID = 0;
 
-      const bookdetail = await prisma.bookdetails.findFirst({
+      let bookdetail = await prisma.bookdetails.findFirst({
         where: {
           BookID: parseInt(BookID, 10),
         },
@@ -23,6 +24,7 @@ async function bookdetail(req, res) {
         },
       })
       if (bookdetail) {
+        bookdetail = calculateBookDetailPricePromo(bookdetail)
         
         if (bookdetail?.BookCover) {
           bookdetail.BookCover = bookdetail.BookCover.toString('utf-8');
