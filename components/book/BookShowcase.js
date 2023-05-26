@@ -39,10 +39,8 @@ export default function BookShowcase({
         {book.map((book) => (
           <Binfo
             key={"book" + book.BookID}
-            linkname={"/book/" + book.BookID}
-            linkauthor={"/book/search/author/" + book.bookauthor[0].author.AuthorName}
             picture={
-              book?.BookCover?.length < 10
+              book?.BookCover?.length < 5
                 ? "/picture/noim.jpg"
                 : book.BookCover
             }
@@ -51,6 +49,7 @@ export default function BookShowcase({
             price={book.Price}
             promotion={book?.CurrentPromotion}
             finalprice={book?.FinalPrice}
+            bookid={book.BookID}
           />
         ))}
       </div>

@@ -7,13 +7,13 @@ export default function Logout() {
   const { user, status, logout } = useAuth();
 
   useEffect(() => {
+    if( router.isReady)
     if (status == "authenticated") {
       logout();
-      router.push("/");
     } else if (status == "unauthenticated") {
       router.push("/");
     }
   }
-    , [status]);
+    , [status, router]);
   return (<div></div>)
 }
