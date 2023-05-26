@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 //getting all orders that the current publisher has
 async function orderpublisher(req, res) {
-  if (req.user.role.RoleID != 1) {
+  if (req.user.role.RoleID != 2) {
     prisma.$disconnect();
     res.status(401).json({ message: "Unauthorized" }); // if not user
   }
@@ -19,6 +19,7 @@ async function orderpublisher(req, res) {
       let orders = await prisma.order.findMany({
         where: {
           PublisherID: req.user.UserID,
+          OrderID: req.query.OrderID ? parseInt(req.query.OrderID) : undefined,
         },
         include: {
           publisher: true,
@@ -31,43 +32,23 @@ async function orderpublisher(req, res) {
           }
         }
       })
-
-      orders = orders.map((order) => {
-        order.orderbook = order.orderbook.map((bookinfo) => {
-          return {
-            ...bookinfo,
-            book: {
-              ...bookinfo.book,
-              BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
-            },
-          }
-        }
-        )
-      })
-      
-
-
       const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
-        console.log(order)
         order.orderbook = order.orderbook.map((bookinfo) => {
+          console.log({BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion})
           return {
             ...bookinfo,
             book: {
               ...bookinfo.book,
-              promotionbook: bookinfo.promotion ? {BookID: bookinfo.BookID,PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion} : {},
+              promotionbook: bookinfo.promotion ? [{BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion}] : [],
               BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
             },
             promotion: undefined
           }
         }) 
         return order
-      }), 'orderbook')
-
-
+      }), 'orderbook')      
       res.status(200).json({ message: "Success", orders: calculatedResult });
-    }
-
-    
+    }    
   } catch (e) {
     res.status(500).json({ message: "Internal Server Error", error: e.message })
     prisma.$disconnect();

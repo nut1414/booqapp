@@ -12,11 +12,20 @@ async function bank(req, res) {
     if (req.method == "GET") {
       const publisherbank = await prisma.publisherbank.findMany({
         where: {
-          UserID: req.user.UserID,
+          PublisherID: req.user.UserID,
         },
       })
+      const publisher = await prisma.publisher.findUnique({
+        where: {
+          PublisherID: req.user.UserID,
+        },
+        select: {
+          Mainbank: true,
+        }
+      })
+      console.log(publisher)
       await prisma.$disconnect()
-      res.status(200).json({ message: "Publisher bank info fetched successfully", publisherbank: publisherbank ? publisherbank : [] })
+      res.status(200).json({ message: "Publisher bank info fetched successfully", publisherbank: publisherbank ? publisherbank : [] , Mainbank: publisher.Mainbank ? publisher.Mainbank : null})
     }
     else if (req.method == "DELETE"){
       const findbank = await prisma.publisherbank.findUnique({
