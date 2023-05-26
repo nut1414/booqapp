@@ -61,12 +61,6 @@ async function createpromotion(req, res) {
         promotionbook: {
           include: {
             bookdetails: {
-              select: {
-                BookID: true,
-                BookName: true,
-              },
-            },
-            bookdetails: {
               include: {
                 bookauthor: {
                   select: {
@@ -81,13 +75,65 @@ async function createpromotion(req, res) {
             },
           },
         },
-        _count: {
-          select: {
-            orderbook: true,
-          }
-        },
       },
+    })
+    const bookid = getpromotion.map((x) => x.promotionbook.map((y) => 
+      y.BookID
+    ));
+
+    const reducedbook = bookid.reduce((a, b) => {return a.concat(b)}, []);
+
+    const promotionid = getpromotion.map((x) => 
+      x.PromotionID
+    );
+
+    console.log(promotionid);
+    const agg = await prisma.orderbook.groupBy({
+      by: ['BookID'],
+      _sum: {
+        Quantity: true,
+      },
+      where: {
+        PromotionID: { in : promotionid }
+      }
     });
+    // console.log(agg[0]._sum.Quantity);
+    // const result = getpromotion.map((x) => ({ 
+    //   agg.reduce((a, b) => {
+    //     if(b.BookID == x.promotionbook.BookID){
+    //       return a.concat(b._sum.Quantity);
+    //     }
+    //   }, [])
+    // , ...x });
+    // console.log(result);
+    // Version 2
+    // const mappedQuantityArray = agg.map(aggre => {
+    // const { Quantity } = aggre._sum;
+    // const { BookID } = aggre;
+    // const promotions = getpromotion.filter(promo => {
+    //   return promo.promotionbook.some(book => book.BookID === BookID);
+    // });
+    //   return {
+    //     Quantity,
+    //     BookID,
+    //     promotions
+    //   };
+    // });
+
+    for (const item of agg) {
+      const { BookID, _sum: { Quantity } } = item;
+      
+      for (const promotion of getpromotion) {
+        const book = promotion.promotionbook.find(b => b.BookID == BookID);        
+        if (book) {
+          book.Quantity = Quantity;
+          break;
+        }
+      }
+    }
+
+    console.log(getpromotion);
+
     res.status(200).json(getpromotion);
   } else if (req.method == "DELETE") {
   }

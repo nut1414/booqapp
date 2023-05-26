@@ -21,12 +21,34 @@ async function bank(req, res) {
     else if (req.method == "DELETE"){
       const findbank = await prisma.publisherbank.findUnique({
         where: {
-          PBankID: req.query.PBankID,
+          PBankID: parseInt(req.query.PBankID),
         },
       })
+      if(!findbank){
+        await prisma.$disconnect()
+        return res.status(400).json({ message: 'Bank not found.' })
+      }
+      const checkifmainbank = await prisma.publisher.findUnique({
+        where: {
+          PublisherID: req.user.UserID,
+        },
+        select: {
+          Mainbank: true,
+        }
+      })
+      if(checkifmainbank.Mainbank == parseInt(req.query.PBankID)){
+        const publisherbank = await prisma.publisher.update({
+          where: {
+            PublisherID: req.user.UserID,
+          },
+          data: {
+            Mainbank: null,
+          }
+        })
+      }
       const deletebank = await prisma.publisherbank.delete({
         where: {
-          PBankID: req.query.PBankID,
+          PBankID: parseInt(req.query.PBankID),
         },
       })
       await prisma.$disconnect()
