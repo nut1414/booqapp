@@ -52,7 +52,7 @@ async function summarizeOrder(req, res) {
           ...item,
           book: {
             ...item.book,
-            BookCover: item.book.BookCover.toString('utf-8')
+            BookCover: item?.book?.BookCover?.toString('utf-8') ?? null,
           }
         }
       })
