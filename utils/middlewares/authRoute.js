@@ -29,7 +29,8 @@ export default function authRoute(handler, prisma) {
       }
         
     } catch (err) {
-      prisma.$disconnect()
+      console.log(err)
+      await prisma.$disconnect()
       return res.status(401).json({ message: 'Unauthorized' })
     }
 

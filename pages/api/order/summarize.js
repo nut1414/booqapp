@@ -79,7 +79,7 @@ async function summarizeOrder(req, res) {
       res.status(400).json({ message: "Method not allowed" });
     }
   } catch (e) {
-    es.status(500).json({ message: "Internal Server Error", error: e.message });
+    res.status(500).json({ message: "Internal Server Error", error: e.message });
     prisma.$disconnect();
   }
 

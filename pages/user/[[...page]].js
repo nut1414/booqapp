@@ -99,7 +99,8 @@ export default function UserPage() {
         </div>
         <div className="grow p-8">
           {currentPage == 'profile' && <ProfilePage/>}
-          {currentPage == 'address' && <AddressPage/>}
+          {currentPage == 'address' && <AddressPage />}
+          {currentPage == 'publisheraddress' && <AddressPage publisher={true} />}
           {currentPage == 'order' && <OrderPage/>}
           {currentPage == 'bank' && <BankPage/>}
           {currentPage == 'verify' && <VerifyPage/>}
