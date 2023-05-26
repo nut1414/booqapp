@@ -6,7 +6,7 @@ import { TextBox } from "../input/TextBox";
 import { PostalPicker } from "../input/PostalPicker";
 import Swal from "sweetalert2";
 
-export default function AddressPage({}) {
+export default function AddressPage({publisher}) {
   const [addingAddress, setAddingAddress] = useState(false);
   const [addresses, setAddresses] = useState([]);
 
@@ -25,7 +25,9 @@ export default function AddressPage({}) {
         // Delete logic goes here
         try {
           const res = await fetch(
-            `/api/profile/address?ShippingAddressID=${id}`,
+            publisher
+              ? `/api/profile/publisher/address?PaddressID=${id}`
+              : `/api/profile/address?ShippingAddressID=${id}`,
             {
               method: "DELETE",
             }
@@ -57,10 +59,11 @@ export default function AddressPage({}) {
     for (let [key, value] of formData.entries()) {
       data[key] = value;
     }
-    data["Name"] = data["FirstName"] + " " + data["LastName"];
+    if (!publisher)
+      data["Name"] = data["FirstName"] + " " + data["LastName"];
     console.log(data);
     try {
-      const res = await fetch("/api/profile/address", {
+      const res = await fetch(publisher ? "/api/profile/publisher/address" :  "/api/profile/address", {
         method: "POST",
         body: JSON.stringify(data),
       });
@@ -87,7 +90,8 @@ export default function AddressPage({}) {
 
   const getAddresses = async () => {
     try {
-      const res = await fetch("/api/profile/address", {
+      const res = await fetch(
+        publisher ? "/api/profile/publisher/address" :"/api/profile/address", {
         method: "GET",
       });
       const data = await res.json();
@@ -115,8 +119,28 @@ export default function AddressPage({}) {
           <div className="border-b-2 border-black border-opacity-50 mb-10"></div>
           <div>
             <form method="POST" onSubmit={handleAddSubmit}>
-              <TextBox label={"First Name"} name={"FirstName"} type={"text"} />
-              <TextBox label={"Last Name"} name={"LastName"} type={"text"} />
+              {publisher ? (
+                <>
+                  <TextBox
+                    label={"Name"}
+                    name={"Name"}
+                    type={"text"}
+                  />
+                </>
+              ) : (
+                <>
+                  <TextBox
+                    label={"First Name"}
+                    name={"FirstName"}
+                    type={"text"}
+                  />
+                  <TextBox
+                    label={"Last Name"}
+                    name={"LastName"}
+                    type={"text"}
+                  />
+                </>
+              )}
               <TextBox label={"Phone"} name={"PhoneNumber"} type={"text"} />
               <PostalPicker />
               <TextBox
@@ -125,7 +149,17 @@ export default function AddressPage({}) {
                 type={"text"}
               />
               <div className="float-right">
-                <Button type="submit" text={"Cancel"} onClick={(e) => { e.preventDefault();  setAddingAddress(false)}} onSubmit={(e) => { e.preventDefault(); }} />
+                <Button
+                  type="submit"
+                  text={"Cancel"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setAddingAddress(false);
+                  }}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                  }}
+                />
                 <Button type="submit" text={"Add"} />
               </div>
             </form>
@@ -138,7 +172,7 @@ export default function AddressPage({}) {
           <div>
             {addresses.map((address) => (
               <AddressU
-                key={address.ShippingAddressID}
+                key={publisher ? address.PaddressID : address.ShippingAddressID}
                 name={address.Name}
                 addressDetail={
                   address.Address +
@@ -147,7 +181,7 @@ export default function AddressPage({}) {
                   ", " +
                   address.PhoneNumber
                 }
-                onclick={() => deleteAddress(address.ShippingAddressID)}
+                onclick={() => deleteAddress(publisher ? address.PaddressID : address.ShippingAddressID)}
               />
             ))}
           </div>

@@ -89,9 +89,6 @@ async function publisher(req, res){
       const address = await prisma.publisheraddress.delete({
         where: {
           PaddressID: parseInt(PaddressID),
-          publisher: {
-            PublisherID: req.user.UserID
-          }
         },
       });
       if (address)

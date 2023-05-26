@@ -82,9 +82,6 @@ async function address(req, res) {
       const address = await prisma.shippingaddress.delete({
         where: {
           ShippingAddressID: parseInt(ShippingAddressID),
-          user: {
-            UserID: req.user.UserID
-          }
         },
       });
       if (address)
