@@ -19,9 +19,9 @@ export default function SearchEntity() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    // if (router.isReady && (querytype == null || searchName == null)) {
-    //   router.push("/");
-    // }
+    if (router.isReady && (querytype == null || searchname == null)) {
+      router.push("/");
+    }
   }, [searchtype, router]);
 
   useEffect(() => {
@@ -60,10 +60,6 @@ export default function SearchEntity() {
         {books.map((book) => (
           <Binfo
             key={"book" + book.BookID}
-            linkname={"/book/" + book.BookID}
-            linkauthor={
-              "/book/search/author/" + book.bookauthor[0].author.AuthorName
-            }
             picture={
               book?.BookCover?.length < 10
                 ? "/picture/noim.jpg"
@@ -74,6 +70,7 @@ export default function SearchEntity() {
             price={book.Price}
             promotion={book?.CurrentPromotion}
             finalprice={book?.FinalPrice}
+            bookid={book.BookID}
           />
         ))}
       </div>

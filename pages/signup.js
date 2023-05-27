@@ -44,6 +44,10 @@ export default function SignUp() {
     }
     console.log(data);
 
+    if (data.RoleID == '2') {
+      data["PublisherAddressName"] = data["PublisherName"];
+    }
+
     try {
       fetch('/api/register', {
       method: 'POST',
@@ -57,8 +61,15 @@ export default function SignUp() {
           Swal.fire({ title: 'Success', text: data.message, icon: 'success' })
           router.push('/login')
         } else {
-          Swal.fire({title: 'Error', text: data.message, icon: 'error'})
+          Swal.fire({title: 'Error', text: "Create User failed", icon: 'error'})
         }
+      }).catch(err => {
+        Swal.fire({
+          title: "Error",
+          text: "Create User failed",
+          icon: "error",
+        });
+        console.log(err)
       })
     } catch (err) {
       console.log(err)

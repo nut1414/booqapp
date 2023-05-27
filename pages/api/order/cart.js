@@ -102,15 +102,15 @@ async function cart(req, res) {
        *
        */
 
-      const { itemID, quantity } = req.body;
+      const { ItemID, Quantity } = req.body;
 
-      if (!itemID || !quantity) {
+      if (!ItemID || !Quantity) {
         res.status(400).json({ message: "All field must be filled" });
         prisma.$disconnect();
       }
 
-      const item = await prisma.book.findUnique({
-        where: { ItemID: parseInt(itemID), UserID: req.user.UserID },
+      const item = await prisma.iteminbasket.findFirst({
+        where: { ItemID: parseInt(ItemID), UserID: req.user.UserID },
       });
 
       if (!item) {
@@ -119,8 +119,8 @@ async function cart(req, res) {
       }
 
       const itemUpdated = await prisma.iteminbasket.update({
-        where: { ItemID: parseInt(itemID), UserID: req.user.UserID },
-        data: { Quantity: quantity },
+        where: { ItemID: parseInt(ItemID) },
+        data: { Quantity: Quantity },
       });
 
       prisma.$disconnect();
@@ -140,7 +140,7 @@ async function cart(req, res) {
         prisma.$disconnect();
       }
 
-      const item = await prisma.book.findUnique({
+      const item = await prisma.iteminbasket.findFirst({
         where: { ItemID: parseInt(ItemID), UserID: req.user.UserID },
       });
 
@@ -150,7 +150,7 @@ async function cart(req, res) {
       }
 
       const itemDeleted = await prisma.iteminbasket.delete({
-        where: { ItemID: parseInt(ItemID), UserID: req.user.UserID },
+        where: { ItemID: parseInt(ItemID) },
       });
 
       prisma.$disconnect();

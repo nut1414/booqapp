@@ -197,6 +197,10 @@ async function createbook(req, res) {
         BookID: req.body?.BookID ? parseInt(req.body?.BookID, 10) : undefined,
       },
     });
+    let coverBuffer;
+    if (req.body?.BookCover)
+      coverBuffer = Buffer.from(req.body.BookCover, "utf-8");
+    console.log("cover", coverBuffer);
     const updatebook = await prisma.bookdetails.update({
       where: {
         BookID: req.body?.BookID ? parseInt(req.body?.BookID, 10) : undefined,
@@ -226,6 +230,7 @@ async function createbook(req, res) {
         Price: parseInt(req.body?.Price, 10),
         Weight: parseFloat(req.body?.Weight),
         Available: req.body?.Available ? parseInt(req.body?.Available, 10) == 1 : undefined,
+        BookCover: coverBuffer,
       },
     });
     const authordata = author.map((x) => ({

@@ -3,11 +3,16 @@ import { Footer } from "@/components/common/Footer"
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "../input/Button"
 import { useRouter } from "next/router"
+import { useEffect } from "react"
 
 export function Template({ children, className, noBack, ...props }) {
   const { user, status } = useAuth()
   const router = useRouter()
-  console.log(user)
+
+  useEffect(() => {
+    console.log(user)
+
+  },[user])
 
   return (
     <div

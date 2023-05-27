@@ -6,15 +6,18 @@ import { SelectBox } from "@/components/input/SelectBox";
 import { Review } from "@/components/book/Review";
 import { useEffect, useState } from "react";
 import { BookTagLink } from "@/components/book/BookTagLink";
-
+import { useAuth } from "@/hooks/useAuth";
 
 export default function BookInfo() {
   const router = useRouter();
   const { bookid } = router.query;
   const [book, setBook] = useState(null);
+  const { user, status } = useAuth();
+
+  const addToCartAvailable = status == "unauthenticated" ? true : status == "authenticated" ? user.role.RoleID == 1 : true;
 
   const handleAddCart = () => {
-    router.push("/cart/add/"+bookid)
+    router.push("/order/cart/add?BookID="+bookid)
   };
   const handleBuy = () => {
     
@@ -45,7 +48,11 @@ export default function BookInfo() {
           <div className="grow md:w-[30vw] p-2">
             <img
               className={"object-cover md:p-10 float-left "}
-              src={book?.BookCover?.length > 10 ? book?.BookCover :  "/picture/noim.jpg"}
+              src={
+                book?.BookCover?.length > 10
+                  ? book?.BookCover
+                  : "/picture/noim.jpg"
+              }
             />
           </div>
           <div className="flex box-border md:w-[60vw]">
@@ -57,7 +64,7 @@ export default function BookInfo() {
               </div>
               <div className="mt-3 pl-10 mb-3 w-1/2">
                 <ul className="">
-                  <li className="mb-3 flex gap-2">
+                  <li className="mb-3 flex flex-wrap gap-2">
                     by
                     {book?.bookauthor?.map((author) => (
                       <BookTagLink
@@ -78,7 +85,7 @@ export default function BookInfo() {
                       />
                     }
                   </li>
-                  <li className="mb-3 flex gap-2">
+                  <li className="mb-3 flex flex-wrap gap-2">
                     Genre:{" "}
                     {book?.bookgenre?.map((genre) => (
                       <BookTagLink
@@ -95,7 +102,8 @@ export default function BookInfo() {
               {CurrentPromotion ? (
                 <div className="inline-flex mb-5 ml-3">
                   <p className="text-red-600 text-4xl font-bold mr-6">
-                    {book?.FinalPrice}{" "}
+                    {book?.FinalPrice}
+                    {".- "}
                   </p>
                   <p className="text-black text-2xl font-bold mt-2 line-through text-opacity-60">
                     {book?.Price}
@@ -109,11 +117,12 @@ export default function BookInfo() {
                 <div className="inline-flex mb-5 ml-3">
                   <p className="text-black text-4xl font-bold mr-6">
                     {book?.Price}
+                    {".-"}
                   </p>
                 </div>
               )}
               <div>
-                {book.Available && (
+                {(book.Available && addToCartAvailable) && (
                   <>
                     {" "}
                     <Button
@@ -121,18 +130,16 @@ export default function BookInfo() {
                       text={"Add to cart"}
                       onClick={handleAddCart}
                     />
-                    <Button
+                    {/* <Button
                       type="primary"
                       text={"Buy now"}
                       onClick={handleBuy}
-                    />
+                    /> */}
                   </>
                 )}
               </div>
               <div className="mt-5 md:mr-24">
-                <p>
-                  {book?.Description}
-                </p>
+                <p>{book?.Description}</p>
               </div>
               <div className="mt-3 float-right md:mr-16 mb-2">
                 <Button
