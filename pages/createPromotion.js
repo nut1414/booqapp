@@ -1,8 +1,6 @@
 import { Template } from "@/components/common/Template";
 import { Button } from "@/components/input/Button";
 import { useRouter } from "next/router"
-import { CreatePromotion1 } from "@/components/createpromotion/CreatePromotion1";
-import { CreatePromotion2 } from "@/components/createpromotion/CreatePromotion2";
 export default function paymentconfirm(orderid) {
  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
  const router= useRouter()
