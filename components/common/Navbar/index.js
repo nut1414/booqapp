@@ -67,7 +67,7 @@ export function Navbar({ user }) {
               {genreOpen && <div className=" text-black absolute p-5 w-[900px] bg-white rounded-b-xl bottom-[-350px] h-[350px] drop-shadow-sm ">
                 <div className="flex gap-4 relative w-fit ">
                     <ul className="flex flex-col flex-wrap h-[300px] w-fit gap-y-1.5 lg:w-128 p-0">
-                      {genre.map((item, index) => (<Link href={`/book/search/genre/${item.GenreName}`} className="w-32 text-wrap" key={index}>{ item.GenreName }</Link>))}
+                      {genre.map((item, index) => (<Link href={`/book/search/genre/${encodeURIComponent(item.GenreName)}`} className="w-32 text-wrap" key={index}>{ item.GenreName }</Link>))}
                       
                       
                     </ul>
