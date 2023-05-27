@@ -1,53 +1,71 @@
-import { Button } from "../input/Button"
-import { BookOrder } from "./BookOrder"
+import { Button } from "../input/Button";
+import { BookOrder } from "./BookOrder";
 
-export function Order({status, Class}) {
-   // "unpaid" "shipping" "shipped" "recieved" "rated" 
-   const statusOrder = status
-    const payingText = {
-      unpaid: "To Pay",
-      shipping: "To Ship",
-      shipped: "To Recieve",
-      recieved: "To Rate",
-      rated: "Complete"
-    }
-  
-    return (
-      <div className={Class}>
+export function Order({ order, status, Class }) {
+  // "unpaid" "shipping" "shipped" "recieved" "rated"
+  const payingText = {
+    topay: "To Pay",
+    torecieve: "To Ship",
+    toship: "To Recieve",
+    complete: "Complete",
+  };
+
+  return (
+    <div className={Class}>
       <div className="mb-5">
-         <div className="inline-flex">Order ID : xxxxxxx</div>
-         <div className=" float-right text-[#FF7300] text-sm font-bold ">
-         {
-        (statusOrder == "unpaid") ? <div>{payingText[status]}</div> 
-        :(statusOrder == "shipping") ? <div>{payingText[status]}</div> 
-        :(statusOrder == "shipped") ? <div>{payingText[status]}</div> 
-        :(statusOrder == "recieved") ? <div>{payingText[status]}</div> 
-        :(statusOrder == "rated") ? <div>{payingText[status]}</div> 
-        :null
-        }
-         </div>
+        <div className="inline-flex">
+          {"Order ID : "}
+          {order.OrderID}{" "}
+          <div className="px-5">{order.publisher.PublisherName}</div>
+        </div>
+        <div className=" float-right flex text-sm font-bold ">
+          {order?.TrackingNo?.length > 0 ? (
+            <div className=" pr-8">
+              {"Tracking No.: "} {order.TrackingNo}{" "}
+            </div>
+          ) : (
+            <></>
+          )}
+          <div className="text-[#FF7300]">{payingText[status]}</div>
+        </div>
       </div>
       <div>
-       <BookOrder></BookOrder>
-       <BookOrder></BookOrder>
-       
+        {order.orderbook.map((orderbookitem) => (
+          <BookOrder
+            orderbook={orderbookitem}
+            key={orderbookitem.OrderBookID + "orderbook"}
+          ></BookOrder>
+        ))}
       </div>
       <div>
-      <div className="font-bold text-xl float-right">Order Total 300</div>
-      
-      <div className="float-right mt-5 clear-right mb-5">
-        {
-        (status == "unpaid") ? <Button text={"Pay"}></Button> 
-        :(status == "shipping") ? <Button type={"secondary"} text={"Cancle Order"}></Button>
-        :(status == "shipped") ? <Button text={"Order Received"}></Button>
-        :(status == "recieved") ? <Button text={"Rated"}></Button>
-        :(status == "rated") ? <Button type={"secondary"} text={"Rated"}></Button>
-        :null
-        }
-      </div>
+        <div className="flex flex-col align-bottom text-right">
+          <div className="text-md ">
+            {"Shipping Total "}
+            {order.totalShipping}
+          </div>
+
+          <div className="font-bold text-xl ">
+            {"Order Total  "}
+            {order.TotalPrice + order.totalShipping}
+          </div>
+        </div>
+
+        <div className="float-right mt-5 clear-right mb-5">
+          {status == "topay" ? (
+            <>
+              <Button text={"Cancel"} type="secondary"></Button>
+              <Button text={"Pay"}></Button>
+            </>
+          ) : status == "toship" ? (
+            <Button type={"secondary"} text={"Cancel Order"}></Button>
+          ) : status == "toreceive" ? (
+            <Button text={"Order Received"}></Button>
+          ) : status == "complete" ? (
+            <Button type={"secondary"} text={"Review"}></Button>
+          ) : null}
+        </div>
       </div>
       <div className="border-b-2 border-black border-opacity-50 mb-10 clear-both"></div>
-      </div>
-    )
-    
-  }
+    </div>
+  );
+}
