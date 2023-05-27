@@ -1,35 +1,87 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Order } from "../order/Order"
-import { Fourbutton } from "../input/Fourbutton"
+
+import fetch from "@/utils/fetch"
+import Swal from "sweetalert2"
+import OrderFilterButton from "../input/OrderFilterButton"
+
+const filter = ['all', 'topay', 'toship', 'toreceive', 'complete']
+
+
 
 export default function OrderPage() {
-  const filter = ['all', 'pay', 'waitship', 'ship', 'complete']
   const [filterOrder, setFilterOrder] = useState('all')
+  const [allOrder, setAllOrder] = useState([])
 
-  function onFilterValueSelect(filter){
-    console.log(filter);
+  const fetchOrder = async () => {
+    try {
+      const res = await fetch('/api/order/user')
+      const data = await res.json()
+      if (res.ok) {
+        console.log(data)
+        setAllOrder(data.orders)
+      } else {
+        throw new Error(data.message)
+      }
+    } catch (e) {
+      Swal.fire('Error', e.message, 'error')
+    }
+
+  }
+  useEffect(() => {
+    fetchOrder() 
+  }, [])
+
+  const filterOrderCondition = (order) => {
+    if (!(order?.TransactionTime)) return 'topay'
+    else if (order?.TransactionTime != null) return 'toship'
+    else if (order?.TrackingNo != null && order?.Received == false) return 'toreceive'
+    else if (order?.Received == true) return 'complete'
+    else return 'all'
   }
 
-  const allorder = [
-    { OrderID: 0, status: "wait" },
-    { OrderID: 1, status: "pay" },
-    { OrderID: 2, status: "unpaid"},
-    { OrderID: 3, status: "unpaid"},
-  ]
 
   return (
-     <div>
-      <Fourbutton filterValueSelect={onFilterValueSelect}></Fourbutton>
+    <div>
+      <div className="grid grid-cols-5 mb-4 ">
+        <OrderFilterButton
+          active={filterOrder == "all"}
+          onClick={() => setFilterOrder("all")}
+        >
+          All
+        </OrderFilterButton>
+        <OrderFilterButton
+          active={filterOrder == "topay"}
+          onClick={() => setFilterOrder("topay")}
+        >
+          To Pay
+        </OrderFilterButton>
+        <OrderFilterButton
+          active={filterOrder == "toship"}
+          onClick={() => setFilterOrder("toship")}
+        >
+          To Ship
+        </OrderFilterButton>
+        <OrderFilterButton
+          active={filterOrder == "toreceive"}
+          onClick={() => setFilterOrder("toreceive")}
+        >
+          To Receive
+        </OrderFilterButton>
+        <OrderFilterButton
+          active={filterOrder == "complete"}
+          onClick={() => setFilterOrder("complete")}
+        >
+          Complete
+        </OrderFilterButton>
+      </div>
       <div>
-        
-        {allorder.map((order) => (<div>{order.OrderID}</div>))}
-     {/* <Order filter={"waitship"} status={"shipping"}></Order>
-     <Order filter={"pay"} status={"unpaid"}></Order>
-     <Order filter={"pay"} status={"unpaid"}></Order>
-     <Order filter={"ship"} status={"shipped"}></Order>
-     <Order filter={"complete"} status={"recieved"}></Order>
-     <Order filter={"complete"} status={"rated"}></Order> */}
+        {allOrder.map((order) => {
+          const orderCondition = filterOrderCondition(order)
+          if (filterOrder != 'all' && orderCondition != filterOrder) return <></>
+          return <Order key={"order" + order.OrderID} status={orderCondition}   order={order}></Order>;
+        })}
       </div>
     </div>
-  )
+  );
 }

@@ -127,6 +127,45 @@ export default function OrderCart() {
     }
   };
 
+  const handleCreateOrder = async () => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to create order?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const res = await fetch("/api/order/create", {
+            method: "POST",
+            body: JSON.stringify({
+              shippingAddressID: shipAddressID,
+              selectedItems: selectitems,
+            }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            Swal.fire({
+              title: "Success",
+              text: "Order created",
+              icon: "success",
+            });
+            router.push("/user/order");
+          } else {
+            Swal.fire({ title: "Error", text: data.message, icon: "error" })
+          }
+        }
+      }
+      );
+
+    }catch (e) {
+      Swal.fire({ title: "Error", text: e.message, icon: "error" });
+      console.log(e);
+    }
+  }
+
   useEffect(() => {
     console.log("Selected Items", selectitems);
   }, [selectitems]);
@@ -314,7 +353,7 @@ export default function OrderCart() {
           </table>
           <div className="p-8 flex justify-end">
             <Button text={"Back"} onClick={() => setCurrentStep("shipping")} />
-            <Button text={"Order"} />
+            <Button text={"Order"} onClick={handleCreateOrder}/>
           </div>
         </div>
       ) : (
