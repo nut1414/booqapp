@@ -152,14 +152,46 @@ async function summarizeOrder(req, res) {
           });
         }
       });
-
       res.status(200).json({
         message: "Order summarized",
         order: calculatedResult,
         allOrderPrice,
         allOrderShipping,
       });
-    } else {
+    } else if(req.method == "DELETE") {
+      const { orderID } = req.query;
+      console.log("orderID", orderID);
+      if(!orderID) {
+        return res.status(400).json({ message: "Order Required" });
+      }
+      const order = await prisma.order.findFirst({
+        where: {
+          OrderID: parseInt(orderID),
+          UserID: parseInt(req.user.UserID),
+        },
+      });
+
+      if(!order) {
+        prisma.$disconnect();
+        return res.status(400).json({ message: "Order not found" });
+      }
+
+      if(order.Proofoftransfer == null) {        
+        const deleteorder = await prisma.order.delete({
+          where: {
+            OrderID: parseInt(orderID),
+          },
+        });
+        prisma.$disconnect();
+        res.status(200).json({ message: "Order deleted" });
+      }
+      else{
+        prisma.$disconnect();
+        res.status(400).json({ message: "Order can't be delete" });
+      }
+     
+    }
+    else {
       res.status(400).json({ message: "Method not allowed" });
     }
   } catch (e) {

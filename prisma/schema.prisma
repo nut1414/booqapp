@@ -148,7 +148,7 @@ model promotionbook {
 
 model publisher {
   PublisherID        Int                @id @default(autoincrement())
-  PublisherName      String
+  PublisherName      String             @unique(map: "Publisher_PublisherName_key")
   Description        String
   PhoneNumber        String
   VerifyStatusID     Int

@@ -18,10 +18,9 @@ async function orderpublisher(req, res) {
         where: {
           PublisherID: req.user.UserID,
           OrderID: req.query.OrderID ? parseInt(req.query.OrderID) : undefined,
-          TransactionApproved: true
+          TransactionApprove: true
         },
         include: {
-          publisher: true,
           shippingaddress: true,
           orderbook: {
             include: {
@@ -49,6 +48,7 @@ async function orderpublisher(req, res) {
       res.status(200).json({ message: "Success", orders: calculatedResult });
     }    
   } catch (e) {
+    console.log(e)
     res.status(500).json({ message: "Internal Server Error", error: e.message })
     prisma.$disconnect();
   }
