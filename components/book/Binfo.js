@@ -33,7 +33,7 @@ export function Binfo({
 
   picture = picture?.length > 5 ? picture : "/picture/noim.jpg";
   let linkname = "/book/" + bookid;
-  let linkauthor = "/book/search/author/" + author;
+  let linkauthor = "/book/search/author/" + encodeURIComponent(author);
 
   return (
     <div className="flex flex-col w-max">

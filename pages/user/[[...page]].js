@@ -69,43 +69,49 @@ export default function UserPage() {
     <Template>
       <div className="flex flex-col md:flex-row w-full grow h-full">
         <div className="flex flex-col p-8 bg-spooky-black md:w-1/4 text-white">
-          <div className="h-16 flex justify-around align-middle">  
+          <div className="h-16 flex justify-around align-middle">
             <div>
-              <Image src={UserProfileImg} alt="userprofile" width={64} height={64} />
+              <Image
+                src={UserProfileImg}
+                alt="userprofile"
+                width={64}
+                height={64}
+              />
             </div>
-            <div className="">
-              { user?.name }
-            </div>
+            <div className="">{user?.name}</div>
           </div>
           <div className="flex flex-col gap-0.5 justify-start pt-2 font-semibold m-4">
-            {
-              Object.keys(pageList).map((key, index) => {
-                if (pagePermission[key].includes(user?.role?.RoleName)) {
-                  return (
-                    <TextLink href={`/user/${key}`} key={index} active={key == currentPage}>
-                      {pageList[key]}
-                    </TextLink>
-                  )
-                }
+            {Object.keys(pageList).map((key, index) => {
+              if (pagePermission[key].includes(user?.role?.RoleName)) {
+                return (
+                  <TextLink
+                    href={`/user/${key}`}
+                    key={index}
+                    active={key == currentPage}
+                  >
+                    {pageList[key]}
+                  </TextLink>
+                );
               }
-              )
-            }
+            })}
             <div onClick={logout}>
-              <Link href="#" className=" px-2 text-red-600" >
+              <Link href="#" className=" px-2 text-red-600">
                 Log out
               </Link>
             </div>
           </div>
         </div>
         <div className="grow p-8">
-          {currentPage == 'profile' && <ProfilePage/>}
-          {currentPage == 'address' && <AddressPage />}
-          {currentPage == 'publisheraddress' && <AddressPage publisher={true} />}
-          {currentPage == 'order' && <OrderPage/>}
-          {currentPage == 'bank' && <BankPage/>}
-          {currentPage == 'verify' && <VerifyPage/>}
+          {currentPage == "profile" && <ProfilePage />}
+          {currentPage == "address" && <AddressPage />}
+          {currentPage == "publisheraddress" && (
+            <AddressPage publisher={true} />
+          )}
+          {currentPage == "order" && <OrderPage />}
+          {currentPage == "bank" && <BankPage />}
+          {currentPage == "verify" && <VerifyPage />}
         </div>
       </div>
     </Template>
-  )
+  );
 }
