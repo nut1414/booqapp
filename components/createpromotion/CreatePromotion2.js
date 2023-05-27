@@ -4,7 +4,7 @@ import { Button } from "../input/Button"
 export function CreatePromotion2({}) {
     const router = useRouter();
     return (
-        <div className>
+        <div>
         <br></br>
         <br></br>
         <br></br>
