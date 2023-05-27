@@ -14,7 +14,7 @@ export default async function register(req, res){
         || !req.body?.PhoneNumber
         || !req.body?.Email
         || !req.body?.Password
-        || !(req.body?.RoleID !== '1' || req.body?.RoleID !== '2')
+        || !(req.body?.RoleID !== '1' || req.body?.RoleID !== '2' || req.body?.RoleID !== '0')
         || !req.body?.FirstName
         || !req.body?.LastName
         || !req.body?.Address
@@ -118,8 +118,12 @@ export default async function register(req, res){
       let signtok = await generateUserJWT({ user: checkIfUserExist, prisma })
       res.status(200).json({token: signtok})
     }
-      else
-        res.status(400).json({ message: 'Create failed.'})
+    else if (checkIfUserExist && req.body.RoleID == '0'){
+      let signtok = await generateUserJWT({ user: checkIfUserExist, prisma })
+      res.status(200).json({token: signtok})
+    }
+    else
+      res.status(400).json({ message: 'Create failed.'})
       // Return JWT Token
     }
     // Address
