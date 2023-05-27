@@ -2,7 +2,6 @@ import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
 import { BookManageRow } from "@/components/manage/BookManageRow";
-import { Bookmanage } from "@/components/manage/Bookmanage";
 import { useEffect, useState } from "react";
 import fetch from "@/utils/fetch";
 
@@ -60,28 +59,6 @@ export default function ManageBook() {
             {bookManage?.map((bookmanage) => {
               return <BookManageRow key={bookmanage.BookID + "bookmanage"} bookManage={bookmanage} />;
             })}
-            <BookManageRow
-              bookManage={{
-                bookID: "B0000000001",
-                booktitle: "Book Title1",
-                date: "2002/20/02",
-                price: "00000",
-                sales: "00000",
-                salescount: "00000",
-                availablestatus: "Not Avilable",
-              }}
-            />
-            <BookManageRow
-              bookManage={{
-                bookID: "B0000000001",
-                booktitle: "Book Title1",
-                date: "2002/20/02",
-                price: "00000",
-                sales: "00000",
-                salescount: "00000",
-                availablestatus: "Not Avilable",
-              }}
-            />
           </tbody>
         </table>
         <div className="flex justify-center text-center">
