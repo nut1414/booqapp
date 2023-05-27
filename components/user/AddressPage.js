@@ -5,11 +5,12 @@ import fetch from "@/utils/fetch";
 import { TextBox } from "../input/TextBox";
 import { PostalPicker } from "../input/PostalPicker";
 import Swal from "sweetalert2";
+import { useRouter } from "next/router";
 
 export default function AddressPage({publisher}) {
   const [addingAddress, setAddingAddress] = useState(false);
   const [addresses, setAddresses] = useState([]);
-
+  const router = useRouter();
   const deleteAddress = async (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -150,8 +151,9 @@ export default function AddressPage({publisher}) {
               />
               <div className="float-right">
                 <Button
-                  type="submit"
+                  type="secondary"
                   text={"Cancel"}
+                  
                   onClick={(e) => {
                     e.preventDefault();
                     setAddingAddress(false);
@@ -185,9 +187,9 @@ export default function AddressPage({publisher}) {
               />
             ))}
           </div>
-          <div>
+          <div className={"float-right"}>
+          <Button type={"secondary"} onClick={() => router.back()} text={"Back"}></Button>
             <Button
-              className={"float-right"}
               text={"+Add"}
               onClick={() => setAddingAddress(true)}
             ></Button>

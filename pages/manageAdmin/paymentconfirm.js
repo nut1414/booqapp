@@ -5,7 +5,7 @@ import { Button } from "@/components/input/Button";
 import { useRouter } from "next/router"
 export default function paymentconfirm(orderid) {
  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
-   
+ const router= useRouter()
   return (
     <Template noBack={true}>
         <div>
@@ -26,7 +26,7 @@ export default function paymentconfirm(orderid) {
       <AddressAndTotal address={"King Mongkut's University of Technology Thonburi (KMUTT) 126 Pracha Uthit Rd., Bang Mod, Thung Khru, Bangkok 10140, 66 2470 9850"} total={"1000"} verifypic={"/addverify.svg"} amountmoney={"00000"} datetime={"00 XXXXX 0000, 00:00:00"}></AddressAndTotal>
       <div>
         <div className="float-right mb-16 mr-32">
-        <Button type={"secondary"} onClick={""} text={"Back"}></Button>
+        <Button type={"secondary"} onClick={() => router.back()} text={"Back"}></Button>
         <Button text={"Confirm"} onClick={""}></Button>
         </div>
       </div>

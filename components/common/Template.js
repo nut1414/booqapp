@@ -19,9 +19,9 @@ export function Template({ children, className, noBack, ...props }) {
       <Navbar user={user}/>
       <div className="grow flex flex-col min-h-[80vh]">
         {children}
-        {!noBack && <div className="px-[10vw]">
+        {/* {!noBack && <div className="px-[10vw]">
           <Button type={"secondary"} onClick={() => router.back()} text={"Back"}></Button>
-        </div>}
+        </div>} */}
       </div>
       <Footer />
     </div>

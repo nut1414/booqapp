@@ -1,7 +1,9 @@
 import { Button } from "../input/Button";
+import { useRouter } from "next/router";
+
 
 export function Profilemanage() {
- 
+    const router = useRouter();
   return (
             <div>
             <div>
@@ -35,8 +37,11 @@ export function Profilemanage() {
                 <div className=" text-base font-normal mt-5 ml-[4.7rem]">Verified</div>
                 <Button text={"Unverify"} className={"mt-3 ml-10"} type={"secondary"} onClick={""}></Button>
             </div>
-           <div className=" ml-[19rem] mt-5 mb-10"><img src="/addverify.svg" width={"300"}></img></div>
-           <div className=" float-right mb-10 ml-32"><Button text={"Save"}></Button></div>
+            <div className=" ml-[19rem] mt-5 mb-10"><img src="/addverify.svg" width={"300"}></img></div>
+            <div className="float-right inline-flex">
+           <div className="mb-10 "><Button type={"secondary"} onClick={() => router.back()} text={"Back"}></Button></div>
+           <div className="mb-10 "><Button text={"Save"} onClick={""}></Button></div>
+           </div>
             </div>
             </div>
   )

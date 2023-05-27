@@ -250,6 +250,7 @@ export default function ProfilePage() {
                   onChange={onInputChange}
                 ></TextBoxInline>
                 <div className="float-right mt-10">
+                <Button type={"secondary"} onClick={() => router.back()} text={"Back"}></Button>
                   <Button
                     type="submit"
                     text={"Save"}
