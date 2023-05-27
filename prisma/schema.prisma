@@ -32,7 +32,7 @@ model bookauthor {
 model bookdetails {
   BookID        Int             @id @default(autoincrement())
   BookName      String // Can book name duplicate
-  BookCover   Bytes?
+  BookCover     Bytes?
   Price         Int
   Description   String
   FormatTypeID  Int

@@ -20,6 +20,7 @@ async function orderpublisher(req, res) {
         where: {
           PublisherID: req.user.UserID,
           OrderID: req.query.OrderID ? parseInt(req.query.OrderID) : undefined,
+          TransactionApproved: true
         },
         include: {
           publisher: true,
