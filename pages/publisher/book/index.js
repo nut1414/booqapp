@@ -2,7 +2,6 @@ import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
 import { BookManageRow } from "@/components/manage/BookManageRow";
-import { Bookmanage } from "@/components/manage/Bookmanage";
 import { useState } from "react";
 
 export default function ManageBook() {
