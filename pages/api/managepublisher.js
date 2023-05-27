@@ -33,7 +33,6 @@ async function getpublisherbook(req, res) {
             },
           },
         },
-        BookCover: false,
       },
     });
     const bookid = getbook.map((x) =>
@@ -59,6 +58,9 @@ async function getpublisherbook(req, res) {
           break;
         }
       }
+    }
+    for (const book of getbook) {
+      book.BookCover = undefined
     }
     res.status(200).json(getbook);
   }

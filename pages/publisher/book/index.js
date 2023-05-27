@@ -3,11 +3,28 @@ import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
 import { BookManageRow } from "@/components/manage/BookManageRow";
 import { Bookmanage } from "@/components/manage/Bookmanage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import fetch from "@/utils/fetch";
 
 export default function ManageBook() {
   const [page, setPage] = useState(1);
-  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
+  const [bookManage, setBookManage] = useState([])
+
+  const getBookManage = async () => {
+    try {
+      const res = await fetch(`/api/managepublisher`);
+      const data = await res.json()
+      console.log(data)
+      setBookManage(data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    getBookManage()
+  }, [])
+
   return (
     <Template>
       <div className=" text-2xl font-bold mt-10 ml-32 inline-flex">
@@ -40,6 +57,9 @@ export default function ManageBook() {
             </tr>
           </thead>
           <tbody>
+            {bookManage?.map((bookmanage) => {
+              return <BookManageRow key={bookmanage.BookID + "bookmanage"} bookManage={bookmanage} />;
+            })}
             <BookManageRow
               bookManage={{
                 bookID: "B0000000001",

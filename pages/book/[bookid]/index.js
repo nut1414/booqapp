@@ -32,6 +32,7 @@ export default function BookInfo() {
       setBook(data.bookdetail);
       console.log(data);
     } else {
+      router.push("/")
       setBook(null);
     }
   };
