@@ -1,6 +1,8 @@
 //import './book.css';
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import addToCart from "@/utils/addtocart";
 
 export function Binfo({
   picture,
@@ -13,10 +15,23 @@ export function Binfo({
   bookid
 }) {
   const router = useRouter();
+  const { user, status } = useAuth();
+  const addToCartAvailable =
+    status == "unauthenticated"
+      ? true
+      : status == "authenticated"
+      ? user.role.RoleID == 1
+      : true;
 
-  onClick = onClick ? onClick : () => router.push("/order/cart/add?BookID=" + bookid )
 
-  picture = picture?.length < 3 ? "/picture/noim.jpg" : picture;
+  onClick = onClick ? onClick : async () => {
+    await addToCart(bookid).then(
+      () =>
+      router.push("/order/cart")
+    )
+  }
+
+  picture = picture?.length > 5 ? picture : "/picture/noim.jpg";
   let linkname = "/book/" + bookid;
   let linkauthor = "/book/search/author/" + author;
 
@@ -27,7 +42,7 @@ export function Binfo({
           className={"object-cover m-10 "}
           src={picture}
           width="170"
-          height="100"
+          height="100"  
         />
       </Link>
       <div className="mb-2">
@@ -60,12 +75,12 @@ export function Binfo({
         ) : (
           <p className="text-2xl  p-5 object-center w-48">{price}</p>
         )}
-        <button
+        { addToCartAvailable && <button
           className={"rounded-3xl text-4xl hover:text-yellow-600  "}
           onClick={onClick}
         >
           +
-        </button>
+        </button>}
       </div>
     </div>
   );
