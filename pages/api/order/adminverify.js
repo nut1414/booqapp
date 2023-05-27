@@ -8,20 +8,27 @@ const prisma = new PrismaClient();
 
 //getting all orders that the current publisher has
 async function orderpublisher(req, res) {
-  if (req.user.role.RoleID != 2) {
+  if (req.user.role.RoleID != 0) {
     prisma.$disconnect();
     res.status(401).json({ message: "Unauthorized" }); // if not user
   }
   try {
     if (req.method == "GET") {
+      const { OrderID , PaymentStatus, TransactionApprove } = req.query
       let orders = await prisma.order.findMany({
         where: {
-          PublisherID: req.user.UserID,
-          OrderID: req.query.OrderID ? parseInt(req.query.OrderID) : undefined,
-          TransactionApproved: true
+          OrderID: OrderID ? parseInt(OrderID) : undefined,
+          Proofoftransfer: PaymentStatus == "true" ? { not: null } : PaymentStatus == "false" ? null : undefined,
+          TransactionApprove: TransactionApprove == "true" ? true : TransactionApprove == "false" ? false : undefined,
         },
         include: {
-          publisher: true,
+          publisher: {
+            select:{
+              PublisherID: true,
+              PublisherName: true,
+              VerificationDocument: false,
+            }
+          },
           shippingaddress: true,
           orderbook: {
             include: {
@@ -45,10 +52,30 @@ async function orderpublisher(req, res) {
           }
         }) 
         return order
-      }), 'orderbook')      
+      }), 'orderbook')
+      prisma.$disconnect();
       res.status(200).json({ message: "Success", orders: calculatedResult });
-    }    
+    } 
+    else if( req.method == "PUT"){
+      const { verify } = req.body;
+      if (verify == undefined) {
+        prisma.$disconnect();
+        res.status(400).json({ message: "Bad Request" });
+      }
+      const order = await prisma.order.update({
+        where: {
+          OrderID: req.body.OrderID ? parseInt(req.body.OrderID) : undefined,
+        },
+        data: {
+          TransactionApprove: verify == "true" ? true : verify == "false" ? false : undefined,
+          VerificationDate: new Date()
+        }
+      })
+      prisma.$disconnect();
+      res.status(200).json({ message: "Success", order: order });
+    }
   } catch (e) {
+    console.log(e)
     res.status(500).json({ message: "Internal Server Error", error: e.message })
     prisma.$disconnect();
   }

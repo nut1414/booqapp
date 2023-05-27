@@ -33,6 +33,7 @@ async function getpublisherbook(req, res) {
             },
           },
         },
+        BookCover: false,
       },
     });
     const bookid = getbook.map((x) =>
