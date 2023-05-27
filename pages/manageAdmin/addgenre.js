@@ -1,18 +1,13 @@
 import { Template } from "@/components/common/Template";
-import { TextBox } from "@/components/input/TextBox";
-import { Button } from "@/components/input/Button";
+import { Addgenre1 } from "@/components/addgenre/Addgenre1";
+import { Addgenre2 } from "@/components/addgenre/Addgenre2";
 export default function addgenre() {
  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
     <Template>
-      <div className=" mt-36 ml-48">
-      <div className=" text-2xl font-bold mt-10 ml-32 ">Add New Genre</div>
-      
       <div className="inline-flex">
-        <div className=" text-xl font-bold mt-10 ml-52">Genre Name</div>
-        <div><input type="text" className=" p-4 rounded-full text-gray-900 mt-10 ml-10 drop-shadow-sm border border-black w-[35rem] h-3"></input></div>
-      </div>
-      <div className="mt-5 ml-[52rem]"><Button text={"Sent"}></Button></div>
+      <Addgenre1></Addgenre1>
+      <div className=" ml-20"><Addgenre2></Addgenre2></div>
       </div>
     </Template>
   )
