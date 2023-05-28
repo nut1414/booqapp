@@ -4,6 +4,9 @@ import { SelectBox } from "@/components/input/SelectBox";
 import { OrderManageRow } from "@/components/manage/OrderManageRow";
 import { useEffect, useState } from "react";
 import fetch from "@/utils/fetch";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/router";
+import Swal from "sweetalert2";
 
 export default function Manageorder() {
   const [page, setPage] = useState(1);
@@ -12,16 +15,25 @@ export default function Manageorder() {
   const [nameFilter, setNameFilter] = useState("");
   const [orders, setOrders] = useState([]);
 
+  const { status, user } = useAuth();
+  const router = useRouter();
+
+  const perPage = 10;
+  const indexOfLast = page * perPage;
+  const indexOfFirst = indexOfLast - perPage;
+  const totalPages = Math.ceil(orders.length / perPage);
+
   const getOrders = async () => {
     try {
       const res = await fetch(
-        `/api/order/publisher?Filter=${shippingFilter}&${nameFilter.length > 0 ? "OrderID=" + nameFilter : ""}`,
+        `/api/order/publisher?shippingstatus=${shippingFilter}&receivedstatus=${receiveFilter}${nameFilter.length > 0 ? "&OrderID=" + nameFilter : ""}`,
         {
           method: "GET",
         }
         );
         const data = await res.json();
         if (res.ok) {
+          setPage(1)
           setOrders(data.orders)
           console.log("ok",data);
         } else {
@@ -32,8 +44,19 @@ export default function Manageorder() {
   }
 
   useEffect(() => {
+    if (router.isReady) {
+      if (
+        (status == "authenticated" && user?.role?.RoleID != 2) ||
+        status == "unauthenticated"
+      ) {
+        router.push("/");
+      }
+    }
+  }, [status, user, router]);
+
+  useEffect(() => {
     getOrders()
-  }, [nameFilter, shippingFilter])
+  }, [nameFilter, shippingFilter, receiveFilter])
 
 
   // verification drop down has 4 value to pick from -> all, unverified, pending, verified
@@ -46,13 +69,13 @@ export default function Manageorder() {
         <div className="flex align-middle">
           <SelectBox noWidth={true} label={"Receive Status"}  value={receiveFilter} onChange={(e) => setReceiveFilter(e.target.value)}  className="">
             <option value="all">All</option>
-            <option value="received">Received</option>
-            <option value="notreceived">Not Received</option>
+            <option value="true">Received</option>
+            <option value="false">Not Received</option>
           </SelectBox>
           <SelectBox noWidth={true} label={"Shipping Status"}  value={shippingFilter} onChange={(e) => setShippingFilter(e.target.value)}  className="">
             <option value="all">All</option>
-            <option value="shipped">Shipped</option>
-            <option value="notship">Not Ship</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Not Shipped">Not Ship</option>
           </SelectBox>
         </div>
         <div className="h-6 pt-8 ">
@@ -73,7 +96,7 @@ export default function Manageorder() {
           </thead>
           <tbody>
             {
-              orders.map((order) => 
+              orders?.slice(indexOfFirst, indexOfLast)?.map((order) => 
                 (<OrderManageRow key={order.OrderID+ "order"} orderManage={order} />)
               )
             }
@@ -83,42 +106,32 @@ export default function Manageorder() {
         <div className="flex justify-center text-center">
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {"< Previous"}
           </button>
           <button
             className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {page > 1 ? page - 1 : ""}
           </button>
-          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  text-spooky-orange rounded-full">
+          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center text-spooky-orange rounded-full">
             {page}
           </button>
           <button
-            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
-            {/* {nextPageBooks.length == 0 ? "" : page + 1} */}
-            {page + 1}
+            {page < totalPages ? page + 1 : ""}
           </button>
-
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
             {"Next >"}
           </button>

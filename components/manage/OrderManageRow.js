@@ -11,7 +11,7 @@ export function OrderManageRow({
       }, 0   )}</td>
       <td>{orderManage.TotalPrice}</td>
       <td>{orderManage?.TrackingNo?.length > 0 ? "Shipped" : "Not Shipped"}</td>
-      <td>{orderManage?.receivestatus == true ? "Received" : "Not Received"}</td>
+      <td>{orderManage?.Received == true ? "Received" : "Not Received"}</td>
       <td>
         <Link
           className="text-[#FF7300] hover:text-amber-400 transition-all text-sm underline w-max text-center"

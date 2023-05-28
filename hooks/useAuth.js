@@ -82,7 +82,7 @@ export function AuthProvider({ children }) {
     setUser(null)
     setStatus('unauthenticated')
     
-    router.push('/')
+    // router.push('/')
   }
 
   const value = {
