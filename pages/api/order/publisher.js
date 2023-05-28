@@ -3,6 +3,7 @@ import authRoute from "@/utils/middlewares/authRoute";
 import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
 import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
 import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
+import { Order } from "@/components/order/Order";
 
 const prisma = new PrismaClient();
 
@@ -25,7 +26,7 @@ async function orderpublisher(req, res) {
           orderbook: {
             include: {
               promotion: true,
-              book: true,
+              book: req.query.OrderID ? true : { select: { Price: true , Weight: true} },
             }
           }
         }
@@ -42,7 +43,13 @@ async function orderpublisher(req, res) {
             },
             promotion: undefined
           }
-        }) 
+        })
+        if(order.shippingaddress){
+          order?.shippingstatus ? order.shippingstatus = true : order.shippingstatus = false
+        }
+        if(order.Received){
+          order.receivedstatus ? order.receivedstatus = true : order.receivedstatus = false
+        }
         return order
       }), 'orderbook')      
       res.status(200).json({ message: "Success", orders: calculatedResult });
@@ -52,8 +59,7 @@ async function orderpublisher(req, res) {
     res.status(500).json({ message: "Internal Server Error", error: e.message })
     prisma.$disconnect();
   }
-  await prisma.$disconnect();
-  
+  await prisma.$disconnect();  
 }
 
 export default authRoute(orderpublisher, prisma);

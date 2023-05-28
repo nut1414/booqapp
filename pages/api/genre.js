@@ -1,5 +1,6 @@
 import authRoute from "@/utils/middlewares/authRoute"
 import { PrismaClient } from "@prisma/client";
+import book from "./book";
 
 const prisma = new PrismaClient();
 
@@ -31,22 +32,41 @@ async function Genre(req, res) {
     getgenre = await prisma.genre.findMany({
       where: {
       },
-      orderBy: {
-        bookgenre: {
-          _count: "desc",
-        }
-      },
       include: {
         bookgenre: {
-          select: {
-            bookdetails: {
-              
-            }
+          include: {
+            bookdetails: true,
           }
         }
       },
       skip: req.query?.skip ? parseInt(req.query?.skip, 10) : undefined,
     });
+    //const bookid = getgenre.map((x) => x.bookgenre.map((y) => y.bookdetails.map((z) => z.BookID)));
+
+    const agg = await prisma.orderbook.groupBy({
+      by: ['BookID'],
+      _sum: {
+        Quantity: true,
+      },
+    });
+    
+    for (const genre of getgenre) {
+      let genresum = 0;
+      for (const item of agg) {
+        const { BookID, _sum: { Quantity } } = item;
+        const book = genre.bookgenre.find((x) => x.BookID == BookID)
+        if (book) {
+          book.Quantity = Quantity ;
+        }
+      }
+
+      for(const book of genre.bookgenre){
+        genresum += book?.Quantity ? book.Quantity : 0;
+      }
+      genre.Quantity = genresum;
+    }
+    
+    prisma.$disconnect();
     res.status(200).json({ genre: getgenre });
   } else if (req.method == "DELETE") {
     // Query not body
@@ -71,7 +91,6 @@ async function Genre(req, res) {
     }
   }
   await prisma.$disconnect();
-  return res;
 }
 
 export default authRoute(Genre,prisma);
