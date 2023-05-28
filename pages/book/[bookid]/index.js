@@ -13,15 +13,21 @@ export default function BookInfo() {
   const { bookid } = router.query;
   const [book, setBook] = useState(null);
   const { user, status } = useAuth();
+  const [starFilter, setStarFilter] = useState(-1);
 
-  const addToCartAvailable = status == "unauthenticated" ? true : status == "authenticated" ? user.role.RoleID == 1 : true;
+  const [reviews, setReviews] = useState([]);
+
+  const addToCartAvailable =
+    status == "unauthenticated"
+      ? true
+      : status == "authenticated"
+      ? user.role.RoleID == 1
+      : true;
 
   const handleAddCart = () => {
-    router.push("/order/cart/add?BookID="+bookid)
+    router.push("/order/cart/add?BookID=" + bookid);
   };
-  const handleBuy = () => {
-    
-  };
+  const handleBuy = () => {};
 
   const getBook = async () => {
     const res = await fetch(`/api/bookdetail/?BookID=${bookid}`, {
@@ -32,16 +38,43 @@ export default function BookInfo() {
       setBook(data.bookdetail);
       console.log(data);
     } else {
-      router.push("/")
+      router.push("/");
       setBook(null);
     }
   };
 
+  const getReviews = async () => {
+    const res = await fetch(
+      `/api/review?BookID=${bookid}${
+        starFilter != "-1" ? "&Rating=" + starFilter : ""
+      }`,
+      {
+        method: "GET",
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setReviews(data.getbookreview);
+      console.log(data);
+    } else {
+      setReviews([]);
+    }
+  };
+
   useEffect(() => {
-    if (router.isReady) getBook();
+    if (router.isReady) {
+      getBook();
+      getReviews();
+    }
   }, [bookid, router]);
 
-  const CurrentPromotion = book?.CurrentPromotion
+  useEffect(() => {
+    if (router.isReady) {
+      getReviews();
+    }
+  }, [starFilter]);
+
+  const CurrentPromotion = book?.CurrentPromotion;
   return (
     <Template>
       {book && (
@@ -123,7 +156,7 @@ export default function BookInfo() {
                 </div>
               )}
               <div>
-                {(book.Available && addToCartAvailable) && (
+                {book.Available && addToCartAvailable && (
                   <>
                     {" "}
                     <Button
@@ -164,45 +197,27 @@ export default function BookInfo() {
                 className="p-2 pl-4 pr-4  rounded-full bg-white text-gray-900 m-5 drop-shadow-sm  border border-black mr-32 "
                 name="star"
                 id="star"
+                value={starFilter}
+                onChange={(e) => setStarFilter(e.target.value)}
               >
-                <option value="allstar">All</option>
-                <option value="1star">1 Star</option>
-                <option value="2star">2 Star</option>
-                <option value="3star">3 Star</option>
-                <option value="4star">4 Star</option>
-                <option value="5star">5 Star</option>
+                <option value="-1">All</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Star</option>
+                <option value="3">3 Star</option>
+                <option value="4">4 Star</option>
+                <option value="5">5 Star</option>
               </select>
             </div>
           </div>
         </div>
-        <Review
-          nameUser={"Nithikorn Komonsutthi"}
-          star={"1"}
-          comment={
-            "Portraying himself as a failure, the protagonist of Osamu Dazai’s No Longer Human narrates a seemingly normal life even while he feels himself incapable of understanding human beings. Oba Yozo’s attempts to reconcile himself to the world around him begin in early childhood, continue through high school, where he becomes a ’clown to mask his alienation, and eventually lead to a failed suicide attempt as an adult. Without sentimentality, he records the casual cruelties of life and its fleeting moments of human connection and tenderness. Semi-autobiographical, No Longer Human is the final completed work of one of Japan’s most important writers, Osamu Dazai (1909-1948). The novel has come to “echo the sentiments of youth” (Hiroshi Ando, The Mainichi Daily News) from post-war Japan to the postmodern society of technology. Still one of the ten bestselling books in Japan, No Longer Human is a powerful exploration of an individual’s alienation from society."
-          }
-        ></Review>
-        <Review
-          nameUser={"Nithikorn Komonsutthi"}
-          star={"3"}
-          comment={
-            "Portraying himself as a failure, the protagonist of Osamu Dazai’s No Longer Human narrates a seemingly normal life even while he feels himself incapable of understanding human beings. Oba Yozo’s attempts to reconcile himself to the world around him begin in early childhood, continue through high school, where he becomes a ’clown to mask his alienation, and eventually lead to a failed suicide attempt as an adult. Without sentimentality, he records the casual cruelties of life and its fleeting moments of human connection and tenderness. Semi-autobiographical, No Longer Human is the final completed work of one of Japan’s most important writers, Osamu Dazai (1909-1948). The novel has come to “echo the sentiments of youth” (Hiroshi Ando, The Mainichi Daily News) from post-war Japan to the postmodern society of technology. Still one of the ten bestselling books in Japan, No Longer Human is a powerful exploration of an individual’s alienation from society."
-          }
-        ></Review>
-        <Review
-          nameUser={"Nithikorn Komonsutthi"}
-          star={"4"}
-          comment={
-            "Portraying himself as a failure, the protagonist of Osamu Dazai’s No Longer Human narrates a seemingly normal life even while he feels himself incapable of understanding human beings. Oba Yozo’s attempts to reconcile himself to the world around him begin in early childhood, continue through high school, where he becomes a ’clown to mask his alienation, and eventually lead to a failed suicide attempt as an adult. Without sentimentality, he records the casual cruelties of life and its fleeting moments of human connection and tenderness. Semi-autobiographical, No Longer Human is the final completed work of one of Japan’s most important writers, Osamu Dazai (1909-1948). The novel has come to “echo the sentiments of youth” (Hiroshi Ando, The Mainichi Daily News) from post-war Japan to the postmodern society of technology. Still one of the ten bestselling books in Japan, No Longer Human is a powerful exploration of an individual’s alienation from society."
-          }
-        ></Review>
-        <Review
-          nameUser={"Nithikorn Komonsutthi"}
-          star={"5"}
-          comment={
-            "Portraying himself as a failure, the protagonist of Osamu Dazai’s No Longer Human narrates a seemingly normal life even while he feels himself incapable of understanding human beings. Oba Yozo’s attempts to reconcile himself to the world around him begin in early childhood, continue through high school, where he becomes a ’clown to mask his alienation, and eventually lead to a failed suicide attempt as an adult. Without sentimentality, he records the casual cruelties of life and its fleeting moments of human connection and tenderness. Semi-autobiographical, No Longer Human is the final completed work of one of Japan’s most important writers, Osamu Dazai (1909-1948). The novel has come to “echo the sentiments of youth” (Hiroshi Ando, The Mainichi Daily News) from post-war Japan to the postmodern society of technology. Still one of the ten bestselling books in Japan, No Longer Human is a powerful exploration of an individual’s alienation from society."
-          }
-        ></Review>
+        {reviews?.map((review) => (
+          <Review
+            key={review?.OrderID + "review"}
+            nameUser={review?.user?.UserName}
+            star={review?.Rate}
+            comment={review?.Comment}
+          />
+        ))}
       </div>
     </Template>
   );

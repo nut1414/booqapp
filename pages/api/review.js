@@ -7,10 +7,10 @@ import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
 const prisma = new PrismaClient();
 
 async function summarizeOrder(req, res) {
-  if (req.user.role.RoleID != 1) {
-    prisma.$disconnect();
-    return res.status(401).json({ message: "Unauthorized" }); // if not user
-  }
+  // if (req.user.role.RoleID != 1) {
+  //   prisma.$disconnect();
+  //   return res.status(401).json({ message: "Unauthorized" }); // if not user
+  // }
   try {
     if (req.method == "POST") {
       const { BookID, Review, Rating, OrderID } = req.body;
@@ -67,7 +67,7 @@ async function summarizeOrder(req, res) {
       res.status(200).json({ message: "Review created" , createbookreview});
     }
     else if(req.method == "GET"){
-      const { BookID } = req.query;
+      const { BookID, Rating } = req.query;
       console.log("BookID", BookID);
       if(!BookID){
         prisma.$disconnect();
@@ -85,6 +85,7 @@ async function summarizeOrder(req, res) {
       const getbookreview = await prisma.review.findMany({
         where: {
           BookID: parseInt(BookID,10),
+          Rate: Rating? parseInt(Rating,10): undefined,
         },
         include: {
           user: {
@@ -109,4 +110,4 @@ async function summarizeOrder(req, res) {
   await prisma.$disconnect();
 }
 
-export default authRoute(summarizeOrder, prisma);
+export default summarizeOrder
