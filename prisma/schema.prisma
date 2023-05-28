@@ -126,7 +126,7 @@ model promotion {
   PromotionID     Int             @id @default(autoincrement())
   DiscountPercent Float
   PromotionDetail String
-  Verified        Boolean         @default(false)
+  // Verified        Boolean         @default(false)
   StartDate       DateTime        @db.Date
   EndDate         DateTime        @db.Date
   PublisherID     Int
