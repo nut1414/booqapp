@@ -3,6 +3,7 @@ import authRoute from "@/utils/middlewares/authRoute";
 import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
 import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
 import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
+import { Order } from "@/components/order/Order";
 
 const prisma = new PrismaClient();
 
@@ -32,7 +33,7 @@ async function orderpublisher(req, res) {
             select:{
               PublisherID: true,
               PublisherName: true,
-              VerificationDocument: false,
+              VerificationDocument: OrderID ? true : false
             }
           },
           shippingaddress: true,
@@ -44,6 +45,7 @@ async function orderpublisher(req, res) {
           } : false
         }
       })
+      const ImageString = String.fromCharCode(...orders[0].publisher.VerificationDocument ? orders[0].publisher.VerificationDocument : []);
       if( OrderID ){
         const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
           order.orderbook = order.orderbook.map((bookinfo) => {
@@ -57,7 +59,8 @@ async function orderpublisher(req, res) {
               },
               promotion: undefined
             }
-          }) 
+          })
+          order.ImageString = ImageString
           return order
         }), 'orderbook')       
         prisma.$disconnect(); 
