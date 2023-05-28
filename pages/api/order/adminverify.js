@@ -45,7 +45,7 @@ async function orderpublisher(req, res) {
           } : false
         }
       })
-      const ImageString = String.fromCharCode(...orders[0].publisher.VerificationDocument ? orders[0].publisher.VerificationDocument : []);
+      const Proof = orders[0]?.Proofoftransfer ? orders[0].Proofoftransfer.toString('utf-8') : undefined
       if( OrderID ){
         const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
           order.orderbook = order.orderbook.map((bookinfo) => {
@@ -60,7 +60,7 @@ async function orderpublisher(req, res) {
               promotion: undefined
             }
           })
-          order.ImageString = ImageString
+          order.Proof = Proof
           return order
         }), 'orderbook')       
         prisma.$disconnect(); 
