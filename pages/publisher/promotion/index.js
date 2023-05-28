@@ -1,46 +1,70 @@
 import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
-import { BookManageRow } from "@/components/manage/BookManageRow";
+import { PromotionManageRow } from "@/components/manage/PromotionManageRow";
 import { useEffect, useState } from "react";
 import fetch from "@/utils/fetch";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/router";
 
-export default function ManageBook() {
+export default function Managepromotion() {
   const [page, setPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("all");
   const [nameFilter, setNameFilter] = useState("");
-  const [bookManage, setBookManage] = useState([])
+  const [promotions, setPromotions] = useState([]);
+  const { status, user } = useAuth();
+  const router = useRouter();
+  const getPromotion = async () => {
+    try{
 
-  const getBookManage = async () => {
-    try {
-      const res = await fetch(`/api/managepublisher?Available=${activeFilter}${nameFilter.length>0 ? "&BookName="+nameFilter  : ""}`);
-      const data = await res.json()
-      console.log(data)
-      setBookManage(data)
-    } catch (e) {
-      console.log(e)
-    }
-  }
+      const res = await fetch(`/api/promotion?Filter=${activeFilter}&${nameFilter.length>0? "PromotionDetail="+nameFilter : ""}`, {
+        method: "GET",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPromotions(data)
+        console.log(data);
+      } else {
+        console.log(data)
+      }
+      console.log(res)
+    } catch (e) { console.log(e)}
+  };
 
   useEffect(() => {
-    getBookManage()
-  }, [activeFilter,nameFilter])
+    if (router.isReady) {
+      if (
+        (status == "authenticated" && user?.role?.RoleID != 2) ||
+        status == "unauthenticated"
+      ) {
+        router.push("/");
+      }
+    }
+  }, [status, user, router]);
 
+  useEffect(() => {
+    if (router.isReady) {
+      getPromotion();
+    }
+  }, [page, router, activeFilter, nameFilter]);
+  
+
+  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
     <Template>
       <div className=" text-2xl font-bold mt-10 ml-32 inline-flex">
-        All Book
+        All Promotion
       </div>
       <div className="mx-32 flex justify-end">
         <div className="flex align-middle">
-          <SelectBox noWidth={true} label={"Available Status"} value={activeFilter} onChange={(e) => setActiveFilter(e.target.value)} className="">
+          <SelectBox noWidth={true} label={"Active Status"} value={activeFilter} onChange={(e) => setActiveFilter(e.target.value)} className="">
             <option value="all">All</option>
-            <option value="true">Available</option>
-            <option value="false">Not Available</option>
+            <option value="active">Active</option>
+            <option value="inactive">Not Active</option>
           </SelectBox>
         </div>
         <div className="h-6 pt-8 ">
-          <SearchBox placeholder="Search for Book name" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} />
+          <SearchBox placeholder="Search for Promotion name" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} />
         </div>
       </div>
 
@@ -48,19 +72,19 @@ export default function ManageBook() {
         <table className="table-auto w-full">
           <thead>
             <tr className="border-b border-gray-500 text-left">
-              <th className=" font-light text-base">Book ID</th>
-              <th className=" font-light text-base">Book Title</th>
-              <th className=" font-light text-base">Release Date</th>
-              <th className=" font-light text-base">Price</th>
-              <th className=" font-light text-base">Sales</th>
+              <th className=" font-light text-base">Promotion ID</th>
+              <th className=" font-light text-base">Promotion Name</th>
+              <th className=" font-light text-base">Discount</th>
+              <th className=" font-light text-base">Date Start</th>
+              <th className=" font-light text-base">Date End</th>
               <th className=" font-light text-base">Sales Counts</th>
-              <th className=" font-light text-base">Available Status</th>
             </tr>
           </thead>
           <tbody>
-            {bookManage?.map((bookmanage) => {
-              return <BookManageRow key={bookmanage.BookID + "bookmanage"} bookManage={bookmanage} />;
-            })}
+            {
+              promotions.map((promotion) => (
+                <PromotionManageRow key={promotion.PromotionID} promotionManage={promotion} />))
+            }
           </tbody>
         </table>
         <div className="flex justify-center text-center">

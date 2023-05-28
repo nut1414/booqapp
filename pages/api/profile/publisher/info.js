@@ -17,6 +17,7 @@ async function profileinfo(req, res) {
         include: {
           user: {
             select: {
+              Name: true,
               UserName: true,
               PhoneNumber: true,
               Email: true,

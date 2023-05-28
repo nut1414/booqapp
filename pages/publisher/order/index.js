@@ -1,27 +1,62 @@
 import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
-import { PromotionManageRow } from "@/components/manage/PromotionManageRow";
-import { useState } from "react";
+import { OrderManageRow } from "@/components/manage/OrderManageRow";
+import { useEffect, useState } from "react";
+import fetch from "@/utils/fetch";
 
-export default function managepromotion() {
+export default function Manageorder() {
   const [page, setPage] = useState(1);
+  const [shippingFilter, setShippingFilter] = useState("all");
+  const [receiveFilter, setReceiveFilter] = useState("all");
+  const [nameFilter, setNameFilter] = useState("");
+  const [orders, setOrders] = useState([]);
+
+  const getOrders = async () => {
+    try {
+      const res = await fetch(
+        `/api/order/publisher?Filter=${shippingFilter}&${nameFilter.length > 0 ? "OrderID=" + nameFilter : ""}`,
+        {
+          method: "GET",
+        }
+        );
+        const data = await res.json();
+        if (res.ok) {
+          setOrders(data.orders)
+          console.log("ok",data);
+        } else {
+          console.log(data);
+        }
+        console.log(res);
+      } catch (e) { console.log(e) }
+  }
+
+  useEffect(() => {
+    getOrders()
+  }, [nameFilter, shippingFilter])
+
+
   // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
     <Template>
       <div className=" text-2xl font-bold mt-10 ml-32 inline-flex">
-        All Promotion
+        All Order
       </div>
       <div className="mx-32 flex justify-end">
         <div className="flex align-middle">
-          <SelectBox noWidth={true} label={"Available Status"} className="">
+          <SelectBox noWidth={true} label={"Receive Status"}  value={receiveFilter} onChange={(e) => setReceiveFilter(e.target.value)}  className="">
             <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="notactive">Not Active</option>
+            <option value="received">Received</option>
+            <option value="notreceived">Not Received</option>
+          </SelectBox>
+          <SelectBox noWidth={true} label={"Shipping Status"}  value={shippingFilter} onChange={(e) => setShippingFilter(e.target.value)}  className="">
+            <option value="all">All</option>
+            <option value="shipped">Shipped</option>
+            <option value="notship">Not Ship</option>
           </SelectBox>
         </div>
         <div className="h-6 pt-8 ">
-          <SearchBox  placeholder="Search for Promotion name" />
+          <SearchBox  placeholder="Search for Order ID"  value={nameFilter} onChange={(e) => setNameFilter(e.target.value)}/>
         </div>
       </div>
 
@@ -29,35 +64,20 @@ export default function managepromotion() {
         <table className="table-auto w-full">
           <thead>
             <tr className="border-b border-gray-500 text-left">
-              <th className=" font-light text-base">Promotion ID</th>
-              <th className=" font-light text-base">Promotion Name</th>
-              <th className=" font-light text-base">Discount</th>
-              <th className=" font-light text-base">Date Start</th>
-              <th className=" font-light text-base">Date End</th>
-              <th className=" font-light text-base">Sales Counts</th>
+              <th className=" font-light text-base">Order ID</th>
+              <th className=" font-light text-base">Book Count</th>
+              <th className=" font-light text-base">Total Price</th>
+              <th className=" font-light text-base">Shipping Status</th>
+              <th className=" font-light text-base">Receive Status</th>
             </tr>
           </thead>
           <tbody>
-            <PromotionManageRow
-              promotionManage={{
-                promotionID: "00000000001",
-                promotionname: "00000",
-                discount: "00%",
-                datestart: "2002/20/02",
-                dateend: "2002/25/02",
-                salescount: "00000",
-              }}
-            />
-            <PromotionManageRow
-              promotionManage={{
-                promotionID: "00000000001",
-                promotionname: "00000",
-                discount: "00%",
-                datestart: "2002/20/02",
-                dateend: "2002/25/02",
-                salescount: "00000",
-              }}
-            />
+            {
+              orders.map((order) => 
+                (<OrderManageRow key={order.OrderID+ "order"} orderManage={order} />)
+              )
+            }
+            
           </tbody>
         </table>
         <div className="flex justify-center text-center">
