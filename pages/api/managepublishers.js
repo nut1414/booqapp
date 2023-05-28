@@ -17,14 +17,19 @@ async function orderpublisher(req, res) {
         where: {
           PublisherID: PublisherID ? parseInt(PublisherID) : undefined,
         },
-        include: {
+        select: {           
+          PublisherID: true, 
+          VerificationDocument: PublisherID ? true : false,          
           order: PublisherID ? {
             include: {
               orderbook: true,
             }
-          } : false
+          } : false,
         },
       })
+      if(PublisherID)
+        getpublisher.map((x) => { ( x.VerificationDocument ) ? x.VerificationDocument = x.VerificationDocument.toString('utf-8') : [] })
+      
       const ordercount = await prisma.order.count({
         where: {
           PublisherID: PublisherID ? parseInt(PublisherID) : undefined,
