@@ -19,6 +19,8 @@ async function orderpublisher(req, res) {
         },
         select: {           
           PublisherID: true, 
+          PublisherName: true,
+          verificationstatus: true,
           VerificationDocument: PublisherID ? true : false,          
           order: PublisherID ? {
             include: {
