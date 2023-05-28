@@ -38,7 +38,7 @@ export default function ManageBook() {
             <option value="available">Available</option>
             <option value="notavailabe">Not Available</option>
           </SelectBox>
-          <SelectBox noWidth={true} label={"Available Status"} className="">
+          <SelectBox noWidth={true} label={"Available Status"} className=" mr-20">
             <option value="all">All</option>
             <option value="available">Available</option>
             <option value="notavailabe">Not Available</option>
