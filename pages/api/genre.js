@@ -52,6 +52,8 @@ async function Genre(req, res) {
     
     for (const genre of getgenre) {
       let genresum = 0;
+      const bookcount = genre.bookgenre.length;
+      console.log(bookcount)
       for (const item of agg) {
         const { BookID, _sum: { Quantity } } = item;
         const book = genre.bookgenre.find((x) => x.BookID == BookID)
@@ -64,6 +66,7 @@ async function Genre(req, res) {
         genresum += book?.Quantity ? book.Quantity : 0;
       }
       genre.Quantity = genresum;
+      genre.BookCount = bookcount ? bookcount : 0;
     }
     
     prisma.$disconnect();
