@@ -1,5 +1,5 @@
-export default function getCurrentDateString() {
-  let date = new Date();
+export default function getCurrentDateString(dateString) {
+  let date = new Date(dateString);
 
   let year = date.getFullYear();
 

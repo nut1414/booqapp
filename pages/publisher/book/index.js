@@ -4,27 +4,57 @@ import { SelectBox } from "@/components/input/SelectBox";
 import { BookManageRow } from "@/components/manage/BookManageRow";
 import { useEffect, useState } from "react";
 import fetch from "@/utils/fetch";
+import { TextBox } from "@/components/input/TextBox";
 
 export default function ManageBook() {
   const [page, setPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("all");
   const [nameFilter, setNameFilter] = useState("");
-  const [bookManage, setBookManage] = useState([])
+  const [bookManage, setBookManage] = useState([]);
+
+  const [filterDate, setFilterDate] = useState(false);
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
+
+  const perPage = 10;
+  const indexOfLast = page * perPage;
+  const indexOfFirst = indexOfLast - perPage;
+  const totalPages = Math.ceil(bookManage.length / perPage);
+
+  const handleDateStart = (e) => {
+    if (e.target.value > dateEnd && dateEnd.length > 0) {
+      setDateStart("");
+    } else {
+      setDateStart(e.target.value);
+    }
+  };
+
+  const handleDateEnd = (e) => {
+    if (e.target.value < dateStart && dateStart.length > 0) {
+      setDateEnd("");
+    } else {
+      setDateEnd(e.target.value);
+    }
+  };
 
   const getBookManage = async () => {
     try {
-      const res = await fetch(`/api/managepublisher?Available=${activeFilter}${nameFilter.length>0 ? "&BookName="+nameFilter  : ""}`);
-      const data = await res.json()
-      console.log(data)
-      setBookManage(data)
+      const res = await fetch(
+        `/api/getpublisherbook?Available=${activeFilter}${
+          nameFilter.length > 0 ? "&BookName=" + nameFilter : ""
+        }${filterDate && dateStart.length > 0 && dateEnd.length > 0 ? "&StartDate=" + dateStart + "&EndDate=" + dateEnd : ""}`
+      );
+      const data = await res.json();
+      console.log(data);
+      setBookManage(data);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
 
   useEffect(() => {
-    getBookManage()
-  }, [activeFilter,nameFilter])
+    getBookManage();
+  }, [activeFilter, nameFilter, dateStart, dateEnd, filterDate]);
 
   return (
     <Template>
@@ -33,25 +63,54 @@ export default function ManageBook() {
       </div>
       <div className="mx-32 flex justify-end">
         <div className="flex align-middle">
-        <SelectBox noWidth={true} label={"Available Status"} className="">
-            <option value="all">All</option>
-            <option value="available">Available</option>
-            <option value="notavailabe">Not Available</option>
-          </SelectBox>
-          <SelectBox noWidth={true} label={"Available Status"} className=" mr-20">
-            <option value="all">All</option>
-            <option value="available">Available</option>
-            <option value="notavailabe">Not Available</option>
-          </SelectBox>
-          <SelectBox noWidth={true} label={"Available Status"} className="">
-          <SelectBox noWidth={true} label={"Available Status"} value={activeFilter} onChange={(e) => setActiveFilter(e.target.value)} className="">
+          <div className="flex align-middle bg-slate-100 p-2 rounded-xl">
+            <input
+              type="checkbox"
+              checked={filterDate}
+              onChange={(e) => {
+                setFilterDate(e.target.checked);
+                setDateStart("");
+                setDateEnd("");
+              }}
+            />
+            <div className="flex">
+              <TextBox
+                noWidth={true}
+                label="Date Start"
+                type="date"
+                className=""
+                disabled={!filterDate}
+                onChange={handleDateStart}
+                value={dateStart}
+              />
+              <TextBox
+                noWidth={true}
+                onChange={handleDateEnd}
+                value={dateEnd}
+                label="Date End"
+                type="date"
+                disabled={!filterDate}
+              />
+            </div>
+          </div>
+          <SelectBox
+            noWidth={true}
+            label={"Available Status"}
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value)}
+            className=""
+          >
             <option value="all">All</option>
             <option value="true">Available</option>
             <option value="false">Not Available</option>
           </SelectBox>
         </div>
         <div className="h-6 pt-8 ">
-          <SearchBox placeholder="Search for Book name" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} />
+          <SearchBox
+            placeholder="Search for Book name"
+            value={nameFilter}
+            onChange={(e) => setNameFilter(e.target.value)}
+          />
         </div>
       </div>
 
@@ -69,50 +128,45 @@ export default function ManageBook() {
             </tr>
           </thead>
           <tbody>
-            {bookManage?.map((bookmanage) => {
-              return <BookManageRow key={bookmanage.BookID + "bookmanage"} bookManage={bookmanage} />;
+            {bookManage?.slice(indexOfFirst, indexOfLast)?.map((bookmanage) => {
+              return (
+                <BookManageRow
+                  key={bookmanage.BookID + "bookmanage"}
+                  bookManage={bookmanage}
+                />
+              );
             })}
           </tbody>
         </table>
         <div className="flex justify-center text-center">
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {"< Previous"}
           </button>
           <button
             className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {page > 1 ? page - 1 : ""}
           </button>
-          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  text-spooky-orange rounded-full">
+          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center text-spooky-orange rounded-full">
             {page}
           </button>
           <button
-            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
-            {/* {nextPageBooks.length == 0 ? "" : page + 1} */}
-            {page + 1}
+            {page < totalPages ? page + 1 : ""}
           </button>
-
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
             {"Next >"}
           </button>
