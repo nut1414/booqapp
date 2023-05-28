@@ -25,7 +25,11 @@ async function orderuser(req, res) {
           orderbook: {
             include: {
               promotion: true,
-              book: true
+              book:  {
+                include: {
+                  review: true,
+                }
+              }
             }
           }
         }
@@ -53,6 +57,7 @@ async function orderuser(req, res) {
 
     
   } catch (e) {
+    console.log(e)
     res.status(500).json({ message: "Internal Server Error", error: e.message })
     prisma.$disconnect();
   }

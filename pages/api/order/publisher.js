@@ -44,12 +44,8 @@ async function orderpublisher(req, res) {
             promotion: undefined
           }
         })
-        if(order.shippingaddress){
-          order?.shippingstatus ? order.shippingstatus = true : order.shippingstatus = false
-        }
-        if(order.Received){
-          order.receivedstatus ? order.receivedstatus = true : order.receivedstatus = false
-        }
+        order.TrackingNo ? order.shippingstatus = true : order.shippingstatus = false
+        order.Received ? order.receivedstatus = true : order.receivedstatus = false
         return order
       }), 'orderbook')      
       res.status(200).json({ message: "Success", orders: calculatedResult });
