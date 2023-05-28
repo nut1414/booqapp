@@ -19,7 +19,7 @@ export default function Orderid() {
 
   const getOrder = async (orderid) => {
     try {
-      const res = await fetch(`/api/order/publisher?OrderID=${orderid}`);
+      const res = await fetch(`/api/order/adminverify?OrderID=${orderid}`);
       const data = await res.json();
       if (res.ok) {
         if (data?.orders?.length > 0) {
@@ -34,31 +34,25 @@ export default function Orderid() {
     }
   };
 
-  const handleShippingSubmit = async (e) => {
+ 
+
+  const handleApproveTransaction = async (e) => {
     e.preventDefault();
-    if (trackingNo === "") {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Please enter tracking no!",
-      });
-      return;
-    }
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Yes, confirm shipped with tracking no: " +trackingNo,
+      confirmButtonText: "Yes, confirm approve!",
       cancelButtonText: "No, cancel!",
     }).then(async (result) => {
       if (result.isConfirmed){
         try{
-          const res = await fetch("/api/order/shippingstatus", {
+          const res = await fetch("/api/order/adminverify", {
             method: "PUT",
             body: JSON.stringify({
               OrderID: orderid,
-              TrackingNo: trackingNo,
+              verify: "true"
             }),
           });
           if (res.ok) {
@@ -69,9 +63,7 @@ export default function Orderid() {
             });
             getOrder(orderid);
           }
-
-
-        }catch(e){
+        } catch(e) {
           Swal.fire({
             icon: "error",
             title: "Oops...",
@@ -80,14 +72,8 @@ export default function Orderid() {
 
           console.log(e)
         }
+      }})}
 
-
-      }
-
-    })
-
-    
-  };
 
   useEffect(() => {
     if (router.isReady) {
@@ -155,37 +141,35 @@ export default function Orderid() {
                 {orderSummarize[0]?.totalPrice}
               </td>
             </tr>
-            <tr className="font-bold">
-              <td className="border-b p-4" colspan="1">
-                Shipping Number
-              </td>
-              <td className="border-b flex ">
-                {orderSummarize[0]?.TrackingNo?.length > 0 ? (
-                  <div className="p-4">{orderSummarize[0]?.TrackingNo}</div>
-                ) : (
-                  <>
-                    <TextBoxInline
-                      value={trackingNo}
-                      onChange={(e) => setTrackingNo(e.target.value)}
-                    />
-                    <Button text={"Confirm Shipping"} onClick={handleShippingSubmit} className={"w-48"} />
-                  </>
-                )}
-              </td>
-              <td className="border-b">
-
-              </td>
-              <td className="border-b">
-
-              </td>
-              <td className="border-b">
-
-              </td>
-            </tr>
+            
           </tfoot>
         </table>
+        <div className="flex justify-between ">
+          <div className="font-bold flex flex-col gap-4">
+                <div className="flex">
+                  <div className="w-64">
+                    Amount of Money
+                  </div>
+                  <div>
+                    {orderSummarize[0]?.TotalPrice + orderSummarize[0]?.TotalShipping}
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="w-64">
+                    Date and Time
+                  </div>
+                  <div>
+                    {orderSummarize[0]?.TransactionTime ? orderSummarize[0]?.TransactionTime : "No Transaction"}
+                  </div>
+                </div>
+          </div>
+          <div>
+                  <img src={orderSummarize[0]?.Proofoftransfer?.length > 5 ? orderSummarize[0]?.Proofoftransfer :"/picture/noim.jpg" } className="w-64 h-64 object-contain" />
+          </div>
+        </div>
         <div className="p-8 flex justify-end">
           <Button text={"Back"} onClick={() => router.back()} />
+          {!orderSummarize[0]?.TransactionApprove && <Button text={"Confirm"} onClick={handleApproveTransaction} />}
         </div>
       </div>
     </Template>

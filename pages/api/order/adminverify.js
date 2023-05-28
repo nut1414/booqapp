@@ -14,9 +14,14 @@ async function orderpublisher(req, res) {
   }
   try {
     if (req.method == "GET") {
-      const { OrderID , PaymentStatus, TransactionApprove, Receivestatus  } = req.query
+      const { OrderID , PaymentStatus, TransactionApprove, Receivestatus, PublisherName  } = req.query
       let orders = await prisma.order.findMany({
         where: {
+          publisher: PublisherName?.length > 0 ? {
+            PublisherName: {
+              contains: PublisherName
+            }
+          } : undefined,
           OrderID: OrderID ? parseInt(OrderID) : undefined,
           Proofoftransfer: PaymentStatus == "true" ? { not: null } : PaymentStatus == "false" ? null : undefined,
           TransactionApprove: TransactionApprove == "true" ? true : TransactionApprove == "false" ? false : undefined,
