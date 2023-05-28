@@ -1,6 +1,7 @@
 import authRoute from "@/utils/middlewares/authRoute";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
 //Not finished
 async function getpublisherbook(req, res) {
   if (req.user.role.RoleID != 2) {
@@ -15,6 +16,7 @@ async function getpublisherbook(req, res) {
     getbook = await prisma.bookdetails.findMany({
       where: { 
         PublisherID: parseInt(req.user.UserID),
+        BookID: req.query?.BookID ? parseInt(req.query.BookID) : undefined,
         Available: req.query.Available == "true" ? true : req.query.Available == "false" ? false : undefined,
         BookName: req.query?.BookName ? {
           contains: req.query?.BookName ? req.query.BookName : undefined,
@@ -42,7 +44,6 @@ async function getpublisherbook(req, res) {
     const bookid = getbook.map((x) =>
       x.BookID
     );
-
     const agg = await prisma.orderbook.groupBy({
       by: ["BookID"],
       _sum: {
@@ -52,6 +53,7 @@ async function getpublisherbook(req, res) {
         BookID: { in : bookid },
       },
     });
+
     for (const item of agg) {
       const {
         _sum: { Quantity },
@@ -66,6 +68,49 @@ async function getpublisherbook(req, res) {
     for (const book of getbook) {
       book.BookCover = undefined
     }
+    if (req.query?.BookID) {
+      const orders = await prisma.order.findMany({
+        where: {
+          orderbook: {
+            some: {
+              BookID: parseInt(req.query.BookID),
+            },
+          },
+        },
+        include: {
+          orderbook: {
+            include: {
+              book: true,
+            },
+          },
+        },
+      });
+      console.log("orders", orders)
+      const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
+        order.orderbook = order.orderbook.map((bookinfo) => {
+          const book = getbook.find((x) => x.BookID == bookinfo.BookID)          
+            if (book) {
+              console.log('book =',book)
+              console.log({BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion})
+              return {
+                ...bookinfo,
+                book: {
+                  ...bookinfo.book,
+                  promotionbook: bookinfo.promotion ? [{BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion}] : [],
+                  BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
+                },
+                promotion: undefined
+              }
+            }
+            console.log('bookinfo', bookinfo)
+            return bookinfo
+          })
+        order.TrackingNo ? order.shippingstatus = true : order.shippingstatus = false
+        order.Received ? order.receivedstatus = true : order.receivedstatus = false
+        return order
+      }), 'orderbook')
+    }
+    prisma.$disconnect();
     res.status(200).json(getbook);
   }
   prisma.$disconnect();
