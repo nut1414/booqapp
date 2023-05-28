@@ -6,47 +6,52 @@ import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDi
 
 const prisma = new PrismaClient();
 
-
 async function getreview(req, res) {
   if (req.user.role.RoleID != 1) {
     prisma.$disconnect();
     return res.status(401).json({ message: "Unauthorized" }); // if not user
   }
 
-  try { 
+  try {
     if (req.method == "GET") {
       const { OrderID } = req.query;
-      const review = await prisma.review.findMany({
+      const order = await prisma.order.findMany({
         where: {
           OrderID: OrderID ? parseInt(OrderID) : undefined,
-          UserID: req.user.UserID
         },
         include: {
-          order: {
+          orderbook: {
             include: {
-              orderbook: {
-                include: {
-                  book: true,
-                },
-              },
+              book: true,
             },
           },
+          review: true,
         },
       });
-      console.log(review);
+      console.log(order);
 
-      const reviews = review.map((x) => { x.order.orderbook.map((y) => {  return y.book.BookCover ? y.book.BookCover = y.book.BookCover.toString('utf-8') : [] }) ; return x; })
-      console.log(reviews);
+      const orders = order.map((x) => {
+        x.orderbook = x.orderbook.map( (orderbook) => {
+          orderbook.book = {
+          ...orderbook.book,
+          BookCover: orderbook?.book?.BookCover ? orderbook.book.BookCover.toString("utf-8") : null
+        }
+        return orderbook
+      })
+        return x;
+      });
+      console.log(orders);
 
-
-      res.status(200).json({ message : "Success", reviews });                    
+      res.status(200).json({ message: "Success", orders });
     } else {
       res.status(405).json({ message: "Method not allowed" });
       prisma.$disconnect();
     }
   } catch (e) {
-    console.log(e)
-    res.status(500).json({ message: "Internal Server Error", error: e.message });
+    console.log(e);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: e.message });
     prisma.$disconnect();
   }
   await prisma.$disconnect();
