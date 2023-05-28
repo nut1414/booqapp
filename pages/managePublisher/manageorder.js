@@ -1,7 +1,7 @@
 import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
-import { OrderManageRow } from "@/components/manage/OrdermanageRow";
+import { OrderManageRow } from "@/components/manage/OrderManageRow";
 import { useState } from "react";
 
 export default function manageorder() {
@@ -48,7 +48,7 @@ export default function manageorder() {
             />
             <OrderManageRow
               orderManage={{
-                orderID: "P0000000001",
+                order: "P0000000001",
                 bookcount: "00000",
                 totalprice: "00000",
                 shippingstatus: "Not Ship",
