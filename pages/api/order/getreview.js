@@ -34,7 +34,12 @@ async function getreview(req, res) {
         },
       });
       console.log(review);
-      res.status(200).json({ message : "Success", review });                    
+
+      const reviews = review.map((x) => { x.order.orderbook.map((y) => {  return y.book.BookCover ? y.book.BookCover = y.book.BookCover.toString('utf-8') : [] }) ; return x; })
+      console.log(reviews);
+
+
+      res.status(200).json({ message : "Success", reviews });                    
     } else {
       res.status(405).json({ message: "Method not allowed" });
       prisma.$disconnect();
