@@ -13,7 +13,7 @@ export function PromotionManageRow({
       <td>{promotionManage.DiscountPercent}</td>
       <td>{getCurrentDateString(promotionManage.StartDate)}</td>
       <td>{getCurrentDateString( promotionManage.EndDate)}</td>
-      <td>{promotionManage.SalesCount}</td>
+      <td>{promotionManage.Quantity}</td>
       <td>
         <Link
           className="text-[#FF7300] hover:text-amber-400 transition-all text-sm underline w-max text-center"

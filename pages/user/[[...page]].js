@@ -45,7 +45,7 @@ export default function UserPage() {
       console.log('wrong page')
       router.push('/user/profile')
     } else if (status == 'unauthenticated') {
-      router.push('/login')
+      
     } else {
       console.log("current page:", page[0])
       setCurrentPage(page[0])
@@ -94,7 +94,7 @@ export default function UserPage() {
                 );
               }
             })}
-            <div onClick={logout}>
+            <div onClick={() => {logout()}}>
               <Link href="#" className=" px-2 text-red-600">
                 Log out
               </Link>

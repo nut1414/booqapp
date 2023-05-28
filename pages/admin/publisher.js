@@ -8,10 +8,9 @@ import { useRouter } from "next/router";
 import { useAuth } from "@/hooks/useAuth";
 import Swal from "sweetalert2";
 
-
 export default function Managepublisher() {
   const [page, setPage] = useState(1);
-  const [verificationFilter, setVerificationFilter] = useState("all");
+  const [verificationFilter, setVerificationFilter] = useState("-1");
   const [nameFilter, setNameFilter] = useState("");
   const [publishers, setPublishers] = useState([]);
   const { status, user } = useAuth();
@@ -20,12 +19,14 @@ export default function Managepublisher() {
   const perPage = 10;
   const indexOfLast = page * perPage;
   const indexOfFirst = indexOfLast - perPage;
-  const totalPages = Math.ceil(publishers.length / perPage);
+  const totalPages = Math.ceil(publishers?.length / perPage);
 
-  const getGenres = async () => {
+  const getPublishers = async () => {
     try {
       const res = await fetch(
-        `/api/genre?${nameFilter.length > 0 ? "name=" + nameFilter : ""}`,
+        `/api/managepublishers?${
+          verificationFilter != "-1" ? "verificationstatus=" + verificationFilter : ""
+        }${nameFilter.length > 0 ? "&PublisherName=" + nameFilter : ""}`,
         {
           method: "GET",
         }
@@ -33,7 +34,7 @@ export default function Managepublisher() {
       const data = await res.json();
       if (res.ok) {
         setPage(1);
-        setPublishers(data.genre);
+        setPublishers(data.publisher);
         console.log(data);
       } else {
         console.log(data);
@@ -43,7 +44,6 @@ export default function Managepublisher() {
       console.log(e);
     }
   };
-
 
   useEffect(() => {
     if (router.isReady) {
@@ -58,9 +58,9 @@ export default function Managepublisher() {
 
   useEffect(() => {
     if (router.isReady) {
-      getGenres();
+      getPublishers();
     }
-  }, [router, nameFilter]);
+  }, [router, nameFilter,verificationFilter]);
   // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
     <Template>
@@ -69,15 +69,15 @@ export default function Managepublisher() {
       </div>
       <div className="mx-32 flex justify-end">
         <div className="flex align-middle">
-          <SelectBox noWidth={true} label={"Verification"} className="">
-            <option value="all">All</option>
-            <option value="verified">Verified</option>
-            <option value="pending">Pending</option>
-            <option value="notverify">Not Verify</option>
+          <SelectBox noWidth={true} value={verificationFilter} onChange={(e) =>setVerificationFilter(e.target.value)} label={"Verification"} className="">
+            <option value="-1">All</option>
+            <option value="2">Verified</option>
+            <option value="1">Pending</option>
+            <option value="0">Unverified</option>
           </SelectBox>
         </div>
         <div className="h-6 pt-8 ">
-          <SearchBox  placeholder="Search for Publisher name" />
+          <SearchBox placeholder="Search for Publisher name" value={nameFilter} onChange={e => setNameFilter(e.target.value)} />
         </div>
       </div>
 
@@ -87,30 +87,19 @@ export default function Managepublisher() {
             <tr className="border-b border-gray-500 text-left">
               <th className=" font-light text-base">Publisher ID</th>
               <th className=" font-light text-base">Publisher Name</th>
-              <th className=" font-light text-base">Order</th>
-              <th className=" font-light text-base">Sales</th>
+              <th className=" font-light text-base">Book Count</th>
+              <th className=" font-light text-base">Sales Count</th>
               <th className=" font-light text-base">Verify Status</th>
             </tr>
           </thead>
           <tbody>
-            <PublisherManageRow
-              publisherManage={{
-                publisherID: "P0000000001",
-                publishername: "Publisher1",
-                order: "00000",
-                sales: "00000",
-                verifystatus: "Verified",
-              }}
-            />
-            <PublisherManageRow
-              publisherManage={{
-                publisherID: "P0000000001",
-                publishername: "Publisher1",
-                order: "00000",
-                sales: "00000",
-                verifystatus: "Verified",
-              }}
-            />
+            {publishers?.slice(indexOfFirst, indexOfLast)?.map((publisher) => (
+              <PublisherManageRow
+                key={publisher.PublisherID}
+                publisherManage={publisher}
+                getPublishers={getPublishers}
+              />
+            ))}
           </tbody>
         </table>
         <div className="flex justify-center text-center">

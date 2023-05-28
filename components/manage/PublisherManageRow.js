@@ -7,15 +7,15 @@ export function PublisherManageRow({
 
   return (
     <tr className="font-bold border-b border-b-gray-400">
-      <td className="py-6">{publisherManage.publisherID}</td>
-      <td>{publisherManage.publishername}</td>
-      <td>{publisherManage.order}</td>
-      <td>{publisherManage.sales}</td>
-      <td>{publisherManage.verifystatus}</td>
+      <td className="py-6">{publisherManage.PublisherID}</td>
+      <td>{publisherManage.PublisherName}</td>
+      <td>{publisherManage.BookCount}</td>
+      <td>{publisherManage.SalesCount}</td>
+      <td>{publisherManage.verificationstatus.Name}</td>
       <td>
         <Link
           className="text-[#FF7300] hover:text-amber-400 transition-all text-sm underline w-max text-center"
-          href={"#"}
+          href={"/admin/publisher/" + publisherManage.PublisherID}
         >
           Manage
         </Link>

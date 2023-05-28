@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import fetch from "@/utils/fetch";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/router";
+import Swal from "sweetalert2";
 
 export default function Managepromotion() {
   const [page, setPage] = useState(1);
@@ -14,6 +15,13 @@ export default function Managepromotion() {
   const [promotions, setPromotions] = useState([]);
   const { status, user } = useAuth();
   const router = useRouter();
+
+  const perPage = 10;
+  const indexOfLast = page * perPage;
+  const indexOfFirst = indexOfLast - perPage;
+  const totalPages = Math.ceil(promotions.length / perPage);
+
+  
   const getPromotion = async () => {
     try{
 
@@ -82,7 +90,7 @@ export default function Managepromotion() {
           </thead>
           <tbody>
             {
-              promotions.map((promotion) => (
+              promotions?.slice(indexOfFirst, indexOfLast).map((promotion) => (
                 <PromotionManageRow key={promotion.PromotionID} promotionManage={promotion} />))
             }
           </tbody>
@@ -90,42 +98,32 @@ export default function Managepromotion() {
         <div className="flex justify-center text-center">
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {"< Previous"}
           </button>
           <button
             className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {page > 1 ? page - 1 : ""}
           </button>
-          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  text-spooky-orange rounded-full">
+          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center text-spooky-orange rounded-full">
             {page}
           </button>
           <button
-            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
-            {/* {nextPageBooks.length == 0 ? "" : page + 1} */}
-            {page + 1}
+            {page < totalPages ? page + 1 : ""}
           </button>
-
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
             {"Next >"}
           </button>

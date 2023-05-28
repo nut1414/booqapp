@@ -80,9 +80,9 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     localStorage.removeItem('token')
     setUser(null)
+    router.push('/')
     setStatus('unauthenticated')
     
-    // router.push('/')
   }
 
   const value = {
