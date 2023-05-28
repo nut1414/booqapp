@@ -1,37 +1,62 @@
 import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
-import { useState } from "react";
-import { PeymentManageRow } from "@/components/manage/PaymentMangaeRow";
+import { OrderManageRow } from "@/components/manage/OrderManageRow";
+import { useEffect, useState } from "react";
+import fetch from "@/utils/fetch";
 
-export default function managepayment() {
+export default function Manageorder() {
   const [page, setPage] = useState(1);
- // verification drop down has 4 value to pick from -> all, unverified, pending, verified
+  const [shippingFilter, setShippingFilter] = useState("all");
+  const [receiveFilter, setReceiveFilter] = useState("all");
+  const [nameFilter, setNameFilter] = useState("");
+  const [orders, setOrders] = useState([]);
+
+  const getOrders = async () => {
+    try {
+      const res = await fetch(
+        `/api/order/publisher?Filter=${shippingFilter}&${nameFilter.length > 0 ? "OrderID=" + nameFilter : ""}`,
+        {
+          method: "GET",
+        }
+        );
+        const data = await res.json();
+        if (res.ok) {
+          setOrders(data.orders)
+          console.log("ok",data);
+        } else {
+          console.log(data);
+        }
+        console.log(res);
+      } catch (e) { console.log(e) }
+  }
+
+  useEffect(() => {
+    getOrders()
+  }, [nameFilter, shippingFilter])
+
+
+  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
     <Template>
       <div className=" text-2xl font-bold mt-10 ml-32 inline-flex">
-        All Payment Verification
+        All Order
       </div>
       <div className="mx-32 flex justify-end">
         <div className="flex align-middle">
-          <SelectBox noWidth={true} label={"Payment Status"} className="">
-            <option value="all">All</option>
-            <option value="paid">Paid</option>
-            <option value="unpaid">Unpaid</option>
-          </SelectBox>
-          <SelectBox noWidth={true} label={"Payment confirm"} className="">
-            <option value="all">All</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="notconfirm">Not Confirm</option>
-          </SelectBox>
-          <SelectBox noWidth={true} label={"Receive Status"} className="">
+          <SelectBox noWidth={true} label={"Receive Status"}  value={receiveFilter} onChange={(e) => setReceiveFilter(e.target.value)}  className="">
             <option value="all">All</option>
             <option value="received">Received</option>
-            <option value="pending">Pending</option>
+            <option value="notreceived">Not Received</option>
+          </SelectBox>
+          <SelectBox noWidth={true} label={"Shipping Status"}  value={shippingFilter} onChange={(e) => setShippingFilter(e.target.value)}  className="">
+            <option value="all">All</option>
+            <option value="shipped">Shipped</option>
+            <option value="notship">Not Ship</option>
           </SelectBox>
         </div>
         <div className="h-6 pt-8 ">
-          <SearchBox  placeholder="Search for Publisher name" />
+          <SearchBox  placeholder="Search for Order ID"  value={nameFilter} onChange={(e) => setNameFilter(e.target.value)}/>
         </div>
       </div>
 
@@ -40,34 +65,19 @@ export default function managepayment() {
           <thead>
             <tr className="border-b border-gray-500 text-left">
               <th className=" font-light text-base">Order ID</th>
-              <th className=" font-light text-base">Price</th>
-              <th className=" font-light text-base">Publisher Name</th>
-              <th className=" font-light text-base">Payment Status</th>
-              <th className=" font-light text-base">Payment Confiem</th>
-              <th className=" font-light text-base">Received Status</th>
+              <th className=" font-light text-base">Book Count</th>
+              <th className=" font-light text-base">Total Price</th>
+              <th className=" font-light text-base">Shipping Status</th>
+              <th className=" font-light text-base">Receive Status</th>
             </tr>
           </thead>
           <tbody>
-            <PeymentManageRow
-              paymentManage={{
-                orderID: "00000000001",
-                price: "00000",
-                publishername: "Publisher1",
-                paymentstatus: "Paid",
-                paymentconfirm: "Confimed",
-                receivestatus: "Received",
-              }}
-            />
-            <PeymentManageRow
-              paymentManage={{
-                orderID: "00000000001",
-                price: "00000",
-                publishername: "Publisher1",
-                paymentstatus: "Paid",
-                paymentconfirm: "Confimed",
-                receivestatus: "Received",
-              }}
-            />
+            {
+              orders.map((order) => 
+                (<OrderManageRow key={order.OrderID+ "order"} orderManage={order} />)
+              )
+            }
+            
           </tbody>
         </table>
         <div className="flex justify-center text-center">
@@ -115,5 +125,5 @@ export default function managepayment() {
         </div>
       </div>
     </Template>
-  )
+  );
 }

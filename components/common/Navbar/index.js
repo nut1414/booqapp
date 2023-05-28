@@ -52,6 +52,7 @@ export function Navbar({ user }) {
             <NavLink href={"/publisher/promotion"}>Promotion</NavLink>
           </>}
           {isAdmin && <>
+            <NavLink href={"/admin/payment"}>Verify Payment</NavLink>
             <NavLink href={"/admin/publisher"}>Manage Publisher</NavLink>
             <NavLink href={"/admin/genre"}>Edit Genre</NavLink>
           </>}

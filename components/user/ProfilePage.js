@@ -5,9 +5,12 @@ import { Button } from "../input/Button";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
 import fetch from "@/utils/fetch";
+import { useAuth } from "@/hooks/useAuth";
+import { TextAreaBox } from "../input/TextAreaBox";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { status, user } = useAuth();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [userData, setUserData] = useState({
     UserName: "",
@@ -15,7 +18,14 @@ export default function ProfilePage() {
     Name: "",
     PhoneNumber: "",
     Password: "",
+    Phone: "", //pub
+    PublisherName: "", //pub
+    Description: "", //pub
   });
+
+  const isUser = status === "authenticated" && user?.role?.RoleID === 1;
+  const isPublisher = status === "authenticated" && user?.role?.RoleID === 2;
+  const isAdmin = status === "authenticated" && user?.role?.RoleID === 3;
 
   const onInputChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -28,14 +38,28 @@ export default function ProfilePage() {
       Name: "",
       PhoneNumber: "",
       Password: "",
+      Phone: "", //pub
+      PublisherName: "", //pub
+      Description: "", //pub
     };
-    const res = await fetch("/api/profile/info");
+    const res = await fetch(isPublisher ? "/api/profile/publisher/info" : "/api/profile/info");
     try {
       if (!res.ok) {
         throw new Error(res.statusText);
       }
       const resdata = await res.json();
-      data = resdata.user;
+
+      if(isPublisher){
+        resdata.publisher.Phone = resdata.publisher.PhoneNumber;
+        data = {
+          ...data,
+          ...resdata.publisher,
+          ...resdata.publisher.user,
+        }
+        console.log(data)
+      }else {
+        data = resdata.user;
+      }
     } catch (e) {
       Swal.fire({
         icon: "error",
@@ -54,8 +78,8 @@ export default function ProfilePage() {
     let phone = e.target[2].value;
     try {
       if (name.length > 3 && email.length > 5 && phone.length > 4) {
-        const res = await fetch("/api/profile/info", {
-          method: "POST",
+        const res = await fetch(isPublisher ? "/api/profile/publisher/info" : "/api/profile/info", {
+          method: "PUT",
           body: JSON.stringify(userData),
         });
         if (!res.ok) {
@@ -71,6 +95,12 @@ export default function ProfilePage() {
           router.push("/user/");
         });
         console.log(name, email, phone);
+      }else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Invalid Input",
+        });
       }
     } catch (e) {
       Swal.fire({
@@ -131,8 +161,9 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    if(status === "authenticated")
+      fetchUserData();
+  }, [status]);
 
   return (
     <>
@@ -241,6 +272,34 @@ export default function ProfilePage() {
                   value={userData.Email}
                   onChange={onInputChange}
                 ></TextBoxInline>
+                {isPublisher && (
+                  <>
+                    <TextBoxInline
+                      classNamebox={"ml-36"}
+                      label={"Publisher Name"}
+                      name={"PublisherName"}
+                      type={"text"}
+                      value={userData.PublisherName}
+                      onChange={onInputChange}
+                    ></TextBoxInline>
+                    <TextBoxInline
+                      classNamebox={"ml-36"}
+                      label={"Publisher Phone"}
+                      name={"Phone"}
+                      type={"text"}
+                      value={userData.Phone}
+                      onChange={onInputChange}
+                    ></TextBoxInline>
+                    <TextBoxInline
+                      classNamebox={"ml-36"}
+                      label={"Description"}
+                      name={"Description"}
+                      type={"text"}
+                      value={userData.Description}
+                      onChange={onInputChange}
+                    ></TextBoxInline>
+                  </>
+                )}
                 <TextBoxInline
                   classNamebox={"ml-8"}
                   label={"Confirm password"}
@@ -250,7 +309,11 @@ export default function ProfilePage() {
                   onChange={onInputChange}
                 ></TextBoxInline>
                 <div className="float-right mt-10">
-                <Button type={"secondary"} onClick={() => router.back()} text={"Back"}></Button>
+                  <Button
+                    type={"secondary"}
+                    onClick={() => router.back()}
+                    text={"Back"}
+                  ></Button>
                   <Button
                     type="submit"
                     text={"Save"}

@@ -138,7 +138,7 @@ export default function OrderCart() {
         cancelButtonText: "No",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          const res = await fetch("/api/order/create", {
+          const res = await fetch("/api/order/orders", {
             method: "POST",
             body: JSON.stringify({
               shippingAddressID: shipAddressID,
