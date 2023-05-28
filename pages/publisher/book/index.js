@@ -122,7 +122,7 @@ export default function ManageBook() {
               <th className=" font-light text-base">Book Title</th>
               <th className=" font-light text-base">Release Date</th>
               <th className=" font-light text-base">Price</th>
-              <th className=" font-light text-base">Sales</th>
+              <th className=" font-light text-base"></th>
               <th className=" font-light text-base">Sales Counts</th>
               <th className=" font-light text-base">Available Status</th>
             </tr>
