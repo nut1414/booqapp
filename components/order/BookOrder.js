@@ -11,7 +11,7 @@ export function BookOrder({ orderbook }) {
             {/*Picture*/}
           </div>
           <div>
-            <div className="font-bold text-2xl mb-16 pb-2">{book.BookName}</div>{" "}
+            <div className="font-bold text-2xl mb-16 pb-2">{book?.BookName ? book?.BookName: "[DELETED TITLE]"  }</div>{" "}
             {/*Title*/}
             <div>
               <div className=" font-medium text-base">{orderbook.Quantity + " Unit"}</div>{" "}

@@ -67,7 +67,7 @@ const defaultGenre = [
 const defaultFormat = [
   { TypeName: "Hardcover" },
   { TypeName: "Paperback" },
-  { TypeName: "Ebook" },
+  // { TypeName: "Ebook" },
 ]
 
 const defaultBank = [

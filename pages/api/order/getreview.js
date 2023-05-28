@@ -1,8 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import authRoute from "@/utils/middlewares/authRoute";
 import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
-import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
-import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
 
 const prisma = new PrismaClient();
 
@@ -24,6 +22,12 @@ async function getreview(req, res) {
             include: {
               book: true,
             },
+          },
+          publisher: {
+            select: {
+              PublisherID: true,
+              PublisherName: true,
+            }
           },
           review: true,
         },
