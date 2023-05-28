@@ -12,10 +12,11 @@ async function orderpublisher(req, res) {
   try {
     if (req.method == "GET") {
       let getpublisher = [];
-      const { PublisherID, } = req.query
+      const { PublisherID, verificationstatus} = req.query
       getpublisher = await prisma.publisher.findMany({
         where: {
           PublisherID: PublisherID ? parseInt(PublisherID) : undefined,
+          VerifyStatusID: verificationstatus ? parseInt(verificationstatus) : undefined,
         },
         select: {           
           PublisherID: true, 
