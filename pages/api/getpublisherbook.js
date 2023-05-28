@@ -19,6 +19,10 @@ async function getpublisherbook(req, res) {
         BookName: req.query?.BookName ? {
           contains: req.query?.BookName ? req.query.BookName : undefined,
         } : undefined,
+        ReleaseDate: {
+          gte: req.query?.StartDate ? new Date(req.query.StartDate) : undefined,
+          lte: req.query?.EndDate ? new Date(req.query.EndDate) : undefined,
+        }
       },
       orderBy: {
         BookID: "asc",
