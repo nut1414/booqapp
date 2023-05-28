@@ -3,6 +3,7 @@ import authRoute from "@/utils/middlewares/authRoute";
 import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
 import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
 import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
+import { verifyUserJWT } from '@/utils/auth'
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,37 @@ async function summarizeOrder(req, res) {
   // }
   try {
     if (req.method == "POST") {
+      ///
+      let token = req.headers['authorization']
+    //console.log(token)
+    let decoded = null
+    try {
+      token = token?.split(' ')[1]
+      decoded = verifyUserJWT(token)
+      console.log(decoded)
+      
+      if (decoded?.id) {
+        req.user = await prisma.user.findUnique({
+          where: { UserID: decoded.id }
+        })
+        if (!req.user) {
+          throw new Error('User not found')
+        }
+        let role = await prisma.role.findUnique({ where: { RoleID: req.user.RoleID } })
+        
+        if (!role) {
+          throw new Error('Role not found')
+        }
+        req.user.role = role
+      }
+        
+    } catch (err) {
+      console.log(err)
+      await prisma.$disconnect()
+      return res.status(401).json({ message: 'Unauthorized' })
+    }
+
+      ////
       const { BookID, Review, Rating, OrderID } = req.body;
       console.log("BookID", BookID, "Review", Review, "Rating", Rating, "OrderID", OrderID);
       if(!BookID || !Review || !Rating || !OrderID){
@@ -20,6 +52,7 @@ async function summarizeOrder(req, res) {
         return res.status(400).json({ message: "All field must be filled" });
       }
       console.log("req.user.UserID", req.user.UserID);
+      console.log("HERE")
       const checkorder = await prisma.order.findUnique({
         where: {
           OrderID: parseInt(OrderID,10),
