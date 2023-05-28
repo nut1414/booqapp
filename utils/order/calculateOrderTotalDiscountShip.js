@@ -25,9 +25,9 @@ export default function calculateOrderTotalDiscountShip(orderGroup, items='items
       // let maxdiscount = alldiscount.length ? Math.max(...alldiscount) : 0
       // console.log("alldiscount",alldiscount )
       // console.log("maxdiscount",maxdiscount)
-      arr[index].book.CurrentPromotion = maxdiscountpromo.promotion.DiscountPercent > 0 ? maxdiscountpromo.promotion : null;
+      arr[index].book.CurrentPromotion = maxdiscountpromo?.promotion?.DiscountPercent > 0 ? maxdiscountpromo.promotion : null;
       arr[index].book.FinalPrice = +parseFloat(
-        item.book.Price - (item.book.Price * maxdiscountpromo.promotion.DiscountPercent) / 100,
+        item.book.Price - (item.book.Price * maxdiscountpromo?.promotion?.DiscountPercent) / 100,
         2
       );
       totalWeight += item.book.Weight * item.Quantity
