@@ -7,6 +7,7 @@ import { PublisherGroupRow } from "@/components/book/CartBookTable/PublisherGrou
 import { BookItemRow } from "@/components/book/CartBookTable/BookItemRow";
 import { AddressU } from "@/components/addressUser/addressU";
 import Swal from "sweetalert2";
+import { useAuth } from "@/hooks/useAuth";
 
 import { useRouter } from "next/router";
 import { ShippingFeeRow } from "@/components/book/CartBookTable/ShippingFeeRow";
@@ -28,6 +29,7 @@ export default function OrderCart() {
       return acc + item.Quantity
     },0)
   },0)
+  const { user, status } = useAuth();
 
 
   const router = useRouter();
@@ -167,6 +169,17 @@ export default function OrderCart() {
   }
 
   useEffect(() => {
+    if (router.isReady) {
+      if (
+        (status == "authenticated" && user?.role?.RoleID != 1) ||
+        status == "unauthenticated"
+      ) {
+        router.push("/");
+      }
+    }
+  }, [status, user, router]);
+
+  useEffect(() => {
     console.log("Selected Items", selectitems);
   }, [selectitems]);
 
@@ -180,6 +193,8 @@ export default function OrderCart() {
     getCartItem();
     getAddresses();
   }, []);
+
+
 
   return (
     <Template noBack={true}>

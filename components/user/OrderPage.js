@@ -28,6 +28,45 @@ export default function OrderPage() {
     }
 
   }
+
+
+  const handleCancelOrder = async (orderid) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, cancel order!",
+      cancelButtonText: "No, cancel!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await fetch("/api/order/orders?orderID="+orderid, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Success!",
+              text: "Order has been cancelled!",
+            });
+            fetchOrder()
+
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Something went wrong!",
+            });
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+    )
+  };
+
   useEffect(() => {
     fetchOrder() 
   }, [])
@@ -79,7 +118,7 @@ export default function OrderPage() {
         {allOrder.map((order) => {
           const orderCondition = filterOrderCondition(order)
           if (filterOrder != 'all' && orderCondition != filterOrder) return <></>
-          return <Order key={"order" + order.OrderID} status={orderCondition}   order={order}></Order>;
+          return <Order key={"order" + order.OrderID} status={orderCondition}  onDelete={() => handleCancelOrder(order.OrderID)}  order={order}></Order>;
         })}
       </div>
     </div>

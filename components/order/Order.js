@@ -1,7 +1,10 @@
+import { useRouter } from "next/router";
 import { Button } from "../input/Button";
 import { BookOrder } from "./BookOrder";
+import Swal from "sweetalert2";
 
-export function Order({ order, status, Class }) {
+export function Order({ order, status, Class, onDelete }) {
+  const router = useRouter()
   // "unpaid" "shipping" "shipped" "recieved" "rated"
   const payingText = {
     topay: "To Pay",
@@ -9,6 +12,9 @@ export function Order({ order, status, Class }) {
     toship: "To Recieve",
     complete: "Complete",
   };
+
+  
+
 
   return (
     <div className={Class}>
@@ -53,8 +59,8 @@ export function Order({ order, status, Class }) {
         <div className="float-right mt-5 clear-right mb-5">
           {status == "topay" ? (
             <>
-              <Button text={"Cancel"} type="secondary"></Button>
-              <Button text={"Pay"}></Button>
+              <Button text={"Cancel"} type="secondary" onClick={onDelete} ></Button>
+              <Button text={"Pay"} onClick={() => router.push("/order/confirm/"+ order.OrderID)}></Button>
             </>
           ) : status == "toship" ? (
             <Button type={"secondary"} text={"Cancel Order"}></Button>
