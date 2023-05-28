@@ -11,19 +11,20 @@ async function paymentverify(req, res) {
   }
   try {
     if(req.method == "PUT"){
-      const { OrderID, Date, Proof } = req.body;
+      const { OrderID, Datetime, Proof } = req.body;
       const orders = await prisma.order.update({
         where: {
           OrderID: parseInt(OrderID,10)
         },
         data: {
-          TransactionTime: Date,
-          Proofoftransfer: Proof,
+          TransactionTime: new Date(Datetime),
+          Proofoftransfer: Buffer.from(Proof, "utf-8"),
         }
       })
       res.status(200).json({ message: "Success" , order: orders});
     }
   } catch (e) {
+    console.log(e)
     res.status(500).json({ message: "Internal Server Error", error: e.message })
     prisma.$disconnect();
   }

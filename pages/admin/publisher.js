@@ -44,34 +44,6 @@ export default function Managepublisher() {
     }
   };
 
-  const handleDelete = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You will not be able to recover this genre!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, keep it.",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await fetch(`/api/genre?id=${id}`, {
-            method: "DELETE",
-          });
-          const data = await res.json();
-          if (res.ok) {
-            Swal.fire("Deleted!", "Your genre has been deleted.", "success");
-            router.reload();
-            getGenres();
-          } else {
-            Swal.fire("Error!", data.message, "error");
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    });
-  };
 
   useEffect(() => {
     if (router.isReady) {
