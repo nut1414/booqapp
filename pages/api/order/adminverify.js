@@ -60,7 +60,7 @@ async function orderpublisher(req, res) {
               promotion: undefined
             }
           })
-          order.Proof = Proof
+          order.Proofoftransfer = Proof
           return order
         }), 'orderbook')       
         prisma.$disconnect(); 
