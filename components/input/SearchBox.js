@@ -1,10 +1,11 @@
-export function SearchBox({ defaultValue, value,onChange, placeholder }) {
+export function SearchBox({ defaultValue, value,onChange, placeholder, name }) {
   return (
     <div className="bg-white border-black border flex items-center rounded-full p-1 align-middle text-black">
       <input
         type="search"
         className="focus:outline-none outline-none m-1 text-black"
         defaultValue={defaultValue}
+        name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}

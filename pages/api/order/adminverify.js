@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import authRoute from "@/utils/middlewares/authRoute";
 import itemCartGroupByPublisher from "@/utils/order/itemCartGroupByPublisher";
 import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
 import { includeBookPromotion, includeBookPublisher } from "@/utils/bookquery";
+import { Order } from "@/components/order/Order";
 
 const prisma = new PrismaClient();
 
@@ -14,48 +15,62 @@ async function orderpublisher(req, res) {
   }
   try {
     if (req.method == "GET") {
-      const { OrderID , PaymentStatus, TransactionApprove } = req.query
+      const { OrderID , PaymentStatus, TransactionApprove, Receivestatus, PublisherName  } = req.query
       let orders = await prisma.order.findMany({
         where: {
+          publisher: PublisherName?.length > 0 ? {
+            PublisherName: {
+              contains: PublisherName
+            }
+          } : undefined,
           OrderID: OrderID ? parseInt(OrderID) : undefined,
           Proofoftransfer: PaymentStatus == "true" ? { not: null } : PaymentStatus == "false" ? null : undefined,
           TransactionApprove: TransactionApprove == "true" ? true : TransactionApprove == "false" ? false : undefined,
+          Received: Receivestatus == "true" ? true : Receivestatus == "false" ? false : undefined,
         },
         include: {
           publisher: {
             select:{
               PublisherID: true,
               PublisherName: true,
-              VerificationDocument: false,
+              VerificationDocument: OrderID ? true : false
             }
           },
           shippingaddress: true,
-          orderbook: {
+          orderbook: OrderID ?{
             include: {
               promotion: true,
               book: true,
             }
-          }
+          } : false
         }
       })
-      const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
-        order.orderbook = order.orderbook.map((bookinfo) => {
-          console.log({BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion})
-          return {
-            ...bookinfo,
-            book: {
-              ...bookinfo.book,
-              promotionbook: bookinfo.promotion ? [{BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion}] : [],
-              BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
-            },
-            promotion: undefined
-          }
-        }) 
-        return order
-      }), 'orderbook')
-      prisma.$disconnect();
-      res.status(200).json({ message: "Success", orders: calculatedResult });
-    } 
+      const Proof = orders[0]?.Proofoftransfer ? orders[0].Proofoftransfer.toString('utf-8') : undefined
+      if( OrderID ){
+        const calculatedResult = calculateOrderTotalDiscountShip(orders.map((order) => {
+          order.orderbook = order.orderbook.map((bookinfo) => {
+            console.log({BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion})
+            return {
+              ...bookinfo,
+              book: {
+                ...bookinfo.book,
+                promotionbook: bookinfo.promotion ? [{BookID: bookinfo.BookID, PromotionID: bookinfo.PromotionID, promotion: bookinfo.promotion}] : [],
+                BookCover: bookinfo?.book?.BookCover?.toString('utf-8')
+              },
+              promotion: undefined
+            }
+          })
+          order.Proofoftransfer = Proof
+          return order
+        }), 'orderbook')       
+        prisma.$disconnect(); 
+        res.status(200).json({ message: "Success", orders: calculatedResult });
+      }
+      else{
+        prisma.$disconnect();
+        res.status(200).json({ message: "Success", orders: orders });
+      }        
+    }
     else if( req.method == "PUT"){
       const { verify } = req.body;
       if (verify == undefined) {

@@ -10,8 +10,8 @@ async function createbook(req, res) {
     // This required BookName AuthorID GenreID FormatID(FormattypeID) Description ReleaseDate Price Weight
     if (
       !req.body?.BookName ||
-      !req.body?.AuthorName ||
       !req.body?.GenreID ||
+      !req.body?.AuthorName ||
       !req.body?.FormatID ||
       !req.body?.Description ||
       !req.body?.ReleaseDate ||

@@ -52,6 +52,7 @@ export function Navbar({ user }) {
             <NavLink href={"/publisher/promotion"}>Promotion</NavLink>
           </>}
           {isAdmin && <>
+            <NavLink href={"/admin/payment"}>Verify Payment</NavLink>
             <NavLink href={"/admin/publisher"}>Manage Publisher</NavLink>
             <NavLink href={"/admin/genre"}>Edit Genre</NavLink>
           </>}
@@ -81,7 +82,9 @@ export function Navbar({ user }) {
 
           </div>
         </div>
-          <SearchBox />
+          <form action="/book/search/query">
+            <SearchBox name={"keyword"} />
+          </form>
           <div className="flex w-128 flex-wrap justify-center gap-4" >
             {isLogin ? <>
               {isUser &&

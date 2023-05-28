@@ -31,6 +31,9 @@ async function Genre(req, res) {
     let getgenre = [];
     getgenre = await prisma.genre.findMany({
       where: {
+        GenreName: {
+          contains: req.query?.name ? req.query?.name : undefined,
+        }
       },
       include: {
         bookgenre: {

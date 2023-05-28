@@ -2,10 +2,65 @@ import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
 import { PublisherManageRow } from "@/components/manage/PublisherManageRow";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import fetch from "@/utils/fetch";
+import { useRouter } from "next/router";
+import { useAuth } from "@/hooks/useAuth";
+import Swal from "sweetalert2";
 
-export default function managepublisher() {
+
+export default function Managepublisher() {
   const [page, setPage] = useState(1);
+  const [verificationFilter, setVerificationFilter] = useState("all");
+  const [nameFilter, setNameFilter] = useState("");
+  const [publishers, setPublishers] = useState([]);
+  const { status, user } = useAuth();
+  const router = useRouter();
+
+  const perPage = 10;
+  const indexOfLast = page * perPage;
+  const indexOfFirst = indexOfLast - perPage;
+  const totalPages = Math.ceil(publishers.length / perPage);
+
+  const getGenres = async () => {
+    try {
+      const res = await fetch(
+        `/api/genre?${nameFilter.length > 0 ? "name=" + nameFilter : ""}`,
+        {
+          method: "GET",
+        }
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setPage(1);
+        setPublishers(data.genre);
+        console.log(data);
+      } else {
+        console.log(data);
+      }
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (
+        (status == "authenticated" && user?.role?.RoleID != 0) ||
+        status == "unauthenticated"
+      ) {
+        router.push("/");
+      }
+    }
+  }, [status, user, router]);
+
+  useEffect(() => {
+    if (router.isReady) {
+      getGenres();
+    }
+  }, [router, nameFilter]);
   // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
     <Template>
@@ -61,42 +116,32 @@ export default function managepublisher() {
         <div className="flex justify-center text-center">
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {"< Previous"}
           </button>
           <button
             className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page - 1);
-            }}
-            disabled={page == 1}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
           >
             {page > 1 ? page - 1 : ""}
           </button>
-          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  text-spooky-orange rounded-full">
+          <button className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center text-spooky-orange rounded-full">
             {page}
           </button>
           <button
-            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center  rounded-full cursor-pointer"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            className="mx-4 text-xl font-light py-2 px-4 w-8 flex justify-center rounded-full cursor-pointer"
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
-            {/* {nextPageBooks.length == 0 ? "" : page + 1} */}
-            {page + 1}
+            {page < totalPages ? page + 1 : ""}
           </button>
-
           <button
             className="bg-transparent cursor-pointer w-32 text-black text-xl font-light py-2 px-4 rounded-full"
-            onClick={() => {
-              setPage(page + 1);
-            }}
-            // disabled={nextPageBooks.length == 0}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
           >
             {"Next >"}
           </button>

@@ -3,7 +3,7 @@ import { PaymentC } from "@/components/manage/PaymentC";
 import { AddressAndTotal } from "@/components/addressUser/AddressAndTotal";
 import { Button } from "@/components/input/Button";
 import { useRouter } from "next/router"
-export default function paymentconfirm(orderid) {
+export default function Paymentconfirm(orderid) {
  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
  const router= useRouter()
   return (

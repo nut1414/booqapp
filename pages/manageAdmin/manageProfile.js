@@ -2,7 +2,7 @@ import { Template } from "@/components/common/Template";
 import { Button } from "@/components/input/Button";
 import { useRouter } from "next/router";
 
-export default function manageProfile() {
+export default function ManageProfile() {
  // verification drop down has 4 value to pick from -> all, unverified, pending, verified
  const router = useRouter();
   return (

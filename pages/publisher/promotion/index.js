@@ -2,10 +2,53 @@ import { Template } from "@/components/common/Template";
 import { SearchBox } from "@/components/input/SearchBox";
 import { SelectBox } from "@/components/input/SelectBox";
 import { PromotionManageRow } from "@/components/manage/PromotionManageRow";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import fetch from "@/utils/fetch";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/router";
 
-export default function managepromotion() {
+export default function Managepromotion() {
   const [page, setPage] = useState(1);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [nameFilter, setNameFilter] = useState("");
+  const [promotions, setPromotions] = useState([]);
+  const { status, user } = useAuth();
+  const router = useRouter();
+  const getPromotion = async () => {
+    try{
+
+      const res = await fetch(`/api/promotion?Filter=${activeFilter}&${nameFilter.length>0? "PromotionDetail="+nameFilter : ""}`, {
+        method: "GET",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPromotions(data)
+        console.log(data);
+      } else {
+        console.log(data)
+      }
+      console.log(res)
+    } catch (e) { console.log(e)}
+  };
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (
+        (status == "authenticated" && user?.role?.RoleID != 2) ||
+        status == "unauthenticated"
+      ) {
+        router.push("/");
+      }
+    }
+  }, [status, user, router]);
+
+  useEffect(() => {
+    if (router.isReady) {
+      getPromotion();
+    }
+  }, [page, router, activeFilter, nameFilter]);
+  
+
   // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
     <Template>
@@ -14,14 +57,14 @@ export default function managepromotion() {
       </div>
       <div className="mx-32 flex justify-end">
         <div className="flex align-middle">
-          <SelectBox noWidth={true} label={"Available Status"} className="">
+          <SelectBox noWidth={true} label={"Active Status"} value={activeFilter} onChange={(e) => setActiveFilter(e.target.value)} className="">
             <option value="all">All</option>
             <option value="active">Active</option>
-            <option value="notactive">Not Active</option>
+            <option value="inactive">Not Active</option>
           </SelectBox>
         </div>
         <div className="h-6 pt-8 ">
-          <SearchBox  placeholder="Search for Promotion name" />
+          <SearchBox placeholder="Search for Promotion name" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} />
         </div>
       </div>
 
@@ -38,26 +81,10 @@ export default function managepromotion() {
             </tr>
           </thead>
           <tbody>
-            <PromotionManageRow
-              promotionManage={{
-                promotionID: "00000000001",
-                promotionname: "00000",
-                discount: "00%",
-                datestart: "2002/20/02",
-                dateend: "2002/25/02",
-                salescount: "00000",
-              }}
-            />
-            <PromotionManageRow
-              promotionManage={{
-                promotionID: "00000000001",
-                promotionname: "00000",
-                discount: "00%",
-                datestart: "2002/20/02",
-                dateend: "2002/25/02",
-                salescount: "00000",
-              }}
-            />
+            {
+              promotions.map((promotion) => (
+                <PromotionManageRow key={promotion.PromotionID} promotionManage={promotion} />))
+            }
           </tbody>
         </table>
         <div className="flex justify-center text-center">

@@ -31,13 +31,15 @@ async function paymentverify(req, res) {
       })
       prisma.$disconnect();
       res.status(200).json({ message: "Success" , order: orders});
+    }else {
+      prisma.$disconnect();
+      res.status(400).json({ message: "Method not allowed" });
     }
   } catch (e) {    
     prisma.$disconnect();
     res.status(500).json({ message: "Internal Server Error", error: e.message })
   }
   await prisma.$disconnect();
-  
 }
 
 export default authRoute(paymentverify, prisma);

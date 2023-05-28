@@ -7,11 +7,13 @@ import fetch from "@/utils/fetch";
 
 export default function ManageBook() {
   const [page, setPage] = useState(1);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [nameFilter, setNameFilter] = useState("");
   const [bookManage, setBookManage] = useState([])
 
   const getBookManage = async () => {
     try {
-      const res = await fetch(`/api/managepublisher`);
+      const res = await fetch(`/api/managepublisher?Available=${activeFilter}${nameFilter.length>0 ? "&BookName="+nameFilter  : ""}`);
       const data = await res.json()
       console.log(data)
       setBookManage(data)
@@ -22,7 +24,7 @@ export default function ManageBook() {
 
   useEffect(() => {
     getBookManage()
-  }, [])
+  }, [activeFilter,nameFilter])
 
   return (
     <Template>
@@ -42,13 +44,14 @@ export default function ManageBook() {
             <option value="notavailabe">Not Available</option>
           </SelectBox>
           <SelectBox noWidth={true} label={"Available Status"} className="">
+          <SelectBox noWidth={true} label={"Available Status"} value={activeFilter} onChange={(e) => setActiveFilter(e.target.value)} className="">
             <option value="all">All</option>
-            <option value="available">Available</option>
-            <option value="notavailabe">Not Available</option>
+            <option value="true">Available</option>
+            <option value="false">Not Available</option>
           </SelectBox>
         </div>
-        <div className="h-6 pt-8">
-          <SearchBox placeholder="Search for Book name" />
+        <div className="h-6 pt-8 ">
+          <SearchBox placeholder="Search for Book name" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} />
         </div>
       </div>
 

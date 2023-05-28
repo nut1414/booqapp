@@ -1,14 +1,20 @@
+import { useRouter } from "next/router";
 import { Button } from "../input/Button";
 import { BookOrder } from "./BookOrder";
+import Swal from "sweetalert2";
 
-export function Order({ order, status, Class }) {
+export function Order({ order, status, Class, onDelete, onReceive }) {
+  const router = useRouter()
   // "unpaid" "shipping" "shipped" "recieved" "rated"
   const payingText = {
     topay: "To Pay",
-    torecieve: "To Ship",
-    toship: "To Recieve",
+    toship: "To Ship",
+    toreceive: "To Receive",
     complete: "Complete",
   };
+
+  
+
 
   return (
     <div className={Class}>
@@ -53,15 +59,15 @@ export function Order({ order, status, Class }) {
         <div className="float-right mt-5 clear-right mb-5">
           {status == "topay" ? (
             <>
-              <Button text={"Cancel"} type="secondary"></Button>
-              <Button text={"Pay"}></Button>
+              <Button text={"Cancel"} type="secondary" onClick={onDelete} ></Button>
+              <Button text={"Pay"} onClick={() => router.push("/order/confirm/"+ order.OrderID)}></Button>
             </>
           ) : status == "toship" ? (
-            <Button type={"secondary"} text={"Cancel Order"}></Button>
+            <></>
           ) : status == "toreceive" ? (
-            <Button text={"Order Received"}></Button>
+            <Button text={"Order Received"} onClick={onReceive}></Button>
           ) : status == "complete" ? (
-            <Button type={"secondary"} text={"Review"}></Button>
+            <Button type={"secondary"} text={"Review"} onClick={() => router.push("/order/review/"+ order.OrderID)}></Button>
           ) : null}
         </div>
       </div>

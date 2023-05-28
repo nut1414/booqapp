@@ -75,7 +75,7 @@ export default async function register(req, res){
             },
             Address: req.body.Address,
             ZipCode: req.body.ZipCode,
-            Name: req.body.ShippingAddressName,
+            Name: req.body.FirstName + " " + req.body.LastName,
             PhoneNumber: req.body.PhoneNumber,
           }
         })
