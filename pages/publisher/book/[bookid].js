@@ -7,6 +7,9 @@ import { Review } from "@/components/book/Review";
 import { useEffect, useState } from "react";
 import { BookTagLink } from "@/components/book/BookTagLink";
 import { useAuth } from "@/hooks/useAuth";
+import fetch from "@/utils/fetch";
+import Swal from "sweetalert2";
+import getCurrentDateString from "@/utils/getformattime";
 
 export default function BookInfo() {
   const router = useRouter();
@@ -21,21 +24,63 @@ export default function BookInfo() {
       ? user.role.RoleID == 1
       : true;
 
-  const handleAddCart = () => {
-    router.push("/order/cart/add?BookID=" + bookid);
+  const handleDelete = async () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await fetch(`/api/book?BookID=${bookid}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your book has been deleted.",
+              icon: "success",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                router.push("/publisher/book");
+              }
+            });
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: "Something went wrong.",
+              icon: "error",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            });
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    });
   };
-  const handleBuy = () => {};
 
   const getBook = async () => {
-    const res = await fetch(`/api/bookdetail/?BookID=${bookid}`, {
+    const res = await fetch(`/api/getpublisherbook?BookID=${bookid}`, {
       method: "GET",
     });
     if (res.ok) {
       const data = await res.json();
-      setBook(data.bookdetail);
+      if (data.length >0)
+      setBook(data[0]);
+      else router.push("/")
       console.log(data);
     } else {
-      router.push("/")
+      // router.push("/")
       setBook(null);
     }
   };
@@ -79,6 +124,7 @@ export default function BookInfo() {
                   className={"hover:bg-red-600 text-red-600 outline-red-600"}
                   type={"secondary"}
                   text={"Delete"}
+                  onClick={handleDelete}
                 />
               </div>
               <div className="mt-3 pl-10 mb-3 w-1/2">
@@ -121,12 +167,12 @@ export default function BookInfo() {
               {CurrentPromotion ? (
                 <div className="inline-flex mb-5 ml-3">
                   <p className="text-red-600 text-4xl font-bold mr-6">
-                    {"Current Promotion Price: "}
+                    {""}
                     {book?.FinalPrice}
                     {".- "}
                   </p>
                   <p className="text-black text-2xl font-bold mt-2 line-through text-opacity-60">
-                    {"Normal Price: "}
+                    {""}
                     {book?.Price}
                   </p>
                   <div className=" border-black border-l ml-5"></div>
@@ -143,9 +189,8 @@ export default function BookInfo() {
                 </div>
               )}
               <div>
-                <div className="text-xl">Release Date:</div>
-                <div className="text-xl">Sales:</div>
-                <div className="text-xl">Sales Count:</div>
+                <div className="text-xl">Release Date: {getCurrentDateString(book?.ReleaseDate)}</div>
+                <div className="text-xl">Sales Count: {book?.Quantity ? book?.Quantity : 0}</div>
               </div>
               <div>
                 {book.Available && addToCartAvailable && (

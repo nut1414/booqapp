@@ -244,7 +244,7 @@ async function createbook(req, res) {
     prisma.$disconnect();
     res.status(200).json({ message: "Book Updated", book: updatebook });
   }
-  prisma.$disconnect();
+  await prisma.$disconnect();
 }
 
 export default authRoute(createbook, prisma);
