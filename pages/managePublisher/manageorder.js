@@ -4,7 +4,7 @@ import { SelectBox } from "@/components/input/SelectBox";
 import { OrderManageRow } from "@/components/manage/OrderManageRow";
 import { useState } from "react";
 
-export default function manageorder() {
+export default function Manageorder() {
   const [page, setPage] = useState(1);
   // verification drop down has 4 value to pick from -> all, unverified, pending, verified
   return (
