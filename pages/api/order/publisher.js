@@ -19,7 +19,9 @@ async function orderpublisher(req, res) {
         where: {
           PublisherID: req.user.UserID,
           OrderID: req.query.OrderID ? parseInt(req.query.OrderID) : undefined,
-          TransactionApprove: true
+          TransactionApprove: true,
+          TrackingNo: req.query.shippingstatus == "Shipped" ? { not: null } : req.query.shippingstatus == "Not Shipped" ? null : undefined,
+          Received: req.query.receivedstatus == "true" ? true : req.query.receivedstatus == "false" ? false : undefined,
         },
         include: {
           shippingaddress: true,
@@ -47,7 +49,8 @@ async function orderpublisher(req, res) {
         order.TrackingNo ? order.shippingstatus = true : order.shippingstatus = false
         order.Received ? order.receivedstatus = true : order.receivedstatus = false
         return order
-      }), 'orderbook')      
+      }), 'orderbook')
+
       res.status(200).json({ message: "Success", orders: calculatedResult });
     }    
   } catch (e) {
