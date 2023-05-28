@@ -2,6 +2,7 @@ import authRoute from "@/utils/middlewares/authRoute";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import calculateOrderTotalDiscountShip from "@/utils/order/calculateOrderTotalDiscountShip";
+import publisher from "./order/publisher";
 //Not finished
 async function getpublisherbook(req, res) {
   if (req.user.role.RoleID != 2) {
@@ -39,7 +40,8 @@ async function getpublisherbook(req, res) {
             },
           },
         },
-        bookgenre: true
+        bookgenre: true,
+        publisher: true,
       },
     });
     const bookid = getbook.map((x) =>
