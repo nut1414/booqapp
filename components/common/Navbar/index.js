@@ -82,7 +82,9 @@ export function Navbar({ user }) {
 
           </div>
         </div>
-          <SearchBox />
+          <form action="/book/search/query">
+            <SearchBox name={"keyword"} />
+          </form>
           <div className="flex w-128 flex-wrap justify-center gap-4" >
             {isLogin ? <>
               {isUser &&

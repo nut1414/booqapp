@@ -51,9 +51,12 @@ const whereBookSearchQuery = ({
       GenreID,
       PublisherID,
       PublisherName,
-      Available
-}, UserID) => (
+      Available,
+      OrThings
+}, UserID) => 
   {
+    if(!OrThings)
+    return {
       BookName: BookName ? {
           contains: BookName
       } : undefined,
@@ -90,8 +93,48 @@ const whereBookSearchQuery = ({
     } : undefined,
     Available: Available == "true" ? undefined : true, // insecure but works
     }
-)
-
+    else 
+    return {
+      OR: [
+        {BookName: BookName ? {
+          contains: BookName
+      } : undefined},
+      {BookID: BookID ? {
+        equals: parseInt(BookID, 10)
+      } : undefined},
+      {bookgenre: (GenreID || GenreName) ? {
+        some: {
+          genre: {
+            OR: [
+              { GenreName: GenreName ? { contains: GenreName } : undefined },
+              { GenreID: GenreID ? { equals: parseInt(GenreID, 10) } : undefined }
+            ]
+          },
+        }
+      } : undefined},
+      {bookauthor: (AuthorID || AuthorName) ? {      
+        some: {
+          author: {
+            OR: [
+              { AuthorName: AuthorName ? { contains: AuthorName } : undefined },
+              { AuthorID: AuthorID ? { equals: parseInt(AuthorID, 10) } : undefined }
+            ]
+          }
+        }
+      } : undefined},
+      {publisher: (PublisherID || PublisherName) ? {
+        is: {
+            OR: [
+              { PublisherName: PublisherName ? { contains: PublisherName } : undefined },
+              { PublisherID: PublisherID ? { equals: parseInt(PublisherID, 10) } : undefined }
+            ]
+        }
+    } : undefined},
+      ],
+      
+    Available: Available == "true" ? undefined : true, // insecure but works
+    }
+}
 export {
   includeBookPublisher,
   includeBookPromotion,
