@@ -31,6 +31,16 @@ export default function ManageBook() {
       </div>
       <div className="mx-32 flex justify-end">
         <div className="flex align-middle">
+        <SelectBox noWidth={true} label={"Available Status"} className="">
+            <option value="all">All</option>
+            <option value="available">Available</option>
+            <option value="notavailabe">Not Available</option>
+          </SelectBox>
+          <SelectBox noWidth={true} label={"Available Status"} className="">
+            <option value="all">All</option>
+            <option value="available">Available</option>
+            <option value="notavailabe">Not Available</option>
+          </SelectBox>
           <SelectBox noWidth={true} label={"Available Status"} className="">
             <option value="all">All</option>
             <option value="available">Available</option>
