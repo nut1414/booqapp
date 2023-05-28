@@ -11,9 +11,9 @@ async function orderpublisher(req, res) {
   }
   try {
     if (req.method == "GET") {
-      let publisher = [];
+      let getpublisher = [];
       const { PublisherID, } = req.query
-      const getpublisher = await prisma.publisher.findMany({
+      getpublisher = await prisma.publisher.findMany({
         where: {
           PublisherID: PublisherID ? parseInt(PublisherID) : undefined,
         },
@@ -29,15 +29,11 @@ async function orderpublisher(req, res) {
           } : false,
         },
       })
+      console.log('getpublisher', getpublisher)
       if(PublisherID)
         getpublisher.map((x) => { ( x.VerificationDocument ) ? x.VerificationDocument = x.VerificationDocument.toString('utf-8') : [] })
       
-      const ordercount = await prisma.order.count({
-        where: {
-          PublisherID: PublisherID ? parseInt(PublisherID) : undefined,
-        }
-      })
-      console.log(ordercount)
+      
       const agg = await prisma.orderbook.groupBy({
         by: ['BookID'],
         _sum: {
@@ -46,7 +42,13 @@ async function orderpublisher(req, res) {
       });
       for (const publisher of getpublisher) {
         let publishersalecount = 0;        
+        const {PublisherID} = publisher;
         const findbook = await prisma.bookdetails.findMany({
+          where: {
+            PublisherID : PublisherID ? parseInt(PublisherID) : undefined,
+          }
+        })
+        const ordercount = await prisma.order.count({
           where: {
             PublisherID: PublisherID ? parseInt(PublisherID) : undefined,
           }

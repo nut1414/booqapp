@@ -111,17 +111,9 @@ async function createpromotion(req, res) {
         },
       },
     });
-    const bookid = getpromotion.map((x) =>
-      x.promotionbook.map((y) => y.BookID)
-    );
-
-    const reducedbook = bookid.reduce((a, b) => {
-      return a.concat(b);
-    }, []);
 
     const promotionid = getpromotion.map((x) => x.PromotionID);
 
-    console.log(promotionid);
     const agg = await prisma.orderbook.groupBy({
       by: ["BookID"],
       _sum: {
@@ -132,25 +124,35 @@ async function createpromotion(req, res) {
       },
     });
 
-    for (const item of agg) {
-      const {
-        BookID,
-        _sum: { Quantity },
-      } = item;
+    
+    for (const promotion of getpromotion) {
+      let promotionsum = 0;
 
-      for (const promotion of getpromotion) {
+      for (const item of agg) {
+        const {
+          BookID,
+          _sum: { Quantity },
+        } = item;      
         const book = promotion.promotionbook.find((b) => b.BookID == BookID);
+        console.log('book = ', book);
         if (book) {
           book.Quantity = Quantity;
           break;
         }
       }
+
+      for(const book of promotion.promotionbook){
+        promotionsum += book?.Quantity ? book.Quantity : 0;
+      }
+      promotion.Quantity = promotionsum;      
     }
+
 
     console.log(getpromotion);
 
     res.status(200).json(getpromotion);
   } else if (req.method == "DELETE") {
+    
   }
   prisma.$disconnect();
 }
