@@ -42,9 +42,19 @@ export default function BookInfo() {
 
   useEffect(() => {
     if (router.isReady) {
+      
       getBook()
+      
     };
   }, [bookid, router]);
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (status == "authenticated" && user?.role?.RoleID != 2) {
+        router.push("/");
+      }
+    }
+  }, [status,user,router])
 
   const CurrentPromotion = book?.CurrentPromotion;
   return (
@@ -63,10 +73,13 @@ export default function BookInfo() {
           </div>
           <div className="flex box-border md:w-[60vw]">
             <div className="block box-border w-full">
-              <div className="ml-3 mb-5">
-                <h1 className="text-4xl font-bold mt-10 m-auto">
-                  {book?.BookName}
-                </h1>
+              <div className="ml-3 mb-5 mt-10 flex justify-between">
+                <h1 className="text-4xl font-bold ">{book?.BookName}</h1>
+                <Button
+                  className={"hover:bg-red-600 text-red-600 outline-red-600"}
+                  type={"secondary"}
+                  text={"Delete"}
+                />
               </div>
               <div className="mt-3 pl-10 mb-3 w-1/2">
                 <ul className="">
@@ -155,6 +168,11 @@ export default function BookInfo() {
                 <p>{book?.Description}</p>
               </div>
               <div className="mt-3 float-right md:mr-16 mb-2">
+                <Button
+                  type={"Primary"}
+                  text={"Edit"}
+                  onClick={() => router.push("/publisher/book/" + bookid + "/edit")}
+                />
                 <Button
                   type={"secondary"}
                   text={"Back"}

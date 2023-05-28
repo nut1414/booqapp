@@ -47,13 +47,13 @@ export function Navbar({ user }) {
         { (isAdmin || isPublisher) &&
           <div className="flex items-center h-full flex-wrap justify-center align-middle grow md:border-r-2 border-white md:pr-4">
           {isPublisher && <>
-            <NavLink href={"/"}>Order</NavLink>
-            <NavLink href={"/"}>Manage Book</NavLink>
-            <NavLink href={"/"}>Promotion</NavLink>
+            <NavLink href={"/publisher/order"}>Order</NavLink>
+            <NavLink href={"/publisher/book"}>Manage Book</NavLink>
+            <NavLink href={"/publisher/promotion"}>Promotion</NavLink>
           </>}
           {isAdmin && <>
-            <NavLink href={"/"}>Manage Publisher</NavLink>
-            <NavLink href={"/"}>Edit Genre</NavLink>
+            <NavLink href={"/admin/publisher"}>Manage Publisher</NavLink>
+            <NavLink href={"/admin/genre"}>Edit Genre</NavLink>
           </>}
         </div>}
         <div className="flex items-center  h-full flex-wrap justify-center align-middle grow">

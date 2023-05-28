@@ -52,9 +52,41 @@ async function createpromotion(req, res) {
     res.status(200).json({ message: "Promotion created successfully" });
   } else if (req.method == "GET") {
     let getpromotion = [];
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    console.log(currentDate);
     getpromotion = await prisma.promotion.findMany({
       where: {
-        PromotionID: req.query?.PromotionID ? parseInt(req.query.PromotionID) : undefined,
+        PublisherID: req.user.UserID,
+        StartDate:
+          req.query?.Filter == "active"
+            ? {
+                lte: currentDate,
+              }
+            : req.query?.Filter == "inactive"
+            ? {
+                gt: currentDate,
+              }
+            : undefined,
+        EndDate:
+          req.query?.Filter == "active"
+            ? {
+                gte: currentDate,
+              }
+            : req.query?.Filter == "inactive"
+            ? {
+                lt: currentDate,
+              }
+            : undefined,
+        PromotionDetail: req.query?.PromotionDetail
+          ? {
+              contains: req.query?.PromotionDetail,
+            }
+          : undefined,
+        PromotionID: req.query?.PromotionID
+          ? parseInt(req.query.PromotionID)
+          : undefined,
       },
       orderBy: {
         PromotionID: "asc",
@@ -78,33 +110,36 @@ async function createpromotion(req, res) {
           },
         },
       },
-    })
-    const bookid = getpromotion.map((x) => x.promotionbook.map((y) => 
-      y.BookID
-    ));
-
-    const reducedbook = bookid.reduce((a, b) => {return a.concat(b)}, []);
-
-    const promotionid = getpromotion.map((x) => 
-      x.PromotionID
+    });
+    const bookid = getpromotion.map((x) =>
+      x.promotionbook.map((y) => y.BookID)
     );
+
+    const reducedbook = bookid.reduce((a, b) => {
+      return a.concat(b);
+    }, []);
+
+    const promotionid = getpromotion.map((x) => x.PromotionID);
 
     console.log(promotionid);
     const agg = await prisma.orderbook.groupBy({
-      by: ['BookID'],
+      by: ["BookID"],
       _sum: {
         Quantity: true,
       },
       where: {
-        PromotionID: { in : promotionid }
-      }
+        PromotionID: { in: promotionid },
+      },
     });
-    
+
     for (const item of agg) {
-      const { BookID, _sum: { Quantity } } = item;
-      
+      const {
+        BookID,
+        _sum: { Quantity },
+      } = item;
+
       for (const promotion of getpromotion) {
-        const book = promotion.promotionbook.find(b => b.BookID == BookID);        
+        const book = promotion.promotionbook.find((b) => b.BookID == BookID);
         if (book) {
           book.Quantity = Quantity;
           break;

@@ -156,7 +156,7 @@ export default function PublisherPromotionAdd() {
           <TextBox
             id={"d"}
             name={"PromotionDetails"}
-            label={"Promotion details"}
+            label={"Promotion Name"}
             type={"text"}
           ></TextBox>
           <TagSelectBox
