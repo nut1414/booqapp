@@ -47,7 +47,7 @@ async function orderuser(req, res) {
             },
             promotion: undefined
           }
-        }) 
+        })
         return order
       }), 'orderbook')
 
