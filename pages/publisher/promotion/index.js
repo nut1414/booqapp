@@ -7,6 +7,7 @@ import fetch from "@/utils/fetch";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/router";
 import Swal from "sweetalert2";
+import { Button } from "@/components/input/Button";
 
 export default function Managepromotion() {
   const [page, setPage] = useState(1);
@@ -128,6 +129,7 @@ export default function Managepromotion() {
             {"Next >"}
           </button>
         </div>
+        <Button onClick={() => {router.push('/publisher/promotion/add')}} text={"+Add"} className={"float-right"}/>
       </div>
     </Template>
   );

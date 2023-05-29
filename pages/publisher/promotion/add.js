@@ -173,6 +173,7 @@ export default function PublisherPromotionAdd() {
               className={"w-28"}
               text={"Cancel"}
               type={"secondary"}
+              onClick={(e) => {e.preventDefault();router.push("/publisher/promotion");}}
             ></Button>
             <Button className={"w-28"} text={"Done"}></Button>
           </div>
