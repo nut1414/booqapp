@@ -77,6 +77,7 @@ export default function Paymentconfirm() {
               showConfirmButton: false,
               timer: 1500,
             }).then(() => {
+              
               router.push("/user/order");
             });
           } else {
@@ -179,7 +180,10 @@ export default function Paymentconfirm() {
               <div className="mb-10 ">
                 <Button
                   type={"secondary"}
-                  onClick={() => router.back()}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    router.back()
+                  }}
                   text={"Back"}
                 ></Button>
               </div>
