@@ -45,10 +45,10 @@ export function Binfo({
           height="100"  
         />
       </Link>
-      <div className="mb-2">
+      <div className="mb-2 w-72">
         <Link
           href={linkname}
-          className=" text-black  hover:text-spooky-orange transition-all text-2xl w-max p-5  break-words "
+          className=" text-black  hover:text-spooky-orange transition-all  text-2xl w-32 p-5  break-words "
         >
           {name}
         </Link>
