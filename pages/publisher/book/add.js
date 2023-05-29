@@ -148,7 +148,7 @@ export default function PublisherBookAdd() {
     }
 
   }
-
+  
 
 
 
@@ -244,12 +244,14 @@ export default function PublisherBookAdd() {
               id={"g"}
               name={"Price"}
               label={"Price"}
+              min={1}
               type={"number"}
             ></TextBox>
             <TextBox
               id={"h"}
               name={"Weight"}
               label={"Weight"}
+              min={0}
               type={"number"}
             ></TextBox>
             <SelectBox name="Available" label="Available">

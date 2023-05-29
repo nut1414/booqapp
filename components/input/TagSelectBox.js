@@ -66,7 +66,8 @@ export default function TagSelectBox({
         <div className="flex justify-between">
           <div className="grow flex flex-wrap gap-2">
             {selectedTags.map((tag) => {
-              let t = tags.find((t) => t[tagvalue] === tag);
+              let t = tags?.find((t) => t[tagvalue] === tag);
+              if(t)
               return (
                 <TagItem
                   key={t[taglabel]}

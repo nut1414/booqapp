@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import Resizer from "react-image-file-resizer";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
+import { useAuth } from "@/hooks/useAuth";
 
 const resizeFile = (file) =>
   new Promise((resolve) => {
@@ -38,7 +39,10 @@ export default function PublisherBookAdd() {
   const [format, setFormat] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState([]);
+  const [book, setBook] = useState({});
+  const { user, status } = useAuth();
   const router = useRouter();
+  const { bookid }= router.query;
 
   const getGenre = async () => {
     const res = await fetch("/api/fetch/genre", {
@@ -70,8 +74,10 @@ export default function PublisherBookAdd() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = {
+      BookID: bookid,
       GenreID: selectedGenre,
       AuthorName: selectedAuthor,
+      FormatID: formData.get("FormatTypeID"),
       BookCover: img,
     };
 
@@ -125,14 +131,14 @@ export default function PublisherBookAdd() {
     }
 
     const res = await fetch("/api/book", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify(data),
     });
     if (res.ok) {
       Swal.fire({
         icon: "success",
         title: "Success!",
-        text: "Book has been added!",
+        text: "Book has been edited!",
       });
       router.push("/publisher/book");
     } else {
@@ -144,12 +150,41 @@ export default function PublisherBookAdd() {
     }
   };
 
+  const fetchBook = async () => {
+    const res = await fetch(`/api/bookdetail?BookID=${bookid}&PublisherID=${user?.id}` , {
+      method: 'GET'
+    })
+    if (res.ok) {
+      const data = await res.json()
+      console.log(data)
+      setBook(data.bookdetail)
+      setSelectedAuthor(data.bookdetail.bookauthor.map((author) => author.author.AuthorName))
+      setSelectedGenre(data.bookdetail.bookgenre.map((genre) => genre.genre.GenreID))
+      setImg(data.bookdetail.BookCover)
+    }
+
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBook({ ...book, [name]: value });
+  };
+
+
+  useEffect(() => {
+    if (router.isReady) {
+    fetchBook()
+    }
+  }, [router,user])
+
+
+
   // console.log(data)
 
   useEffect(() => {
     getGenre();
     getFormat();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     imgRef.current.addEventListener("change", () => {
@@ -166,7 +201,7 @@ export default function PublisherBookAdd() {
   return (
     <Template>
       <ActionTemplate
-        heading={"Adding Book"}
+        heading={"Edit Book"}
         sideChildren={
           <div>
             <div
@@ -196,32 +231,36 @@ export default function PublisherBookAdd() {
               name={"BookName"}
               label={"Book Title"}
               type={"text"}
+              value={book?.BookName}
+              onChange={handleInputChange}
             ></TextBox>
             <TagInput
               label="Author"
               tags={selectedAuthor}
               setTags={setSelectedAuthor}
             />
-            <TagSelectBox
+            {genre && <TagSelectBox
               label="Genre"
-              tags={genre}
+              tags={genre || []}
               tagvalue="GenreID"
               taglabel="GenreName"
               selectedTags={selectedGenre}
               setSelectedTags={setSelectedGenre}
-            />
-            <SelectBox name="FormatID" label="Format">
+            />}
+            {format && <SelectBox name="FormatTypeID" label="Format" value={book?.FormatTypeID} onChange={handleInputChange} >
               {format?.map((item) => (
                 <option key={item.FormatTypeID} value={item.FormatTypeID}>
                   {item.TypeName}
                 </option>
               ))}
-            </SelectBox>
+            </SelectBox>}
             <TextAreaBox
               className={""}
               id={"e"}
               name={"Description"}
               label={"Description"}
+              value={book?.Description}
+              onChange={handleInputChange}
             />
             {/* <TextBox className={""} id={"e"} name={"Description"} label={"Description"}  type={"text"} desorNot={"Description"}></TextBox> */}
             <TextBox
@@ -229,22 +268,30 @@ export default function PublisherBookAdd() {
               name={"ReleaseDate"}
               label={"Release Date"}
               type={"date"}
+              value={book?.ReleaseDate ? new Date( book?.ReleaseDate)?.toISOString()?.substring(0,10) : ""}
+              onChange={handleInputChange}
             ></TextBox>
             <TextBox
               id={"g"}
               name={"Price"}
               label={"Price"}
               type={"number"}
+              min={1}
+              value={book?.Price}
+              onChange={handleInputChange}
             ></TextBox>
             <TextBox
               id={"h"}
               name={"Weight"}
               label={"Weight"}
+              min={0}
               type={"number"}
+              value={book?.Weight}
+              onChange={handleInputChange}
             ></TextBox>
-            <SelectBox name="Available" label="Available">
-              <option value={1}>Yes</option>
-              <option value={0}>No</option>
+            <SelectBox name="Available" value={book?.Available == true ? "1" : "0" } onChange={handleInputChange} label="Available">
+              <option value={"1"}>Yes</option>
+              <option value={"0"}>No</option>
             </SelectBox>
             <div className="ml-96 mt-10 mb-5">
               <Button

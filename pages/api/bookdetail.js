@@ -29,7 +29,7 @@ async function bookdetail(req, res) {
         if (bookdetail?.BookCover) {
           bookdetail.BookCover = bookdetail.BookCover.toString('utf-8');
         }
-        res.status(200).json({ bookdetail: (bookdetail?.publisher.PublisherID == PublisherID || bookdetail?.Available) ? bookdetail : null });
+        res.status(200).json({ bookdetail: (bookdetail?.publisher.PublisherID == parseInt(PublisherID) || bookdetail?.Available) ? bookdetail : null });
       }else
         res.status(404).json({ message: "Not Found" });
     } else {
