@@ -17,7 +17,7 @@ export function PromotionManageRow({
       <td>
         <Link
           className="text-[#FF7300] hover:text-amber-400 transition-all text-sm underline w-max text-center"
-          href={"#"}
+          href={"/publisher/promotion/" + promotionManage.PromotionID}
         >
           View
         </Link>

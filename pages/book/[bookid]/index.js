@@ -7,6 +7,7 @@ import { Review } from "@/components/book/Review";
 import { useEffect, useState } from "react";
 import { BookTagLink } from "@/components/book/BookTagLink";
 import { useAuth } from "@/hooks/useAuth";
+import addToCart from "@/utils/addtocart";
 
 export default function BookInfo() {
   const router = useRouter();
@@ -25,7 +26,9 @@ export default function BookInfo() {
       : true;
 
   const handleAddCart = () => {
-    router.push("/order/cart/add?BookID=" + bookid);
+    addToCart(bookid).then(() => {
+      router.push("/order/cart");
+    })
   };
   const handleBuy = () => {};
 

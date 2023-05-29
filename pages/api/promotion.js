@@ -123,10 +123,15 @@ async function createpromotion(req, res) {
         PromotionID: { in: promotionid },
       },
     });
+    console.log("getpromotion",getpromotion)
 
     
     for (const promotion of getpromotion) {
       let promotionsum = 0;
+      console.log("promotion",promotion)
+      for (const pb of promotion.promotionbook) {
+        pb.BookCover = pb?.bookdetails?.BookCover?.toString("utf8")
+      }
 
       for (const item of agg) {
         const {
@@ -136,6 +141,7 @@ async function createpromotion(req, res) {
         const book = promotion.promotionbook.find((b) => b.BookID == BookID);
         console.log('book = ', book);
         if (book) {
+          // book.BookCover = book?.bookdetails?.BookCover?.toString("utf8")
           book.Quantity = Quantity;
           break;
         }

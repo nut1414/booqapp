@@ -12,6 +12,7 @@ export function Binfo({
   onClick,
   promotion,
   finalprice,
+  quantity,
   bookid
 }) {
   const router = useRouter();
@@ -72,8 +73,17 @@ export function Binfo({
               {price}
             </p>
           </div>
-        ) : (
-          <p className="text-2xl  p-5 object-center w-48">{price}</p>
+        ) : quantity >= 0 ? (
+          <p className="text-sm  p-5 object-center w-48">
+            <div>
+              Price: {price}
+            </div>
+            <div>
+              Sale Count:{quantity}
+            </div>
+            </p>
+        ) :  (
+          <p className="text-2xl  p-5 object-center w-48">{price}</p> 
         )}
         { addToCartAvailable && <button
           className={"rounded-3xl text-4xl hover:text-yellow-600  "}
