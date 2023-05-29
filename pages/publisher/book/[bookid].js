@@ -15,6 +15,8 @@ export default function BookInfo() {
   const router = useRouter();
   const { bookid } = router.query;
   const [book, setBook] = useState(null);
+  const [book2, setBook2] = useState(null);
+
   const { user, status } = useAuth();
 
   const addToCartAvailable =
@@ -69,6 +71,20 @@ export default function BookInfo() {
     });
   };
 
+  const getBook2 = async () => {
+    const res = await fetch(`/api/bookdetail/?BookID=${bookid}&PublisherID=${user?.id}`, {
+      method: "GET",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setBook2(data.bookdetail);
+      console.log(data);
+    } else {
+      router.push("/");
+      setBook(null);
+    }
+  };
+
   const getBook = async () => {
     const res = await fetch(`/api/getpublisherbook?BookID=${bookid}`, {
       method: "GET",
@@ -89,9 +105,9 @@ export default function BookInfo() {
     if (router.isReady) {
       
       getBook()
-      
+      getBook2()
     };
-  }, [bookid, router]);
+  }, [bookid, router,user]);
 
   useEffect(() => {
     if (router.isReady) {
@@ -110,8 +126,8 @@ export default function BookInfo() {
             <img
               className={"object-cover md:p-10 float-left "}
               src={
-                book?.BookCover?.length > 10
-                  ? book?.BookCover
+                book2?.BookCover?.length > 10
+                  ? book2?.BookCover
                   : "/picture/noim.jpg"
               }
             />

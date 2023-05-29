@@ -30,7 +30,14 @@ async function getpublisherbook(req, res) {
       orderBy: {
         BookID: "asc",
       },
-      include: {
+      select: {
+        BookID: true,
+        BookName: true,
+        Description: true,
+        Price: true,
+        Available: true,
+        ReleaseDate: true,
+        Weight: true,
         bookauthor: {
           select: {
             author: {
