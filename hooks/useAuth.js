@@ -80,8 +80,17 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     localStorage.removeItem('token')
     setUser(null)
-    router.push('/')
     setStatus('unauthenticated')
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'You have been logged out',
+      
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/')
+      }
+    })
     
   }
 

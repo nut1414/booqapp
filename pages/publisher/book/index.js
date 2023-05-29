@@ -4,13 +4,19 @@ import { SelectBox } from "@/components/input/SelectBox";
 import { BookManageRow } from "@/components/manage/BookManageRow";
 import { useEffect, useState } from "react";
 import fetch from "@/utils/fetch";
+import { useAuth } from "@/hooks/useAuth";
 import { TextBox } from "@/components/input/TextBox";
+import { Button } from "@/components/input/Button";
+import { useRouter } from "next/router";
 
 export default function ManageBook() {
   const [page, setPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("all");
   const [nameFilter, setNameFilter] = useState("");
   const [bookManage, setBookManage] = useState([]);
+
+  const { status, user } = useAuth();
+  const router = useRouter();
 
   const [filterDate, setFilterDate] = useState(false);
   const [dateStart, setDateStart] = useState("");
@@ -51,6 +57,17 @@ export default function ManageBook() {
       console.log(e);
     }
   };
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (
+        (status == "authenticated" && user?.role?.RoleID != 2) ||
+        status == "unauthenticated"
+      ) {
+        router.push("/");
+      }
+    }
+  }, [status, user, router]);
 
   useEffect(() => {
     getBookManage();
@@ -171,6 +188,7 @@ export default function ManageBook() {
             {"Next >"}
           </button>
         </div>
+        <Button className={"float-right"} text={"+Add"} onClick={()=> {router.push('/publisher/book/add')}}/>
       </div>
     </Template>
   );

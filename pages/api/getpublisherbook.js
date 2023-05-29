@@ -40,7 +40,11 @@ async function getpublisherbook(req, res) {
             },
           },
         },
-        bookgenre: true,
+        bookgenre: {
+          include: {
+            genre: true,
+          }
+        },
         publisher: true,
         promotionbook: true,
       },
